@@ -1,0 +1,50 @@
+{
+  "root": true,
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2015,
+    "sourceType": "module"
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2020
+      },
+      "extends": [
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "no-console": "off",
+        "no-debugger": "off",
+        "no-trailing-spaces": "error",
+        "no-undef": "off",
+        "no-useless-escape": "off",
+        "semi": ["error", "never"],
+        "no-empty-function": "off",
+        "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }],
+        "quotes": [
+          "error",
+          "single"
+        ],
+        "@typescript-eslint/member-delimiter-style": ["error", {
+          "multiline": {
+            "delimiter": "none",
+            "requireLast": true
+          },
+          "singleline": {
+            "delimiter": "comma",
+            "requireLast": false
+          }
+        }],
+        "@typescript-eslint/prefer-as-const": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/ban-ts-comment": "warn"
+      }
+    }
+  ]
+}
