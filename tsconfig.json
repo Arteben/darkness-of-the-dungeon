@@ -12,10 +12,10 @@
     "removeComments": true,
     "strictNullChecks": true,
 
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["src/*"],
-      "@assets/*": ["src/assets/*"]
+      "@/*": ["*"],
+      "@assets/*": ["assets/*"]
     },
 
     /* Bundler mode */

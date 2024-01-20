@@ -8,25 +8,28 @@ export class MainMenu extends LitElement {
 
   render() {
     return html`
-    <input type="button" value="${this.title}" />
+      <button>${this.title}</button>
     `
   }
 
   static styles = css`
     :host {
       display: block;
-      width: 150px;
-      height: 30px;
-      margin: 10px;
-      border-radius: 10px;
+      margin: 10px 0px;
     }
 
-    input {
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      background: #231a2c;
-      color: wheat
+    button {
+      display: block;
+      font-size: 15px;
+      color: white;
+      width: 150px;
+      border: unset;
+      background: #1a1a1a;
+      padding: 10px 20px;
+    }
+
+    button:hover {
+      outline: white solid 2px;
     }
   `
 }

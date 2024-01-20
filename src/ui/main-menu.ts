@@ -6,24 +6,21 @@ import { customElement, property } from 'lit/decorators.js'
 export class MainMenu extends LitElement {
   render() {
     return html`
-      <div>
-        <menu-button title="one"></menu-button>
-        <menu-button title="two"></menu-button>
-        <menu-button title="third"></menu-button>
-      </div>
+        <menu-button title="Страрт новой игры"></menu-button>
+        <menu-button title="Правила"></menu-button>
+        <menu-button title="Переключить звук"></menu-button>
+        <menu-button title="Сменить язык"></menu-button>
     `
   }
 
   static styles = css`
     :host {
-      position: relative;
+      position: fixed;
       display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
+      flex-flow: column;
       justify-content: center;
       align-items: center;
-      background: beige;
-      width: 300px;
+      height: 100%;
     }
   `
 }

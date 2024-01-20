@@ -1,10 +1,10 @@
 
-export enum languages {
+export enum Languages {
   ru,
   eng,
 }
 
-export enum difficultyLevels {
+export enum DifficultyLevels {
   easy,
   middle,
   hard,
