@@ -3,8 +3,8 @@ import { customElement, property } from 'lit/decorators.js'
 
 @customElement('menu-button')
 export class MainMenu extends LitElement {
-  @property({type: String})
-  title=''
+  @property({ type: String })
+  title = ''
 
   render() {
     return html`

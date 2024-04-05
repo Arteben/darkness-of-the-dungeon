@@ -9,3 +9,12 @@ export enum DifficultyLevels {
   middle,
   hard,
 }
+
+export enum ImportantDomElementIds {
+  phaserCanvasId = 'phaser-canvas-id',
+}
+
+export enum BusEventsList {
+  changeGameState = 'changeGameState',
+  initGame = 'initGame',
+}
