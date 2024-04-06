@@ -1,12 +1,17 @@
 import '@/ui-elements/menu-button'
 import { LitElement, css, html } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { customElement, state } from 'lit/decorators.js'
 
 import { Game } from '@/classes/mine-darkness'
-import { MainButtonType } from '@/types/main-types'
+import { MainButtonType, ChangeGameStateData, MainButtonRenderInfo } from '@/types/main-types'
+import { EventBus } from '@/classes/event-bus'
+import { BusEventsList } from '@/types/enums'
 
 const buttons: Array<MainButtonType> = [
-  { type: 'gameStart', hidden: false, names: ['gameStart', 'gamePause'] },
+  {
+    type: 'gameStart', hidden: false,
+    names: ['gameStart', 'gameContinue'], icons: ['fa-play']
+  },
   { type: 'rules', hidden: false, names: ['rules'] },
   { type: 'turnSound', hidden: false, names: ['turnSoundOff', 'turnSoundOn'] },
   { type: 'lang', hidden: false, names: ['someLang'] },
@@ -14,6 +19,43 @@ const buttons: Array<MainButtonType> = [
 
 @customElement('main-menu')
 export class MainMenu extends LitElement {
+
+  @state()
+  private _renderButtons: Array<MainButtonRenderInfo> = []
+
+  connectedCallback() {
+    super.connectedCallback()
+    this.onChangeGameState = this.onChangeGameState.bind(this)
+    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    EventBus.off(BusEventsList.changeGameState, this.onChangeGameState)
+  }
+
+  private onChangeGameState(eventData: unknown) {
+    const state = (eventData as ChangeGameStateData).detail
+    const renderButtons: Array<MainButtonRenderInfo> = []
+
+    buttons.forEach((button) => {
+      const newButton: MainButtonRenderInfo = { type: button.type, hidden: false, name: '' }
+
+      switch (button.type) {
+        case 'gameStart':
+          newButton.name = state.isGameStarted ? button.names[1] : button.names[0]
+          break
+        case 'turnSound':
+          newButton.name = state.isSound ? button.names[1] : button.names[0]
+        default:
+          newButton.name = button.names[0]
+          break
+      }
+      renderButtons.push(newButton)
+    })
+
+    this._renderButtons = renderButtons
+  }
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
@@ -32,45 +74,23 @@ export class MainMenu extends LitElement {
     }
   }
 
-  static GetButtonNameFromInfo(info: MainButtonType): string {
-    let name = ''
-    const game = Game()
-    if (!game) {
-      return name
-    }
+  render() {
+    const renderOrderButton = (buttonData: MainButtonRenderInfo) => {
+      if (buttonData.hidden) {
+        return html``
+      }
 
-    switch (info.type) {
-      case 'gameStart':
-        name = game.state.isGameStarted ? info.names[1] : info.names[0]
-        break
-      case 'turnSound':
-        name = game.state.isSound ? info.names[1] : info.names[0]
-      default:
-        name = info.names[0]
-        break
-    }
-
-    return name
-  }
-
-  private renderOrderButton(buttonData: MainButtonType) {
-
-    if (buttonData.hidden) {
-      return html``
-    }
-
-    return html`
-      <menu-button
-        @click="${(e: Event) => {
+      return html`
+        <menu-button
+          @click="${(e: Event) => {
           this.OnClickButton(buttonData.type, e)
         }}"
-        title="${MainMenu.GetButtonNameFromInfo(buttonData)}"></menu-button>
-    `
-  }
+          title="${buttonData.name}"></menu-button>
+      `
+    }
 
-  render() {
     return html`
-        ${buttons.map(el => this.renderOrderButton(el))}
+        ${this._renderButtons.map(el => renderOrderButton(el))}
     `
   }
 

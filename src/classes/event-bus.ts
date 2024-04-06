@@ -1,3 +1,7 @@
+import { BusEventsList } from '@/types/enums'
+import { Game } from '@/classes/mine-darkness'
+import { ChangeGameStateData } from '@/types/main-types'
+
 let eventBus: EventBus
 
 export class EventBus {
@@ -30,16 +34,20 @@ export class EventBus {
 
   // here need to bind for not allow this destraction!
   // for example: this.onChangeGameState = this.onChangeGameState.bind(this)
-  //
-  static On(name: string, callback: (e: Event) => void, that: any) {
-    if (!that) {
-      console.error(`you dont set bind for function  ${String(callback)}`)
-    }
-    eventBus.addEventListener(name, callback)
+  static OnUsedItselfThis(name: string, callbackWihBindThis: (e: Event) => void) {
+    eventBus.addEventListener(name, callbackWihBindThis)
   }
 
-  static OnArrowFunc(name: string, callback: (e: Event) => void) {
-    eventBus.addEventListener(name, callback)
+  static OnChangeGameStateItselfThis(callbackWihBindThis: (e: unknown) => void) {
+    EventBus.OnUsedItselfThis(BusEventsList.changeGameState, callbackWihBindThis)
+
+    const game = Game()
+    if (!game) {
+      return
+    }
+
+    const data: ChangeGameStateData = { detail: game.state }
+    callbackWihBindThis(data)
   }
 
   static off(name: string, callback: (e: Event) => void) {

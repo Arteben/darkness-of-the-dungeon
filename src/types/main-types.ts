@@ -28,4 +28,12 @@ export interface MainButtonType {
   type: string
   hidden: boolean
   names: Array<string>
+  icons?: Array<string>
+}
+
+export interface MainButtonRenderInfo {
+  type: string
+  hidden: boolean
+  name: string
+  icons?: string
 }

@@ -15,7 +15,7 @@ export class PhaserCanvas extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.On(BusEventsList.changeGameState, this.onChangeGameState, this)
+    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
   }
 
   disconnectedCallback() {

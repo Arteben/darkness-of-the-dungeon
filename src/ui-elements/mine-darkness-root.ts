@@ -20,7 +20,7 @@ export class AppElement extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.On(BusEventsList.changeGameState, this.onChangeGameState, this)
+    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
   }
 
   disconnectedCallback() {
@@ -32,12 +32,10 @@ export class AppElement extends LitElement {
     const state = (eventData as ChangeGameStateData).detail
     this._isGameStarted = state.isGameStarted
     this._isMainMenu = state.isMainMenu
-    console.log('game started', this._isGameStarted)
   }
 
   render() {
-    // const mainMenu = this._isMainMenu ? html`<main-menu></main-menu>` : ''
-    const mainMenu = html`<main-menu></main-menu>`
+    const mainMenu = this._isMainMenu ? html`<main-menu></main-menu>` : ''
     const phaserConvas = this._isGameStarted ? html`<phaser-canvas></phaser-canvas>` : ''
 
     return html`
