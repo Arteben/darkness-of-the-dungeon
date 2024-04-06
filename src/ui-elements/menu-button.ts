@@ -19,17 +19,22 @@ export class MainMenu extends LitElement {
     }
 
     button {
-      display: block;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       font-size: 15px;
-      color: white;
-      width: 150px;
+      color: #ffd9a6;
+      width: 200px;
       border: unset;
-      background: #1a1a1a;
       padding: 10px 20px;
+      background-image: linear-gradient(166deg, black, gray);
+      border: #000000 solid 2px;
+      border-radius: 9px;
     }
 
-    button:hover {
-      outline: white solid 2px;
+    button:hover, button:active {
+      outline: #eeeded solid 2px;
     }
   `
 }
