@@ -23,3 +23,9 @@ export interface MainMenuEventData {
 export interface ChangeGameStateData {
   detail: GameState
 }
+
+export interface MainButtonType {
+  type: string
+  hidden: boolean
+  names: Array<string>
+}

@@ -1,13 +1,8 @@
-:root {
+html, body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background: gray;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: center;
   margin: 0;
   padding: 0;
+  height: 100%;
+  background: black;
+  display: block;
 }

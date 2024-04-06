@@ -19,7 +19,7 @@ class MineDarkness {
 
     const body = document.querySelector('body')
     if (body == null) {
-      new Error('there isnt any body or app element for this document')
+      console.error('there isnt any body or app element for this document')
     } else {
       body.appendChild(appElement)
     }
