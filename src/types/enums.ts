@@ -15,5 +15,5 @@ export enum ImportantDomElementIds {
 }
 
 export enum BusEventsList {
-  changeGameState = 'changeGameState',
+  changeGameState,
 }

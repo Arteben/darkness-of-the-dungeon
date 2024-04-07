@@ -31,7 +31,7 @@ export class MineDarkness {
 
   SetNewStateValues(newState: GameState) {
     this.state = GameState.SetNewValues(newState)
-    EventBus.Dispatch(BusEventsList.changeGameState, this.state)
+    EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], this.state)
   }
 
   setLocFunc(locs: Translates) {
@@ -45,7 +45,7 @@ export function InitGame(rootElement: string, localState: ILocalGameState) {
   const locals = new Translates()
   game = new MineDarkness(rootElement, localState, locals)
   locals.game = game
-  EventBus.Dispatch(BusEventsList.changeGameState, game.state)
+  EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], game.state)
 }
 
 export function Game() {

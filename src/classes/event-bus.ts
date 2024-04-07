@@ -39,7 +39,7 @@ export class EventBus {
   }
 
   static OnChangeGameStateItselfThis(callbackWihBindThis: (e: unknown) => void) {
-    EventBus.OnUsedItselfThis(BusEventsList.changeGameState, callbackWihBindThis)
+    EventBus.OnUsedItselfThis(BusEventsList[BusEventsList.changeGameState], callbackWihBindThis)
 
     const game = Game()
     if (!game) {

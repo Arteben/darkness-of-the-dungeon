@@ -25,7 +25,7 @@ export class AppElement extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    EventBus.off(BusEventsList.changeGameState, this.onChangeGameState)
+    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
   }
 
   private onChangeGameState(eventData: unknown) {
