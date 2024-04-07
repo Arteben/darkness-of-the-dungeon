@@ -5,13 +5,17 @@ import {
 import { ILocalGameState } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
+import { Translates } from '@/classes/translates'
 
-class MineDarkness {
+export class MineDarkness {
 
   state: GameState
   appElement: HTMLElement
+  loc: (a: string) => string
 
-  constructor(rootElement: string, localState: ILocalGameState) {
+  constructor(rootElement: string, localState: ILocalGameState, locals: Translates) {
+    this.loc = locals.loc.bind(locals)
+
     this.state = new GameState(localState)
 
     const appElement = document.createElement(rootElement)
@@ -29,15 +33,21 @@ class MineDarkness {
     this.state = GameState.SetNewValues(newState)
     EventBus.Dispatch(BusEventsList.changeGameState, this.state)
   }
+
+  setLocFunc(locs: Translates) {
+    this.loc = locs.loc.bind(locs)
+  }
 }
 
 let game: MineDarkness
 
 export function InitGame(rootElement: string, localState: ILocalGameState) {
-  game = new MineDarkness(rootElement, localState)
-  EventBus.Dispatch(BusEventsList.initGame, game)
+  const locals = new Translates()
+  game = new MineDarkness(rootElement, localState, locals)
+  locals.game = game
+  EventBus.Dispatch(BusEventsList.changeGameState, game.state)
 }
 
-export function Game(): MineDarkness | null {
+export function Game() {
   return game ? game : null
 }

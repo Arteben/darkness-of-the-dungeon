@@ -2,7 +2,7 @@ import '@/ui-elements/menu-button'
 import { LitElement, css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
-import { Game } from '@/classes/mine-darkness'
+import { Game, MineDarkness } from '@/classes/mine-darkness'
 import { MainButtonType, ChangeGameStateData, MainButtonRenderInfo } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { BusEventsList, Languages } from '@/types/enums'
@@ -10,15 +10,17 @@ import { BusEventsList, Languages } from '@/types/enums'
 const buttons: Array<MainButtonType> = [
   {
     type: 'gameStart', hidden: false,
-    names: ['gameStart', 'gameContinue'], icons: ['fa-play']
+    names: ['menuGameStart', 'menuGameContinue'], icons: ['fa-play']
   },
   { type: 'rules', hidden: false, names: ['menuRules'] },
-  { type: 'turnSound', hidden: false, names: ['turnSoundOff', 'turnSoundOn'] },
+  { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
 ]
 
 @customElement('main-menu')
 export class MainMenu extends LitElement {
+
+  private gameLink: MineDarkness | null = Game()
 
   @state()
   private _renderButtons: Array<MainButtonRenderInfo> = []
@@ -59,6 +61,10 @@ export class MainMenu extends LitElement {
           newButton.name = button.names[0]
           break
       }
+
+      if (!this.gameLink) return
+      newButton.name = this.gameLink.loc(newButton.name)
+
       renderButtons.push(newButton)
     })
 
@@ -68,24 +74,21 @@ export class MainMenu extends LitElement {
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
 
-    const game = Game()
-    if (!game) {
-      return
-    }
+    if (!this.gameLink) return
 
     switch (type) {
       case 'gameStart':
-        game.state.isGameStarted = true
-        game.state.isMainMenu = false
-        game.SetNewStateValues(game.state)
+        this.gameLink.state.isGameStarted = true
+        this.gameLink.state.isMainMenu = false
+        this.gameLink.SetNewStateValues(this.gameLink.state)
         break
       case 'lang':
-        game.state.lang = game.state.lang == Languages.ru ? Languages.eng : Languages.ru
-        game.SetNewStateValues(game.state)
+        this.gameLink.state.lang = this.gameLink.state.lang == Languages.ru ? Languages.eng : Languages.ru
+        this.gameLink.SetNewStateValues(this.gameLink.state)
         break
       case 'rules':
-        game.state.isRules = true
-        game.SetNewStateValues(game.state)
+        this.gameLink.state.isRules = true
+        this.gameLink.SetNewStateValues(this.gameLink.state)
         break
     }
   }

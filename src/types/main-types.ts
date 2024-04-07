@@ -42,3 +42,7 @@ export interface IHashParams {
   lang: Languages
   isRules: boolean
 }
+
+export interface IJsonTranslatesType {
+  [index: string]: {ru: string, eng: string}
+}

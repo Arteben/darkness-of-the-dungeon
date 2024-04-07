@@ -1,0 +1,30 @@
+{
+  "menuGameStart": {
+    "ru": "Начать игру",
+    "eng": "Start game"
+  },
+  "menuGameContinue": {
+    "ru": "Продолжить",
+    "eng": "Continue"
+  },
+  "menuRules": {
+    "ru": "Правила",
+    "eng": "Rules"
+  },
+  "menuTurnSoundOff": {
+    "ru": "Выключить звук",
+    "eng": "Turn Off Sound"
+  },
+  "menuTurnSoundOn": {
+    "ru": "Включить звук",
+    "eng": "Turn On Sound"
+  },
+  "menuToEng": {
+    "ru": "Английский",
+    "eng": "English"
+  },
+  "menuToRu": {
+    "ru": "Русский",
+    "eng": "Russian"
+  }
+}
