@@ -2,10 +2,15 @@ import '@/ui-elements/menu-button'
 import { LitElement, css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
-import { Game, MineDarkness } from '@/classes/mine-darkness'
-import { MainButtonType, ChangeGameStateData, MainButtonRenderInfo } from '@/types/main-types'
-import { EventBus } from '@/classes/event-bus'
+import {
+  MainButtonType,
+  ChangeGameStateData,
+  MainButtonRenderInfo,
+} from '@/types/main-types'
 import { BusEventsList, Languages } from '@/types/enums'
+
+import { Game, MineDarkness } from '@/classes/mine-darkness'
+import { EventBus } from '@/classes/event-bus'
 
 const buttons: Array<MainButtonType> = [
   {

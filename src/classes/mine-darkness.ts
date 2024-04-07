@@ -2,7 +2,7 @@ import {
   BusEventsList,
 } from '@/types/enums'
 
-import { ILocalGameState } from '@/types/main-types'
+import { ILocalGameState, IJsonTranslatesType } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
 import { Translates } from '@/classes/translates'
@@ -11,7 +11,7 @@ export class MineDarkness {
 
   state: GameState
   appElement: HTMLElement
-  loc: (a: string) => string
+  loc: (a: string, b?: IJsonTranslatesType) => string
 
   constructor(rootElement: string, localState: ILocalGameState, locals: Translates) {
     this.loc = locals.loc.bind(locals)

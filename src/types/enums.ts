@@ -17,7 +17,3 @@ export enum ImportantDomElementIds {
 export enum BusEventsList {
   changeGameState = 'changeGameState',
 }
-
-export enum jsonTranslateFiles {
-  uiTranslates
-}

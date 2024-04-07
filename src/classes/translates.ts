@@ -1,7 +1,7 @@
 import { default as uiTranlates } from '@/translates/ui.json'
 
 import { MineDarkness } from '@/classes/mine-darkness'
-import { jsonTranslateFiles, Languages } from '@/types/enums'
+import { Languages } from '@/types/enums'
 import { IJsonTranslatesType } from '@/types/main-types'
 
 export class Translates {
@@ -15,22 +15,11 @@ export class Translates {
     return Languages[stateLang] as ('ru' | 'eng')
   }
 
-  loc(text: string, type?: jsonTranslateFiles) {
+  loc(text: string, pageTranslates?: IJsonTranslatesType) {
     const unknowWithoutLoc = (str: string) => `!!${str}!!`
 
-    let translates: IJsonTranslatesType
-
-    if (!type) {
-      type = jsonTranslateFiles.uiTranslates
-    }
-
-    switch (type) {
-      case jsonTranslateFiles.uiTranslates:
-        translates = uiTranlates
-        break
-      default:
-        return unknowWithoutLoc(text)
-    }
+    const translates: IJsonTranslatesType =
+        pageTranslates ? pageTranslates : uiTranlates
 
     const lang = this.getLang()
     if (!lang){
