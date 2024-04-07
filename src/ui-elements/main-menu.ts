@@ -5,16 +5,16 @@ import { customElement, state } from 'lit/decorators.js'
 import { Game } from '@/classes/mine-darkness'
 import { MainButtonType, ChangeGameStateData, MainButtonRenderInfo } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
-import { BusEventsList } from '@/types/enums'
+import { BusEventsList, Languages } from '@/types/enums'
 
 const buttons: Array<MainButtonType> = [
   {
     type: 'gameStart', hidden: false,
     names: ['gameStart', 'gameContinue'], icons: ['fa-play']
   },
-  { type: 'rules', hidden: false, names: ['rules'] },
+  { type: 'rules', hidden: false, names: ['menuRules'] },
   { type: 'turnSound', hidden: false, names: ['turnSoundOff', 'turnSoundOn'] },
-  { type: 'lang', hidden: false, names: ['someLang'] },
+  { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
 ]
 
 @customElement('main-menu')
@@ -47,6 +47,14 @@ export class MainMenu extends LitElement {
           break
         case 'turnSound':
           newButton.name = state.isSound ? button.names[1] : button.names[0]
+          break
+        case 'lang':
+          newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
+          break
+        case 'rules':
+          newButton.name = button.names[0]
+          newButton.hidden = state.isRules
+          break
         default:
           newButton.name = button.names[0]
           break
@@ -68,7 +76,15 @@ export class MainMenu extends LitElement {
     switch (type) {
       case 'gameStart':
         game.state.isGameStarted = true
-        game.state.isMainMenu = !game.state.isMainMenu
+        game.state.isMainMenu = false
+        game.SetNewStateValues(game.state)
+        break
+      case 'lang':
+        game.state.lang = game.state.lang == Languages.ru ? Languages.eng : Languages.ru
+        game.SetNewStateValues(game.state)
+        break
+      case 'rules':
+        game.state.isRules = true
         game.SetNewStateValues(game.state)
         break
     }

@@ -6,7 +6,7 @@ import {
 export type nullNumber = null | number;
 
 export interface ILocalGameState {
-  isSound: boolean
+  isRules: boolean
   lang: Languages
 }
 
@@ -36,4 +36,9 @@ export interface MainButtonRenderInfo {
   hidden: boolean
   name: string
   icons?: string
+}
+
+export interface IHashParams {
+  lang: Languages
+  isRules: boolean
 }

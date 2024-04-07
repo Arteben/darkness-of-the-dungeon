@@ -11,7 +11,7 @@ class MineDarkness {
   state: GameState
   appElement: HTMLElement
 
-  constructor(rootElement: string, localState?: ILocalGameState) {
+  constructor(rootElement: string, localState: ILocalGameState) {
     this.state = new GameState(localState)
 
     const appElement = document.createElement(rootElement)
@@ -33,7 +33,7 @@ class MineDarkness {
 
 let game: MineDarkness
 
-export function InitGame(rootElement: string, localState?: ILocalGameState) {
+export function InitGame(rootElement: string, localState: ILocalGameState) {
   game = new MineDarkness(rootElement, localState)
   EventBus.Dispatch(BusEventsList.initGame, game)
 }

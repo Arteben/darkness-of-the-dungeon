@@ -31,7 +31,7 @@ export class AppElement extends LitElement {
   private onChangeGameState(eventData: unknown) {
     const state = (eventData as ChangeGameStateData).detail
     this._isGameStarted = state.isGameStarted
-    this._isMainMenu = state.isMainMenu
+    this._isMainMenu = state.isMainMenu && !state.isRules
   }
 
   render() {
