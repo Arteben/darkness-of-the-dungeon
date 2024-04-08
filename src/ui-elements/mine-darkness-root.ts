@@ -7,15 +7,13 @@ import '@/ui-elements/phaser-canvas'
 import { ChangeGameStateData } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { BusEventsList } from '@/types/enums'
+import { GameState } from '@/classes/game-state'
 
 @customElement('mine-darkness-root')
 export class AppElement extends LitElement {
 
   @state()
-  private _isMainMenu: boolean = true
-
-  @state()
-  private _isGameStarted: boolean = false
+  private _state: GameState = new GameState()
 
   connectedCallback() {
     super.connectedCallback()
@@ -30,13 +28,12 @@ export class AppElement extends LitElement {
 
   private onChangeGameState(eventData: unknown) {
     const state = (eventData as ChangeGameStateData).detail
-    this._isGameStarted = state.isGameStarted
-    this._isMainMenu = state.isMainMenu && !state.isRules
+    this._state = state
   }
 
   render() {
-    const mainMenu = this._isMainMenu ? html`<main-menu></main-menu>` : ''
-    const phaserConvas = this._isGameStarted ? html`<phaser-canvas></phaser-canvas>` : ''
+    const mainMenu = this._state.isMainMenu ? html`<main-menu></main-menu>` : ''
+    const phaserConvas = this._state.isGame ? html`<phaser-canvas></phaser-canvas>` : ''
 
     return html`
       ${mainMenu}

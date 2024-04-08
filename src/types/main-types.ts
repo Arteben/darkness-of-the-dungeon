@@ -5,11 +5,6 @@ import {
 
 export type nullNumber = null | number;
 
-export interface ILocalGameState {
-  isRules: boolean
-  lang: Languages
-}
-
 export type ElementOrNull = HTMLElement | null;
 
 export type VoidFunction = () => void;
@@ -41,6 +36,7 @@ export interface MainButtonRenderInfo {
 export interface IHashParams {
   lang: Languages
   isRules: boolean
+  isGame: boolean
 }
 
 export interface IJsonTranslatesType {
