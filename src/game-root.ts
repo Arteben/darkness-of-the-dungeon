@@ -2,14 +2,14 @@ import { LitElement, css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import '@/ui-elements/main-menu'
-import '@/ui-elements/phaser-canvas'
+import '@/phaser-canvas'
 
 import { ChangeGameStateData } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { BusEventsList } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
 
-@customElement('mine-darkness-root')
+@customElement('game-root')
 export class AppElement extends LitElement {
 
   @state()
