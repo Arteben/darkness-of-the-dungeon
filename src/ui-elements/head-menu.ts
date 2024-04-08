@@ -120,12 +120,14 @@ export class MainMenu extends LitElement {
   static styles = css`
     :host {
       position: fixed;
+      top: 0px;
       display: flex;
-      flex-flow: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
+      flex-flow: row;
+      justify-content: start;
+      align-items: start;
+      height: 100px;
       width: 100%;
+      background-image: linear-gradient(rgb(149 0 0 / 74%), rgb(151 0 0 / 41%));
     }
   `
 }

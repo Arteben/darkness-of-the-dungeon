@@ -2,6 +2,7 @@ import { LitElement, css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import '@/ui-elements/main-menu'
+import '@/ui-elements/head-menu'
 import '@/phaser-canvas'
 
 import { ChangeGameStateData } from '@/types/main-types'
@@ -33,11 +34,12 @@ export class AppElement extends LitElement {
 
   render() {
     const mainMenu = this._state.isMainMenu ? html`<main-menu></main-menu>` : ''
+    const headMenu = !this._state.isMainMenu ? html`<head-menu></head-menu>` : ''
     const phaserConvas = this._state.isGame ? html`<phaser-canvas></phaser-canvas>` : ''
 
     return html`
       ${mainMenu}
-      <game-menu></game-menu>
+      ${headMenu}
       <mobile-controls></mobile-controls>
       ${phaserConvas}
     `
