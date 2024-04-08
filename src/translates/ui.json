@@ -26,5 +26,9 @@
   "menuToRu": {
     "ru": "Русский",
     "eng": "Russian"
+  },
+  "hMenuToMain": {
+    "ru": "Основное меню",
+    "eng": "Back to main menu"
   }
 }

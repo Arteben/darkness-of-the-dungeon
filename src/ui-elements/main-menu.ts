@@ -12,10 +12,14 @@ import { BusEventsList, Languages } from '@/types/enums'
 import { Game, MineDarkness } from '@/classes/mine-darkness'
 import { EventBus } from '@/classes/event-bus'
 
+interface MenuButtonRenderInfo extends MainButtonRenderInfo {
+  isSpecial: boolean
+}
+
 const buttons: Array<MainButtonType> = [
   {
     type: 'gameStart', hidden: false,
-    names: ['menuGameStart', 'menuGameContinue'], icons: ['fa-play']
+    names: ['menuGameStart', 'menuGameContinue']
   },
   { type: 'rules', hidden: false, names: ['menuRules'] },
   { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
@@ -28,7 +32,7 @@ export class MainMenu extends LitElement {
   private gameLink: MineDarkness | null = Game()
 
   @state()
-  private _renderButtons: Array<MainButtonRenderInfo> = []
+  private _renderButtons: Array<MenuButtonRenderInfo> = []
 
   connectedCallback() {
     super.connectedCallback()
@@ -43,14 +47,19 @@ export class MainMenu extends LitElement {
 
   private onChangeGameState(eventData: unknown) {
     const state = (eventData as ChangeGameStateData).detail
-    const renderButtons: Array<MainButtonRenderInfo> = []
+    const renderButtons: Array<MenuButtonRenderInfo> = []
 
     buttons.forEach((button) => {
-      const newButton: MainButtonRenderInfo = { type: button.type, hidden: false, name: '' }
+      const newButton: MenuButtonRenderInfo = { type: button.type, hidden: false, name: '', isSpecial: false }
 
       switch (button.type) {
         case 'gameStart':
-          newButton.name = state.isGameStarted ? button.names[1] : button.names[0]
+          if (state.isGameStarted) {
+            newButton.name = button.names[1]
+            newButton.isSpecial = true
+          } else {
+            newButton.name = button.names[0]
+          }
           break
         case 'turnSound':
           newButton.name = state.isSound ? button.names[1] : button.names[0]
@@ -98,17 +107,17 @@ export class MainMenu extends LitElement {
   }
 
   render() {
-    const renderOrderButton = (buttonData: MainButtonRenderInfo) => {
+    const renderOrderButton = (buttonData: MenuButtonRenderInfo) => {
       if (buttonData.hidden) {
         return html``
       }
 
       return html`
         <menu-button
-          @click="${(e: Event) => {
-          this.OnClickButton(buttonData.type, e)
-        }}"
-          title="${buttonData.name}"></menu-button>
+          @click="${(e: Event) => {this.OnClickButton(buttonData.type, e)}}"
+          ?isspecial="${buttonData.isSpecial}">
+            ${buttonData.name}
+        </menu-button>
       `
     }
 

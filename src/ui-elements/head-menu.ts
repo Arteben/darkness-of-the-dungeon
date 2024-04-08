@@ -4,22 +4,15 @@ import { customElement, state } from 'lit/decorators.js'
 
 import {
   MainButtonType,
-  ChangeGameStateData,
   MainButtonRenderInfo,
 } from '@/types/main-types'
-import { BusEventsList, Languages } from '@/types/enums'
+import { BusEventsList } from '@/types/enums'
 
 import { Game, MineDarkness } from '@/classes/mine-darkness'
 import { EventBus } from '@/classes/event-bus'
 
 const buttons: Array<MainButtonType> = [
-  {
-    type: 'gameStart', hidden: false,
-    names: ['menuGameStart', 'menuGameContinue'], icons: ['fa-play']
-  },
-  { type: 'rules', hidden: false, names: ['menuRules'] },
-  { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
-  { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
+  { type: 'mainMenu', hidden: false, names: ['hMenuToMain'] }
 ]
 
 @customElement('head-menu')
@@ -42,33 +35,13 @@ export class MainMenu extends LitElement {
   }
 
   private onChangeGameState(eventData: unknown) {
-    const state = (eventData as ChangeGameStateData).detail
     const renderButtons: Array<MainButtonRenderInfo> = []
 
     buttons.forEach((button) => {
       const newButton: MainButtonRenderInfo = { type: button.type, hidden: false, name: '' }
 
-      switch (button.type) {
-        case 'gameStart':
-          newButton.name = state.isGameStarted ? button.names[1] : button.names[0]
-          break
-        case 'turnSound':
-          newButton.name = state.isSound ? button.names[1] : button.names[0]
-          break
-        case 'lang':
-          newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
-          break
-        case 'rules':
-          newButton.name = button.names[0]
-          newButton.hidden = state.isRules
-          break
-        default:
-          newButton.name = button.names[0]
-          break
-      }
-
       if (!this.gameLink) return
-      newButton.name = this.gameLink.loc(newButton.name)
+      newButton.name = this.gameLink.loc(button.names[0])
 
       renderButtons.push(newButton)
     })
@@ -82,16 +55,8 @@ export class MainMenu extends LitElement {
     if (!this.gameLink) return
 
     switch (type) {
-      case 'gameStart':
-        this.gameLink.state.isGameStarted = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
-        break
-      case 'lang':
-        this.gameLink.state.lang = this.gameLink.state.lang == Languages.ru ? Languages.eng : Languages.ru
-        this.gameLink.SetNewStateValues(this.gameLink.state)
-        break
-      case 'rules':
-        this.gameLink.state.isRules = true
+      case 'mainMenu':
+        this.gameLink.state.isMainMenu = true
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
     }
@@ -105,10 +70,10 @@ export class MainMenu extends LitElement {
 
       return html`
         <menu-button
-          @click="${(e: Event) => {
-          this.OnClickButton(buttonData.type, e)
-        }}"
-          title="${buttonData.name}"></menu-button>
+          @click="${(e: Event) => {this.OnClickButton(buttonData.type, e)}}"
+          placeClass="headMenu">
+        ${buttonData.name}
+      </menu-button>
       `
     }
 
@@ -124,8 +89,8 @@ export class MainMenu extends LitElement {
       display: flex;
       flex-flow: row;
       justify-content: start;
-      align-items: start;
-      height: 100px;
+      align-items: center;
+      height: 70px;
       width: 100%;
       background-image: linear-gradient(rgb(149 0 0 / 74%), rgb(151 0 0 / 41%));
     }
