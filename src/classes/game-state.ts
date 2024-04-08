@@ -19,7 +19,7 @@ export class GameState implements IHashParams {
   }
   public set isRules(flag: boolean) {
     if (flag) {
-      this.isGame = false
+      if (this.isGame) this.isGame = false
     }
     this._isRules = flag
   }
@@ -30,7 +30,7 @@ export class GameState implements IHashParams {
   }
   public set isGame(flag: boolean) {
     if (flag) {
-      this.isRules = false
+      if (this.isRules) this.isRules = false
     }
     this._isGame = flag
   }
@@ -40,7 +40,7 @@ export class GameState implements IHashParams {
     return this._isGameStarted
   }
   public set isGameStarted(flag: boolean) {
-    if (flag) this.isGame = true
+    if (flag && !this.isGame) this.isGame = true
     this._isGameStarted = flag
   }
   //
@@ -50,8 +50,8 @@ export class GameState implements IHashParams {
   }
   public set isMainMenu(flag: boolean) {
     if (flag) {
-      this.isRules = false
-      this.isGame = false
+      if (this.isRules) this.isRules = false
+      if (this.isGame) this.isGame = false
     }
   }
   //
