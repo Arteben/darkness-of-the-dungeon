@@ -47,11 +47,14 @@ export function InitGame(localState: IHashParams) {
   const locals = new Translates()
   game = new MineDarkness(localState, locals, gameApp)
   // search and get convas for phaser
-  game.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
-    if (!element) return
-    new GameEngine(element, game)
-    EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], game.state)
+  game.gameApp.canvasParent.then((parent: HTMLElement | null) => {
+    if (!parent) return
+    game.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
+      if (!element) return
+      new GameEngine(parent, element, game)
+    }, () => {})
   }, () => {})
+  EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], game.state)
 }
 
 export function Game() {

@@ -16,6 +16,9 @@ export class GameApp extends LitElement {
   @queryAsync('canvas')
   phaserCanvas!: Promise<HTMLCanvasElement | null>
 
+  @queryAsync('div')
+  canvasParent!: Promise<HTMLElement | null>
+
   @state()
   private _state: GameState = new GameState()
 
@@ -41,17 +44,27 @@ export class GameApp extends LitElement {
     const convasDisplay = { 'display': (this._state.isGame) ? 'block' : 'none' }
 
     return html`
-      ${mainMenu}
-      ${headMenu}
-      <mobile-controls></mobile-controls>
-      <canvas style=${styleMap(convasDisplay)}></canvas>
+      <div>
+        ${mainMenu}
+        ${headMenu}
+        <mobile-controls></mobile-controls>
+        <canvas style=${styleMap(convasDisplay)}></canvas>
+      </div>
     `
   }
 
   static styles = css`
   :host {
+    display: block;
+  }
+
+  :host, div {
     width: 100%;
     height: 100%;
+  }
+
+  div {
+    display: flex;
     background: gray;
     display: flex;
     flex-direction: column;
@@ -60,8 +73,8 @@ export class GameApp extends LitElement {
   }
 
   canvas {
-    width: 100%;
-    height: 100%;
+    width: 1200px;
+    height: 900px;
     background-color: darkslateblue;
   }
 `
