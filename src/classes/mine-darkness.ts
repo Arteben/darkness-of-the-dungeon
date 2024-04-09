@@ -16,17 +16,11 @@ export class MineDarkness {
   gameApp: GameApp
   loc: (a: string, b?: IJsonTranslatesType) => string
 
-  constructor(localState: IHashParams, locals: Translates) {
+  constructor(localState: IHashParams, locals: Translates, gameApp: GameApp) {
     this.state = new GameState(localState)
     this.loc = locals.loc.bind(locals)
     locals.game = this
-    this.gameApp = document.createElement('game-app')
-    const body = document.querySelector('body')
-    if (body == null) {
-      console.error('there isnt any body or app element for this document')
-    } else {
-      body.appendChild(this.gameApp)
-    }
+    this.gameApp = gameApp
   }
 
   SetNewStateValues(newState: GameState) {
@@ -42,9 +36,17 @@ export class MineDarkness {
 let game: MineDarkness
 
 export function InitGame(localState: IHashParams) {
+  // append gameApp elements to html
+  const gameApp = document.createElement('game-app')
+  const body = document.querySelector('body')
+  if (body == null || gameApp == null) {
+    return
+  }
+  body.appendChild(gameApp)
+  // get object with methods with translates
   const locals = new Translates()
-  game = new MineDarkness(localState, locals)
-  // create phaser canvas
+  game = new MineDarkness(localState, locals, gameApp)
+  // search and get convas for phaser
   game.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
     if (!element) return
     new GameEngine(element, game)
