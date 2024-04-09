@@ -7,8 +7,3 @@ declare module '*.png' {
   const value: string
   export default value
 }
-
-declare module 'big.js' {
-  const Big: BigJsLibrary.BigJS
-  export = Big
-}

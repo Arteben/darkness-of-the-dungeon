@@ -1,17 +1,20 @@
 import { LitElement, css, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { customElement, state, queryAsync } from 'lit/decorators.js'
+import { styleMap } from 'lit/directives/style-map.js'
 
 import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
-import '@/phaser-canvas'
 
 import { ChangeGameStateData } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { BusEventsList } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
 
-@customElement('game-root')
-export class AppElement extends LitElement {
+@customElement('game-app')
+export class GameApp extends LitElement {
+
+  @queryAsync('canvas')
+  phaserCanvas!: Promise<HTMLCanvasElement | null>
 
   @state()
   private _state: GameState = new GameState()
@@ -35,13 +38,13 @@ export class AppElement extends LitElement {
   render() {
     const mainMenu = this._state.isMainMenu ? html`<main-menu></main-menu>` : ''
     const headMenu = !this._state.isMainMenu ? html`<head-menu></head-menu>` : ''
-    const phaserConvas = this._state.isGame ? html`<phaser-canvas></phaser-canvas>` : ''
+    const convasDisplay = { 'display': (this._state.isGame) ? 'block' : 'none' }
 
     return html`
       ${mainMenu}
       ${headMenu}
       <mobile-controls></mobile-controls>
-      ${phaserConvas}
+      <canvas style=${styleMap(convasDisplay)}></canvas>
     `
   }
 
@@ -55,5 +58,17 @@ export class AppElement extends LitElement {
     justify-content: center;
     align-items: center;
   }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    background-color: darkslateblue;
+  }
 `
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'game-app': GameApp
+  }
 }

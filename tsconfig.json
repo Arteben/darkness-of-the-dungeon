@@ -1,30 +1,46 @@
 {
-  "include": ["src"],
-  "files": ["declarations/global.d.ts"],
+  "include": [
+    "src"
+  ],
+  "files": [
+    "declarations/global.d.ts"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "target": "ES2020",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "ScriptHost",
+    ],
     "skipLibCheck": true,
     "removeComments": true,
     "strictNullChecks": true,
-
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"],
-      "@assets/*": ["assets/*"]
+      "@/*": [
+        "*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ]
     },
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-
     "strict": true,
+
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/phaser/types"
+    ],
+    "types": [ "Phaser" ]
   }
 }

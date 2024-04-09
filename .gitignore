@@ -48,3 +48,6 @@ typings/
 
 # Output directory
 dist
+
+#vscode
+.vscode
