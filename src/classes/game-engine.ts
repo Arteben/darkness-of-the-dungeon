@@ -13,6 +13,10 @@ import * as phaserImgs from '@/imports/test-images'
 class GameScene extends Scene {
   private _cursors: Types.Input.Keyboard.CursorKeys | undefined
   private _player: Types.Physics.Arcade.SpriteWithDynamicBody | undefined
+  private _stars: Physics.Arcade.Group | undefined
+  private _score: number = 0
+  private _scoreText: GameObjects.Text | undefined
+  private _bombs: Physics.Arcade.Group | undefined
 
   private _jumpEventFlags: keyJumpFlags = {
     isJump: false,
@@ -62,6 +66,57 @@ class GameScene extends Scene {
     this.physics.add.collider(this._player, platforms)
 
     this._cursors = this.input.keyboard?.createCursorKeys()
+
+    this._scoreText = this.add.text(16, 50, 'score: 0', { fontSize: '32px', fill: '#000' } as Types.GameObjects.Text.TextStyle)
+
+    this._stars = this.physics.add.group({
+      key: 'star',
+      repeat: 11,
+      setXY: { x: 12, y: 0, stepX: 70 }
+    })
+
+    this._stars.children.getArray().forEach((child: GameObjects.GameObject) => {
+      (child as Phaser.Physics.Arcade.Sprite).setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
+    })
+
+    this._bombs = this.physics.add.group()
+    this.physics.add.collider(this._bombs, platforms)
+    this.physics.add.collider(this._player, this._bombs, (player, bomb) => {
+      this.physics.pause()
+      const pl = player as Phaser.Physics.Arcade.Sprite
+      pl.setTint(0xff0000)
+      pl.anims.play('turn')
+      // gameOver = true
+    })
+
+    this.physics.add.collider(this._stars, platforms)
+
+    this.physics.add.overlap(this._player, this._stars, (player, star) => {
+      (star as Phaser.Physics.Arcade.Sprite).disableBody(true, true)
+
+      if (this._scoreText) {
+        this._score += 10
+        this._scoreText.setText(`Score: ${this._score}`)
+      }
+
+      if (!this._stars) { return }
+      if (this._stars.countActive(true) != 0) { return }
+
+      this._stars.children.getArray().forEach((child) => {
+        const star = child as Phaser.Physics.Arcade.Sprite
+        star.enableBody(true, star.x, 0, true, true)
+      })
+
+      const pl = player as Phaser.Physics.Arcade.Sprite
+      const coordX = (pl.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400)
+
+      if (!this._bombs) { return }
+
+      const bomb: Phaser.Physics.Arcade.Sprite = this._bombs.create(coordX, 16, 'bomb')
+      bomb.setBounce(1)
+      bomb.setCollideWorldBounds(true)
+      bomb.setVelocity(Phaser.Math.Between(-200, 200), 20)
+    })
   }
 
   update(time: number, delta: number): void {

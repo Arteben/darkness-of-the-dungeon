@@ -12,7 +12,7 @@
     "useDefineForClassFields": false,
     "module": "ESNext",
     "lib": [
-      "ES2020",
+      "ES6",
       "DOM",
       "DOM.Iterable",
       "ScriptHost",
