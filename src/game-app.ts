@@ -70,6 +70,7 @@ export class GameApp extends LitElement {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
   }
 
   canvas {
