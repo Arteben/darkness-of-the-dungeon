@@ -92,7 +92,7 @@ export class MainMenu extends LitElement {
 
     switch (type) {
       case 'gameStart':
-        this.gameLink.state.isGameStarted = true
+        this.gameLink.state.isGame = true
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
       case 'lang':

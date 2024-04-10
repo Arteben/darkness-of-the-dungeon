@@ -29,9 +29,8 @@ export class GameState implements IHashParams {
     return this._isGame
   }
   public set isGame(flag: boolean) {
-    if (flag) {
-      if (this.isRules) this.isRules = false
-    }
+    if (flag && this.isRules) this.isRules = false
+    if (flag && !this.isGameStarted) this.isGameStarted = true
     this._isGame = flag
   }
   //
@@ -40,7 +39,6 @@ export class GameState implements IHashParams {
     return this._isGameStarted
   }
   public set isGameStarted(flag: boolean) {
-    if (flag && !this.isGame) this.isGame = true
     this._isGameStarted = flag
   }
   //

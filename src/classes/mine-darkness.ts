@@ -52,9 +52,9 @@ export function InitGame(localState: IHashParams) {
     game.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
       if (!element) return
       new GameEngine(parent, element, game)
+      EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], game.state)
     }, () => {})
   }, () => {})
-  EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], game.state)
 }
 
 export function Game() {

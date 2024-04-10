@@ -1,8 +1,10 @@
 import { MineDarkness } from '@/classes/mine-darkness'
+import { EventBus } from '@/classes/event-bus'
 
 import {
   IWindowResolution, keyJumpFlags
 } from '@/types/phaser-types'
+import { ChangeGameStateData } from '@/types/main-types'
 
 import {
   Scene, Game, WEBGL, GameObjects, Types, Physics
@@ -10,22 +12,23 @@ import {
 
 import * as phaserImgs from '@/imports/test-images'
 
-class GameScene extends Scene {
+class MainEngineScene extends Scene {
   private _cursors: Types.Input.Keyboard.CursorKeys | undefined
   private _player: Types.Physics.Arcade.SpriteWithDynamicBody | undefined
   private _stars: Physics.Arcade.Group | undefined
   private _score: number = 0
+  private _translatedScoreText = ' :'
   private _scoreText: GameObjects.Text | undefined
   private _bombs: Physics.Arcade.Group | undefined
 
   private _jumpEventFlags: keyJumpFlags = {
     isJump: false,
     isUpClick: false,
-    timeout: NaN
+    timeout: null
   }
 
-  constructor() {
-    super('main-scene')
+  constructor(name: string) {
+    super(name)
   }
 
   create() {
@@ -67,7 +70,8 @@ class GameScene extends Scene {
 
     this._cursors = this.input.keyboard?.createCursorKeys()
 
-    this._scoreText = this.add.text(16, 50, 'score: 0', { fontSize: '32px', fill: '#000' } as Types.GameObjects.Text.TextStyle)
+    const scoreText = this._translatedScoreText + this._score
+    this._scoreText = this.add.text(16, 50, scoreText, { fontSize: '32px', fill: '#000' } as Types.GameObjects.Text.TextStyle)
 
     this._stars = this.physics.add.group({
       key: 'star',
@@ -93,11 +97,7 @@ class GameScene extends Scene {
 
     this.physics.add.overlap(this._player, this._stars, (player, star) => {
       (star as Phaser.Physics.Arcade.Sprite).disableBody(true, true)
-
-      if (this._scoreText) {
-        this._score += 10
-        this._scoreText.setText(`Score: ${this._score}`)
-      }
+      this._score += 10
 
       if (!this._stars) { return }
       if (this._stars.countActive(true) != 0) { return }
@@ -120,6 +120,7 @@ class GameScene extends Scene {
   }
 
   update(time: number, delta: number): void {
+
     if (!this._cursors || !this._player) { return }
 
     if (this._cursors.left.isDown) {
@@ -148,12 +149,18 @@ class GameScene extends Scene {
       this._jumpEventFlags.isUpClick = true
       this._jumpEventFlags.timeout = window.setTimeout(() => {
         this._jumpEventFlags.isJump = false
-        window.clearTimeout(this._jumpEventFlags.timeout)
+        window.clearTimeout(this._jumpEventFlags.timeout as number)
       }, 100)
     }
 
     if (this._jumpEventFlags.isJump && this._player.body.touching.down) {
       this._player.setVelocityY(-330)
+    }
+
+
+    const newText = this._translatedScoreText + this._score
+    if (this._scoreText && this._scoreText.text != newText) {
+      this._scoreText.setText(newText)
     }
   }
 
@@ -164,28 +171,29 @@ class GameScene extends Scene {
     this.load.image('bomb', phaserImgs.bomb)
     this.load.spritesheet('dude', phaserImgs.dude, { frameWidth: 32, frameHeight: 48 })
   }
+
+  setTranslatedScoreText(text: string) {
+    this._translatedScoreText = text + ': '
+  }
 }
 
 export class GameEngine {
-
-  config: Types.Core.GameConfig
+  configEngine: Types.Core.GameConfig
   game: MineDarkness
   engine: Phaser.Game
+  mainScene: MainEngineScene
 
   constructor(parent: HTMLElement, element: HTMLCanvasElement, game: MineDarkness) {
     this.game = game
+    this.mainScene = new MainEngineScene('main-scene')
 
-    if (!this.game.gameApp.shadowRoot) null
-
-    this.config = {
-      // width: this.getWindowResolutions().width,
-      // height: this.getWindowResolutions().height,
+    this.configEngine = {
       width: 800,
       height: 600,
       type: WEBGL,
       canvas: element,
       parent,
-      scene: [GameScene],
+      scene: [this.mainScene],
       physics: {
         default: 'arcade',
         arcade: {
@@ -195,7 +203,21 @@ export class GameEngine {
       },
     }
 
-    this.engine = new Game(this.config)
+    this.engine = new Game(this.configEngine)
+    this.engine.pause()
+
+    this.onChangeState = this.onChangeState.bind(this)
+    EventBus.OnChangeGameStateItselfThis(this.onChangeState)
+  }
+
+  onChangeState (eventData: unknown) {
+    if (this.game.state.isGame) {
+      if (this.engine.isPaused) { this.engine.resume() }
+    } else if (!this.engine.isPaused) {
+      this.engine.pause()
+    }
+
+    this.mainScene.setTranslatedScoreText(this.game.loc('phaserScore'))
   }
 
   getWindowResolutions(): IWindowResolution {
