@@ -65,7 +65,7 @@ export class GameApp extends LitElement {
 
   div {
     display: flex;
-    background: gray;
+    background-image: linear-gradient(0deg, black, #272727);
     display: flex;
     flex-direction: column;
     justify-content: center;
