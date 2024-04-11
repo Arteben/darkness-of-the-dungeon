@@ -35,8 +35,8 @@ export class GameEngine {
   mainScene: MainEngineScene
 
   sceneResolution: IResolution = {
-    width: 1000,
-    height: 500
+    width: 640,
+    height: 384,
   }
 
   constructor(parent: HTMLElement, element: HTMLCanvasElement, game: MineDarkness) {
