@@ -1,32 +1,9 @@
 import { MineDarkness } from '@/classes/mine-darkness'
 import { EventBus } from '@/classes/event-bus'
+import { MainEngineScene } from '@/classes/main-engine-scene'
 
-import {
-  IResolution
-} from '@/types/phaser-types'
-
-import {
-  Scene, Game, WEBGL, GameObjects, Types, Physics
-} from 'phaser'
-
-import someFon from '@/assets/fon.png'
-
-class MainEngineScene extends Scene {
-  constructor(name: string) {
-    super(name)
-  }
-
-  create() {
-    this.add.image(0, 0, 'fon').setOrigin(0, 0)
-  }
-
-  update(time: number, delta: number): void {
-  }
-
-  preload() {
-    this.load.image('fon', someFon)
-  }
-}
+import { IResolution } from '@/types/phaser-types'
+import { Game, WEBGL, Types } from 'phaser'
 
 export class GameEngine {
   configEngine: Types.Core.GameConfig
