@@ -1,34 +1,24 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
 
-// import tiles from '@/assets/kenny_platformer_64x64.png'
-// import envTiles from '@assets/env-tileset.png'
-// import groundTiles from '@assets/ground-tileset.png'
-import textMapRaw from '@/assets/map.txt?url'
+import { IMapTilesIndexes } from '@/types/phaser-types'
 
+import textMapRaw from '@/assets/map.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
-const tileIndexes = {
+const tileIndexes: IMapTilesIndexes = {
   '+': 14,
   'd': 53,
   'dd': 58,
   's': 18,
   'ss': 23,
-  'f': 15,
-}
-
-interface layers {
-  rockLayer: Phaser.Tilemaps.TilemapLayer | null
-  waterLayer: Phaser.Tilemaps.TilemapLayer | null
-  platformLayer: Phaser.Tilemaps.TilemapLayer | null
-  stuffLayer: Phaser.Tilemaps.TilemapLayer | null
+  'f': 16,
 }
 
 export class MainEngineScene extends Scene {
   _progress!: GameObjects.Graphics
-  _map!: Phaser.Tilemaps.Tilemap
-  _layers!: layers
   _controls!: Phaser.Cameras.Controls.FixedKeyControl
-  _groundLayer!: Phaser.Tilemaps.TilemapLayer
-  // _symbolMap!: Array<string>
+
+  _groundLayer!: Phaser.Tilemaps.TilemapLayer | null
+  _envLayer!: Phaser.Tilemaps.TilemapLayer | null
 
   _tileWidth = 32
 
@@ -41,23 +31,23 @@ export class MainEngineScene extends Scene {
     if (symbolMap[symbolMap.length - 1].length == 0) {
       symbolMap.splice(symbolMap.length - 1, 1)
     }
-    this.getLayerForSymbols(['+'], symbolMap)
-    // this._groundLayer = this.getLayerForSymbols(['+'], symbolMap)
-    // this._mapIndexes = this.getMapIndexes()
-    // this._groundLayer = this.getLayer()
-    // this._map = this.make.tilemap({ key: 'multiple-layers-map' })
-    // const tiles = this._map.addTilesetImage('kenny_platformer_64x64')
-    // if (!tiles) { return }
 
-    // this._layers = {
-    //   rockLayer: this._map.createLayer('Rock Layer', tiles, 0, 0),
-    //   waterLayer: this._map.createLayer('Water Layer', tiles, 0, 0),
-    //   platformLayer: this._map.createLayer('Platform Layer', tiles, 0, 0),
-    //   stuffLayer: this._map.createLayer('Stuff Layer', tiles, 0, 0),
-    // }
+    if (!(symbolMap.length > 0 && symbolMap[0].length > 0)) {
+      console.error('Something wrong with json map, json dont load correctly!')
+      return
+    }
 
-    this.cameras.main.setScroll(0, 1000)
-    this.cameras.main.setBounds(0, 0, 200, 200)
+    const map = this.make.tilemap({
+      width: symbolMap[0].length, height: symbolMap.length,
+      tileWidth: this._tileWidth, tileHeight: this._tileWidth
+    })
+    const tileset = map.addTilesetImage('tileSet') as Phaser.Tilemaps.Tileset
+
+    this._groundLayer = this.getLayerForSymbols(['+'], 'groundLayer', map, tileset, symbolMap)
+    this._envLayer = this.getLayerForSymbols(['d', 's', 'f'], 'env-layer', map, tileset, symbolMap)
+
+    this.cameras.main.setScroll(0, 0)
+    this.cameras.main.setBounds(0, 0, 1000, 200)
 
     const cursors = this.input.keyboard?.createCursorKeys()
     if (!cursors) return
@@ -94,11 +84,11 @@ export class MainEngineScene extends Scene {
     this._progress.fillRect(0, (gameSize.height - 22), gameSize.width * value, 20)
   }
 
-  private getLayerForSymbols(symbols: string[], symbolMap: string[]) {
-    if (!(symbolMap.length > 0 && symbolMap[0].length > 0)) return
+  private getLayerForSymbols(
+    symbols: string[], nameLayer: string, map: Phaser.Tilemaps.Tilemap, tiles: Phaser.Tilemaps.Tileset, symMap: string[]) {
 
-    const width = symbolMap[0].length
-    const height = symbolMap.length
+    const width = symMap[0].length
+    const height = symMap.length
 
     const notNulls = (strings: string[], i: number, j: number) => {
       return strings[i] && !(strings[i][j] == undefined || strings[i][j] == null)
@@ -111,15 +101,12 @@ export class MainEngineScene extends Scene {
         // orders symbolos for this layer
         symbols.findIndex((element) => {
           // check symbol map for null, undefined
-          if (!notNulls(symbolMap, i, j)) return false
+          if (!notNulls(symMap, i, j)) return false
 
-          if (symbolMap[i][j] == element) {
-            // @ts-ignore
-            if (notNulls(symbolMap, i - 1, j) && symbolMap[i - 1][j] == element && tileIndexes[element + element]) {
-              // @ts-ignore
+          if (symMap[i][j] == element) {
+            if (notNulls(symMap, i - 1, j) && symMap[i - 1][j] == element && tileIndexes[element + element]) {
               indexesMap[i][j] = tileIndexes[element + element]
             } else {
-              // @ts-ignore
               indexesMap[i][j] = tileIndexes[element]
             }
             // stop search for these symbols
@@ -132,7 +119,10 @@ export class MainEngineScene extends Scene {
         })
       }
     }
-    console.log('indexes map', indexesMap)
-    return indexesMap
+
+    const layer = map.createBlankLayer(nameLayer, tiles)
+    if (!layer) { return null }
+    layer.putTilesAt(indexesMap, 0, 0)
+    return layer
   }
 }
