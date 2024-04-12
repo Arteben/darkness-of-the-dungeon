@@ -27,6 +27,8 @@ export class GameEngine {
       canvas: element,
       parent,
       scene: [this.mainScene],
+      backgroundColor: '#1b262c',
+      pixelArt: true,
       physics: {
         default: 'arcade',
         arcade: {
