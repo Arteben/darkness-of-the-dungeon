@@ -5,12 +5,7 @@ import { IMapTilesIndexes } from '@/types/phaser-types'
 import textMapRaw from '@/assets/map.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
 const tileIndexes: IMapTilesIndexes = {
-  '+': 14,
-  'd': 53,
-  'dd': 58,
-  's': 18,
-  'ss': 23,
-  'f': 16,
+  '+': 14, 'd': 53, 'dd': 58, 's': 18, 'ss': 23, 'f': 16,
 }
 
 export class MainEngineScene extends Scene {
