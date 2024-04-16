@@ -2,10 +2,10 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import { IMapTilesIndexes } from '@/types/phaser-types'
 
-import textMapRaw from '@assets/map.txt?url'
+import textMapRaw from '@assets/maps/map.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
 const tileIndexes: IMapTilesIndexes = {
-  '+': 14, 'd': 53, 'dd': 58, 's': 18, 'ss': 23, 'f': 16,
+  '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
 }
 
 export class MainEngineScene extends Scene {
@@ -38,11 +38,12 @@ export class MainEngineScene extends Scene {
     })
     const tileset = map.addTilesetImage('tileSet') as Phaser.Tilemaps.Tileset
 
-    this._groundLayer = this.getLayerForSymbols(['+'], 'groundLayer', map, tileset, symbolMap)
-    this._envLayer = this.getLayerForSymbols(['d', 's', 'f'], 'env-layer', map, tileset, symbolMap)
+    this._groundLayer = this.getLayerForSymbols(['#'], 'groundLayer', map, tileset, symbolMap)
+    this._envLayer = this.getLayerForSymbols(['D', 't', 'k', 'B', 'w', 'T', 'A'], 'env-layer', map, tileset, symbolMap)
 
     this.cameras.main.setScroll(0, 0)
-    this.cameras.main.setBounds(0, 0, 1000, 200)
+    this.cameras.main.setBounds(0, 0,
+              symbolMap[0].length * this._tileWidth, symbolMap.length * this._tileWidth)
 
     const cursors = this.input.keyboard?.createCursorKeys()
     if (!cursors) return
