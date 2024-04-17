@@ -54,4 +54,4 @@ dist
 
 #generated maps
 src/assets/map-list.json
-src/assets/maps/*
+src/assets/maps/
