@@ -2,7 +2,7 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import { IMapTilesIndexes } from '@/types/phaser-types'
 
-import textMapRaw from '@assets/maps/map.txt?url'
+import textMapRaw from '@assets/maps/map5.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
 const tileIndexes: IMapTilesIndexes = {
   '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
