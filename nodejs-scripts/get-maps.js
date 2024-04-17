@@ -24,7 +24,7 @@ const config = {
 }
 
 const createLabyrinth = (degree) => {
-  const maze = new MineMazeBuilder(degree, degree);
+  const maze = new MineMazeBuilder(degree);
   if (!maze.correctPlaceDoors()) {
     console.error('fail with place doors!');
     return false;
