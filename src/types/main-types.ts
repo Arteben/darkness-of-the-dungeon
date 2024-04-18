@@ -35,6 +35,7 @@ export interface IHashParams {
   lang: Languages
   isRules: boolean
   isGame: boolean
+  isMaps: boolean
 }
 
 export interface IJsonTranslatesType {

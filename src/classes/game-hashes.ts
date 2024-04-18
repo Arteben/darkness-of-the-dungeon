@@ -11,12 +11,14 @@ export class GameHashes {
     eng: 'en',
     rules: 'rules',
     game: 'game',
+    maps: 'maps',
   }
 
   // params
   lang: Languages = Languages.eng
   isRules: boolean = false
   isGame: boolean = false
+  isMaps: boolean = false
   //
 
   constructor() {
@@ -25,6 +27,7 @@ export class GameHashes {
     this.lang = hashParams.lang
     this.isRules = hashParams.isRules
     this.isGame = hashParams.isGame
+    this.isMaps = hashParams.isMaps
 
     this.onChangeGameState = this.onChangeGameState.bind(this)
     EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
@@ -36,16 +39,21 @@ export class GameHashes {
   }
 
   private getHashParams() {
-    const params: IHashParams = { lang: this.lang, isRules: this.isRules, isGame: this.isGame }
+    const params: IHashParams = {
+      lang: this.lang, isRules: this.isRules, isGame: this.isGame, isMaps: this.isMaps,
+    }
     const langRexp = new RegExp('^#[a-z]+')
     const rulesRexp = new RegExp('^#[a-z]+\/'+ this.hashes.rules + '$', 'i')
     const gameRexp = new RegExp('^#[a-z]+\/' + this.hashes.game + '$', 'i')
+    const mapsRexp = new RegExp('^#[a-z]+\/' + this.hashes.maps + '$', 'i')
 
-    params.isRules = params.isGame = false
+    params.isRules = params.isGame = params.isMaps = false
     if (rulesRexp.test(this.location.hash)) {
       params.isRules = true
     } else if (gameRexp.test(this.location.hash)) {
       params.isGame = true
+    } else if (mapsRexp.test(this.location.hash)) {
+      params.isMaps = true
     }
 
     const langSearches = this.location.hash.match(langRexp)
@@ -66,6 +74,7 @@ export class GameHashes {
       isRules: this.isRules,
       lang: this.lang,
       isGame: this.isGame,
+      isMaps: this.isMaps,
     }
   }
 
@@ -86,6 +95,11 @@ export class GameHashes {
       this.isGame = newParams.isGame
     }
 
+    if (newParams.isMaps != this.isMaps) {
+      isChanged = true
+      this.isMaps = newParams.isMaps
+    }
+
     if (newParams.lang != this.lang) {
       isChanged = true
       this.lang = newParams.lang
@@ -98,6 +112,7 @@ export class GameHashes {
     game.state.isRules = this.isRules
     game.state.lang = this.lang
     game.state.isGame = this.isGame
+    game.state.isMaps = this.isMaps
 
     game.SetNewStateValues(game.state)
   }
@@ -122,6 +137,11 @@ export class GameHashes {
       this.isGame = state.isGame
     }
 
+    if (state.isMaps != this.isMaps) {
+      isChanged = true
+      this.isMaps = state.isMaps
+    }
+
     if (!(isChanged || isRaplaceChanged)) {
       return
     }
@@ -130,9 +150,11 @@ export class GameHashes {
 
     if (this.isRules) {
       newHash += '/' + this.hashes.rules
-    } else if (this.isGame) (
+    } else if (this.isGame) {
       newHash += '/' + this.hashes.game
-    )
+    } else if (this.isMaps) {
+      newHash += '/' + this.hashes.maps
+    }
 
     if (isChanged) {
       window.history.pushState({}, '', newHash)

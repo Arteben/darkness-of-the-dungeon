@@ -22,6 +22,7 @@ const buttons: Array<MainButtonType> = [
     names: ['menuGameStart', 'menuGameContinue']
   },
   { type: 'rules', hidden: false, names: ['menuRules'] },
+  { type: 'maps', hidden: false, names: ['menuSelectMap'] },
   { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
 ]
@@ -67,10 +68,6 @@ export class MainMenu extends LitElement {
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
           break
-        case 'rules':
-          newButton.name = button.names[0]
-          newButton.hidden = state.isRules
-          break
         default:
           newButton.name = button.names[0]
           break
@@ -101,6 +98,10 @@ export class MainMenu extends LitElement {
         break
       case 'rules':
         this.gameLink.state.isRules = true
+        this.gameLink.SetNewStateValues(this.gameLink.state)
+        break
+      case 'maps':
+        this.gameLink.state.isMaps = true
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
     }

@@ -31,8 +31,8 @@
     "ru": "Основное меню",
     "eng": "Back to main menu"
   },
-  "phaserScore": {
-    "ru": "Счет",
-    "eng": "Score"
+  "menuSelectMap": {
+    "ru": "Выбрать карту",
+    "eng": "Select map"
   }
 }
