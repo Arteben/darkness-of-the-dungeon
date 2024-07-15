@@ -31,7 +31,7 @@
     "ru": "Основное меню",
     "eng": "Back to main menu"
   },
-  "menuSelectMap": {
+  "menuselectedMap": {
     "ru": "Выбрать карту",
     "eng": "Select map"
   }

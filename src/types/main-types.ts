@@ -41,3 +41,10 @@ export interface IHashParams {
 export interface IJsonTranslatesType {
   [index: string]: {ru: string, eng: string}
 }
+
+export interface LocSettings {
+  isSound: boolean
+  selectedMap?: string
+}
+
+export type locSettingsValue = string | boolean

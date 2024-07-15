@@ -22,7 +22,7 @@ const buttons: Array<MainButtonType> = [
     names: ['menuGameStart', 'menuGameContinue']
   },
   { type: 'rules', hidden: false, names: ['menuRules'] },
-  { type: 'maps', hidden: false, names: ['menuSelectMap'] },
+  { type: 'maps', hidden: false, names: ['menuselectedMap'] },
   { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
 ]
@@ -102,6 +102,11 @@ export class MainMenu extends LitElement {
         break
       case 'maps':
         this.gameLink.state.isMaps = true
+        this.gameLink.SetNewStateValues(this.gameLink.state)
+        break
+      case 'turnSound':
+        const newVallue = !this.gameLink.state.isSound
+        this.gameLink.state.isSound = newVallue
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
     }
