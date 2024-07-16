@@ -13,7 +13,7 @@ export class GameLocSettings {
 
   constructor() {
     this.locStorage = window.localStorage
-    EventBus.OnUsedItselfThis(BusEventsList[BusEventsList.changeGameState], callbackWihBindThis)
+    // EventBus.OnUsedItselfThis(BusEventsList[BusEventsList.changeGameState], callbackWihBindThis)
   }
 
   getStorageData() {
@@ -29,7 +29,7 @@ export class GameLocSettings {
       return data
     }
     catch (e) {
-      console.log('error with parse local storage', e)
+      console.error('error with parse local storage', e)
       return data
     }
   }
@@ -39,9 +39,8 @@ export class GameLocSettings {
     return <LocSettings>Object.assign({}, this.defaultLocSettings, data)
   }
 
-  onLocSettingChange (type, ) {
-
-  }
+  // onLocSettingChange (type, ) {
+  // }
 
   setLocSettings (type: LocSettingsList, value: locSettingsValue) {
     const oldData = this.getLocSettings()

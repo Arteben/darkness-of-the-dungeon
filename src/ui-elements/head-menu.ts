@@ -6,14 +6,15 @@ import {
   MainButtonType,
   MainButtonRenderInfo,
 } from '@/types/main-types'
-import { BusEventsList } from '@/types/enums'
 
 import { Game, MineDarkness } from '@/classes/mine-darkness'
-import { EventBus } from '@/classes/event-bus'
+import { GameState } from '@/classes/game-state'
 
 const buttons: Array<MainButtonType> = [
   { type: 'mainMenu', hidden: false, names: ['hMenuToMain'] }
 ]
+
+let changeStateCallback = (eventData: CustomEventInit) => {}
 
 @customElement('head-menu')
 export class MainMenu extends LitElement {
@@ -25,13 +26,12 @@ export class MainMenu extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
+    changeStateCallback = GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
+    GameState.OffStateChangesSubscribe(changeStateCallback)
   }
 
   private onChangeGameState(eventData: unknown) {

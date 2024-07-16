@@ -15,10 +15,6 @@ export interface MainMenuEventData {
   isStarted?: boolean
 }
 
-export interface ChangeGameStateData {
-  detail: GameState
-}
-
 export interface MainButtonType {
   type: string
   hidden: boolean

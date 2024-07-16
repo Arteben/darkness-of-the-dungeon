@@ -4,13 +4,12 @@ import { customElement, state } from 'lit/decorators.js'
 
 import {
   MainButtonType,
-  ChangeGameStateData,
   MainButtonRenderInfo,
 } from '@/types/main-types'
-import { BusEventsList, Languages } from '@/types/enums'
+import { Languages } from '@/types/enums'
 
 import { Game, MineDarkness } from '@/classes/mine-darkness'
-import { EventBus } from '@/classes/event-bus'
+import { GameState } from '@/classes/game-state'
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
   isSpecial: boolean
@@ -27,6 +26,8 @@ const buttons: Array<MainButtonType> = [
   { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
 ]
 
+let changeStateCallback = (eventData: CustomEventInit) => {}
+
 @customElement('main-menu')
 export class MainMenu extends LitElement {
 
@@ -37,17 +38,17 @@ export class MainMenu extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
+    changeStateCallback =
+      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
+    GameState.OffStateChangesSubscribe(changeStateCallback)
   }
 
-  private onChangeGameState(eventData: unknown) {
-    const state = (eventData as ChangeGameStateData).detail
+  onChangeGameState(eventData: unknown) {
+    const state = (eventData as CustomEventInit).detail
     const renderButtons: Array<MenuButtonRenderInfo> = []
 
     buttons.forEach((button) => {
@@ -105,8 +106,7 @@ export class MainMenu extends LitElement {
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
       case 'turnSound':
-        const newVallue = !this.gameLink.state.isSound
-        this.gameLink.state.isSound = newVallue
+        this.gameLink.state.isSound = !this.gameLink.state.isSound
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
     }

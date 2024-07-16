@@ -12,7 +12,7 @@ const locSettings = new GameLocSettings()
 locSettings.setLocSettings(LocSettingsList.isSound, false)
 locSettings.setLocSettings(LocSettingsList.selectedMap, 'someMap')
 
-const getSets = locSettings.getLocSettings()
-console.log('new sets', getSets, locSettings.defaultLocSettings)
+// const getSets = locSettings.getLocSettings()
+// console.log('new sets', getSets, locSettings.defaultLocSettings)
 
 InitGame(hashParams)

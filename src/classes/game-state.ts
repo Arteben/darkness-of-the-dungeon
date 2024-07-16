@@ -1,8 +1,8 @@
-import {
-  Languages,
-} from '@/types/enums'
-
+import { Languages, BusEventsList } from '@/types/enums'
 import { IHashParams } from '@/types/main-types'
+
+import { EventBus } from '@/classes/event-bus'
+import { Game } from '@/classes/mine-darkness'
 
 export class GameState implements IHashParams {
 
@@ -84,5 +84,26 @@ export class GameState implements IHashParams {
     const newState = new GameState()
     Object.assign(newState, newValues)
     return newState
+  }
+
+  static SubscribeAndUpdateStateChanges (callbackWihBindThis: (e: unknown) => void, that: any) {
+
+    const eventBusCallback = (eventData: CustomEventInit) => {
+      callbackWihBindThis.call(that, eventData)
+    }
+
+    EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
+
+    const game = Game()
+    if (game) {
+      const data: CustomEventInit = { detail: game.state }
+      callbackWihBindThis.call(that, data)
+    }
+
+    return eventBusCallback
+  }
+
+  static OffStateChangesSubscribe (callback: (eventData: CustomEventInit) => void) {
+    EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
   }
 }
