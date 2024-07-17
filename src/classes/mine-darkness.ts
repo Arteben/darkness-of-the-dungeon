@@ -1,6 +1,6 @@
 import { BusEventsList } from '@/types/enums'
 
-import { IHashParams, IJsonTranslatesType } from '@/types/main-types'
+import { IHashParams, IJsonTranslatesType, ILocSettings } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
@@ -16,8 +16,8 @@ export class MineDarkness {
   gameApp: GameApp
   loc: (a: string, b?: IJsonTranslatesType) => string
 
-  constructor(localState: IHashParams, locals: Translates, gameApp: GameApp) {
-    this.state = new GameState(localState)
+  constructor(localState: IHashParams, locSettings: ILocSettings, locals: Translates, gameApp: GameApp) {
+    this.state = new GameState(localState, locSettings)
     this.loc = locals.loc.bind(locals)
     locals.game = this
     this.gameApp = gameApp
@@ -35,7 +35,7 @@ export class MineDarkness {
 
 let game: MineDarkness
 
-export function InitGame(localState: IHashParams) {
+export function InitGame(localState: IHashParams, locSettings: ILocSettings) {
   // append gameApp elements to html
   const gameApp = document.createElement('game-app')
   const body = document.querySelector('body')
@@ -45,7 +45,7 @@ export function InitGame(localState: IHashParams) {
   body.appendChild(gameApp)
   // get object with methods with translates
   const locals = new Translates()
-  game = new MineDarkness(localState, locals, gameApp)
+  game = new MineDarkness(localState, locSettings, locals, gameApp)
   // search and get convas for phaser
   game.gameApp.canvasParent.then((parent: HTMLElement | null) => {
     if (!parent) return

@@ -1,6 +1,6 @@
 import { MineDarkness } from '@/classes/mine-darkness'
-import { EventBus } from '@/classes/event-bus'
 import { MainEngineScene } from '@/classes/main-engine-scene'
+import { GameState } from '@/classes/game-state'
 
 import { IResolution } from '@/types/phaser-types'
 import { Game, WEBGL, Types } from 'phaser'
@@ -41,7 +41,7 @@ export class GameEngine {
     this.engine = new Game(this.configEngine)
     this.engine.pause()
 
-    EventBus.OnChangeGameStateItselfThis((eventData) => { this.onChangeState() })
+    GameState.SubscribeAndUpdateStateChanges(this.onChangeState, this)
 
     window.addEventListener('resize',(event: UIEvent) => { this.onWindowResize() })
     this.onWindowResize()
@@ -64,8 +64,7 @@ export class GameEngine {
       width: 0, height: 0,
     }
 
-    const gameProportion = this.sceneResolution.width /
-                                    this.sceneResolution.height
+    const gameProportion = this.sceneResolution.width / this.sceneResolution.height
 
     if (winSizes.width > winSizes.height) {
       newSize.width = gameProportion * winSizes.height

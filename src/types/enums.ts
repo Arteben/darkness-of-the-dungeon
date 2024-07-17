@@ -16,4 +16,10 @@ export enum ImportantDomElementIds {
 
 export enum BusEventsList {
   changeGameState,
+  changeLocSettings,
+}
+
+export enum LocSettingsList {
+  isSound,
+  selectedMap
 }

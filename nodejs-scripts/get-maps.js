@@ -95,7 +95,7 @@ const jsonPath = `${projectAbsPath}/src/assets/${config.json}`;
 
 fs.writeFile(jsonPath, JSON.stringify(mapList, null, 2), (error) => {
   if (error) {
-    console.log('An error has occurred ', error);
+    console.error('An error has occurred ', error);
     return;
   }
 });

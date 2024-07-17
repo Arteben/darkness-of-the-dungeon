@@ -1,6 +1,6 @@
-import { GameState } from '@/classes/game-state'
 import {
   Languages,
+  LocSettingsList,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -13,10 +13,6 @@ export interface MainMenuEventData {
   isSound?: boolean
   newlang?: Languages
   isStarted?: boolean
-}
-
-export interface ChangeGameStateData {
-  detail: GameState
 }
 
 export interface MainButtonType {
@@ -40,4 +36,16 @@ export interface IHashParams {
 
 export interface IJsonTranslatesType {
   [index: string]: {ru: string, eng: string}
+}
+
+export interface ILocSettings {
+  isSound: boolean
+  selectedMap?: string
+}
+
+export type locSettingsValue = string | boolean
+
+export interface ILocSettingsEventLoad {
+  type: LocSettingsList
+  value: locSettingsValue
 }

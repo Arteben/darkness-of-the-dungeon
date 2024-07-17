@@ -5,10 +5,9 @@ import { styleMap } from 'lit/directives/style-map.js'
 import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
 
-import { ChangeGameStateData } from '@/types/main-types'
-import { EventBus } from '@/classes/event-bus'
-import { BusEventsList } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
+
+let changeStateCallback = (eventData: CustomEventInit) => {}
 
 @customElement('game-app')
 export class GameApp extends LitElement {
@@ -24,17 +23,17 @@ export class GameApp extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
+    changeStateCallback =
+      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
+    GameState.OffStateChangesSubscribe(changeStateCallback)
   }
 
   private onChangeGameState(eventData: unknown) {
-    const state = (eventData as ChangeGameStateData).detail
+    const state = (eventData as CustomEventInit).detail
     this._state = state
   }
 

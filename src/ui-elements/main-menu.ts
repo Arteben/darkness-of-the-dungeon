@@ -4,13 +4,12 @@ import { customElement, state } from 'lit/decorators.js'
 
 import {
   MainButtonType,
-  ChangeGameStateData,
   MainButtonRenderInfo,
 } from '@/types/main-types'
-import { BusEventsList, Languages } from '@/types/enums'
+import { Languages } from '@/types/enums'
 
 import { Game, MineDarkness } from '@/classes/mine-darkness'
-import { EventBus } from '@/classes/event-bus'
+import { GameState } from '@/classes/game-state'
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
   isSpecial: boolean
@@ -22,10 +21,12 @@ const buttons: Array<MainButtonType> = [
     names: ['menuGameStart', 'menuGameContinue']
   },
   { type: 'rules', hidden: false, names: ['menuRules'] },
-  { type: 'maps', hidden: false, names: ['menuSelectMap'] },
+  { type: 'maps', hidden: false, names: ['menuselectedMap'] },
   { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
 ]
+
+let changeStateCallback = (eventData: CustomEventInit) => {}
 
 @customElement('main-menu')
 export class MainMenu extends LitElement {
@@ -37,17 +38,17 @@ export class MainMenu extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
+    changeStateCallback =
+      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
+    GameState.OffStateChangesSubscribe(changeStateCallback)
   }
 
-  private onChangeGameState(eventData: unknown) {
-    const state = (eventData as ChangeGameStateData).detail
+  onChangeGameState(eventData: unknown) {
+    const state = (eventData as CustomEventInit).detail
     const renderButtons: Array<MenuButtonRenderInfo> = []
 
     buttons.forEach((button) => {
@@ -63,7 +64,7 @@ export class MainMenu extends LitElement {
           }
           break
         case 'turnSound':
-          newButton.name = state.isSound ? button.names[1] : button.names[0]
+          newButton.name = state.isSound ? button.names[0] : button.names[1]
           break
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
@@ -102,6 +103,10 @@ export class MainMenu extends LitElement {
         break
       case 'maps':
         this.gameLink.state.isMaps = true
+        this.gameLink.SetNewStateValues(this.gameLink.state)
+        break
+      case 'turnSound':
+        this.gameLink.state.isSound = !this.gameLink.state.isSound
         this.gameLink.SetNewStateValues(this.gameLink.state)
         break
     }
