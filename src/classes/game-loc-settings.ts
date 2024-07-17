@@ -1,11 +1,6 @@
 import { LocSettingsList, BusEventsList } from '@/types/enums'
-import { locSettingsValue, ILocSettingsEventLoad } from '@/types/main-types'
+import { ILocSettings, locSettingsValue, ILocSettingsEventLoad } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
-
-interface ILocSettings {
-  isSound: boolean
-  selectedMap?: string
-}
 
 export class GameLocSettings {
   locStorage: Storage

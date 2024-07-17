@@ -1,18 +1,18 @@
 import { Languages, BusEventsList, LocSettingsList } from '@/types/enums'
-import { IHashParams, ILocSettingsEventLoad } from '@/types/main-types'
+import { IHashParams, ILocSettingsEventLoad, ILocSettings } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
 import { Game } from '@/classes/mine-darkness'
 
-export class GameState implements IHashParams {
+export class GameState implements IHashParams, ILocSettings {
 
   private _isRules: boolean = false
   private _isGame: boolean = false
   private _isMaps: boolean = false
   lang: Languages = Languages.eng
   private _isGameStarted: boolean = false
-  // private _isMainMenu: boolean = true
   private _isSound: boolean = true
+  selectedMap?: string = undefined
 
   // isRules //
   public get isRules(): boolean {
@@ -86,12 +86,17 @@ export class GameState implements IHashParams {
   }
   //
 
-  constructor(newParams?: IHashParams) {
+  constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {
       this.lang = newParams.lang
       this.isRules = newParams.isRules
       this.isGame = newParams.isGame
       this.isMaps = newParams.isMaps
+    }
+
+    if (locSettings) {
+      this._isSound = locSettings.isSound
+      this.selectedMap = locSettings.selectedMap
     }
   }
 

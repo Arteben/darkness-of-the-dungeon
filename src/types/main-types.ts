@@ -1,4 +1,3 @@
-import { GameState } from '@/classes/game-state'
 import {
   Languages,
   LocSettingsList,
@@ -37,6 +36,11 @@ export interface IHashParams {
 
 export interface IJsonTranslatesType {
   [index: string]: {ru: string, eng: string}
+}
+
+export interface ILocSettings {
+  isSound: boolean
+  selectedMap?: string
 }
 
 export type locSettingsValue = string | boolean
