@@ -28,8 +28,7 @@ export class EventBus {
     eventBus.dispatchEvent<t>(name, data)
   }
 
-  // here need to bind for not allow this destraction!
-  // for example: this.onChangeGameState = this.onChangeGameState.bind(this)
+  // 'this' here NOT WORK!!!!!!! use call for save it
   static On(name: string, callbackWihBindThis: (e: Event) => void) {
     eventBus.addEventListener(name, callbackWihBindThis)
   }

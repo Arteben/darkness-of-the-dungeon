@@ -1,23 +1,33 @@
-import { LocSettingsList } from '@/types/enums'
-import { LocSettings, locSettingsValue } from '@/types/main-types'
+import { LocSettingsList, BusEventsList } from '@/types/enums'
+import { locSettingsValue, ILocSettingsEventLoad } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
-// import { Game } from '@/classes/mine-darkness'
+
+interface ILocSettings {
+  isSound: boolean
+  selectedMap?: string
+}
 
 export class GameLocSettings {
   locStorage: Storage
   storageKey = 'darknessOfTheMain'
-  defaultLocSettings: LocSettings = {
+  defaultLocSettings: ILocSettings = {
     isSound: true,
     selectedMap: undefined,
   }
 
   constructor() {
     this.locStorage = window.localStorage
-    // EventBus.OnUsedItselfThis(BusEventsList[BusEventsList.changeGameState], callbackWihBindThis)
+    EventBus.On(BusEventsList[BusEventsList.changeLocSettings], (event: CustomEventInit) => {
+      if (!event.detail)
+        return
+
+      const data: ILocSettingsEventLoad = event.detail
+      this.setLocSettings(data.type, data.value)
+    })
   }
 
   getStorageData() {
-    let data: LocSettings | null = null
+    let data: ILocSettings | null = null
     const rawData = this.locStorage.getItem(this.storageKey)
 
     if (!rawData) {
@@ -25,7 +35,7 @@ export class GameLocSettings {
     }
 
     try {
-      data = JSON.parse(rawData) as LocSettings
+      data = JSON.parse(rawData) as ILocSettings
       return data
     }
     catch (e) {
@@ -36,11 +46,8 @@ export class GameLocSettings {
 
   getLocSettings () {
     const data = this.getStorageData()
-    return <LocSettings>Object.assign({}, this.defaultLocSettings, data)
+    return <ILocSettings>Object.assign({}, this.defaultLocSettings, data)
   }
-
-  // onLocSettingChange (type, ) {
-  // }
 
   setLocSettings (type: LocSettingsList, value: locSettingsValue) {
     const oldData = this.getLocSettings()
@@ -52,10 +59,10 @@ export class GameLocSettings {
 
     switch(type) {
       case LocSettingsList.isSound:
-        setLocalSettings(Object.assign(oldData, {isSound: <boolean>value}))
+        setLocalSettings(Object.assign(oldData, {isSound: value}))
         break
       case LocSettingsList.selectedMap:
-        setLocalSettings(Object.assign(oldData, {selectedMap: <string>value}))
+        setLocalSettings(Object.assign(oldData, {selectedMap: value}))
     }
   }
 }

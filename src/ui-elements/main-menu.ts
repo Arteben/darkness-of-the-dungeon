@@ -64,7 +64,7 @@ export class MainMenu extends LitElement {
           }
           break
         case 'turnSound':
-          newButton.name = state.isSound ? button.names[1] : button.names[0]
+          newButton.name = state.isSound ? button.names[0] : button.names[1]
           break
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
