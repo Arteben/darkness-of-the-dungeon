@@ -7,7 +7,7 @@ import {
   MainButtonRenderInfo,
 } from '@/types/main-types'
 
-import { Game, MineDarkness } from '@/classes/mine-darkness'
+import { Game } from '@/classes/mine-darkness'
 import { GameState } from '@/classes/game-state'
 
 const buttons: Array<MainButtonType> = [
@@ -18,11 +18,11 @@ let changeStateCallback = (eventData: CustomEventInit) => {}
 
 @customElement('head-menu')
 export class MainMenu extends LitElement {
-
-  private gameLink: MineDarkness | null = Game()
-
   @state()
   private _renderButtons: Array<MainButtonRenderInfo> = []
+
+  @state()
+  private _state: GameState = new GameState()
 
   connectedCallback() {
     super.connectedCallback()
@@ -36,12 +36,15 @@ export class MainMenu extends LitElement {
 
   private onChangeGameState(eventData: unknown) {
     const renderButtons: Array<MainButtonRenderInfo> = []
+    const game = Game()
+
+    if (!game)
+      return
 
     buttons.forEach((button) => {
       const newButton: MainButtonRenderInfo = { type: button.type, hidden: false, name: '' }
 
-      if (!this.gameLink) return
-      newButton.name = this.gameLink.loc(button.names[0])
+      newButton.name = game.loc(button.names[0])
 
       renderButtons.push(newButton)
     })
@@ -51,13 +54,15 @@ export class MainMenu extends LitElement {
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
+    const game = Game()
 
-    if (!this.gameLink) return
+    if (!game)
+      return
 
     switch (type) {
       case 'mainMenu':
-        this.gameLink.state.isMainMenu = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        game.state.isMainMenu = true
+        game.dispatchStateChanges()
         break
     }
   }

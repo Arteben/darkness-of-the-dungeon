@@ -1,41 +1,20 @@
-import { LitElement, css, html } from 'lit'
+import { GameRootElement } from '@/classes/root-element-template'
+
+import { css, html } from 'lit'
 import { customElement, state, queryAsync } from 'lit/decorators.js'
 import { styleMap } from 'lit/directives/style-map.js'
 
 import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
 
-import { GameState } from '@/classes/game-state'
-
-let changeStateCallback = (eventData: CustomEventInit) => {}
-
 @customElement('game-app')
-export class GameApp extends LitElement {
+export class GameApp extends GameRootElement {
 
   @queryAsync('canvas')
   phaserCanvas!: Promise<HTMLCanvasElement | null>
 
   @queryAsync('div')
   canvasParent!: Promise<HTMLElement | null>
-
-  @state()
-  private _state: GameState = new GameState()
-
-  connectedCallback() {
-    super.connectedCallback()
-    changeStateCallback =
-      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback()
-    GameState.OffStateChangesSubscribe(changeStateCallback)
-  }
-
-  private onChangeGameState(eventData: unknown) {
-    const state = (eventData as CustomEventInit).detail
-    this._state = state
-  }
 
   render() {
     const mainMenu = this._state.isMainMenu ? html`<main-menu></main-menu>` : ''

@@ -79,7 +79,7 @@ export class GameState implements IHashParams, ILocSettings {
     if (this._isSound != flag) {
       this._isSound = flag
       const evendLoad: ILocSettingsEventLoad =
-        {type: LocSettingsList.isSound, value: flag}
+        { type: LocSettingsList.isSound, value: flag }
       EventBus.Dispatch(
         BusEventsList[BusEventsList.changeLocSettings], evendLoad)
     }
@@ -106,7 +106,7 @@ export class GameState implements IHashParams, ILocSettings {
     return newState
   }
 
-  static SubscribeAndUpdateStateChanges (callbackWihBindThis: (e: unknown) => void, that: any) {
+  static SubscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
 
     const eventBusCallback = (eventData: CustomEventInit) => {
       callbackWihBindThis.call(that, eventData)
@@ -123,7 +123,7 @@ export class GameState implements IHashParams, ILocSettings {
     return eventBusCallback
   }
 
-  static OffStateChangesSubscribe (callback: (eventData: CustomEventInit) => void) {
+  static OffStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
     EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
   }
 }

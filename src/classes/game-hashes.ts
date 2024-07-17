@@ -113,7 +113,7 @@ export class GameHashes {
     game.state.isGame = this.isGame
     game.state.isMaps = this.isMaps
 
-    game.SetNewStateValues(game.state)
+    game.dispatchStateChanges()
   }
 
   onChangeGameState(eventData: unknown) {

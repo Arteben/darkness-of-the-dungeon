@@ -30,11 +30,11 @@ let changeStateCallback = (eventData: CustomEventInit) => {}
 
 @customElement('main-menu')
 export class MainMenu extends LitElement {
-
-  private gameLink: MineDarkness | null = Game()
-
   @state()
   private _renderButtons: Array<MenuButtonRenderInfo> = []
+
+  @state()
+  private _state: GameState = new GameState()
 
   connectedCallback() {
     super.connectedCallback()
@@ -49,6 +49,7 @@ export class MainMenu extends LitElement {
 
   onChangeGameState(eventData: unknown) {
     const state = (eventData as CustomEventInit).detail
+    this._state = state
     const renderButtons: Array<MenuButtonRenderInfo> = []
 
     buttons.forEach((button) => {
@@ -74,8 +75,9 @@ export class MainMenu extends LitElement {
           break
       }
 
-      if (!this.gameLink) return
-      newButton.name = this.gameLink.loc(newButton.name)
+      const game = Game()
+      if (!game) return
+      newButton.name = game.loc(newButton.name)
 
       renderButtons.push(newButton)
     })
@@ -85,31 +87,31 @@ export class MainMenu extends LitElement {
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
+    const game = Game()
 
-    if (!this.gameLink) return
+    if (!game) return
+
+    const state = game.state
 
     switch (type) {
       case 'gameStart':
-        this.gameLink.state.isGame = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isGame = true
         break
       case 'lang':
-        this.gameLink.state.lang = this.gameLink.state.lang == Languages.ru ? Languages.eng : Languages.ru
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.lang = state.lang == Languages.ru ? Languages.eng : Languages.ru
         break
       case 'rules':
-        this.gameLink.state.isRules = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isRules = true
         break
       case 'maps':
-        this.gameLink.state.isMaps = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isMaps = true
         break
       case 'turnSound':
-        this.gameLink.state.isSound = !this.gameLink.state.isSound
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isSound = !state.isSound
         break
     }
+
+    game.dispatchStateChanges()
   }
 
   render() {
