@@ -1,18 +1,18 @@
-import {
-  Languages,
-} from '@/types/enums'
+import { Languages, BusEventsList, LocSettingsList } from '@/types/enums'
+import { IHashParams, ILocSettingsEventLoad, ILocSettings } from '@/types/main-types'
 
-import { IHashParams } from '@/types/main-types'
+import { EventBus } from '@/classes/event-bus'
+import { Game } from '@/classes/mine-darkness'
 
-export class GameState implements IHashParams {
+export class GameState implements IHashParams, ILocSettings {
 
   private _isRules: boolean = false
   private _isGame: boolean = false
   private _isMaps: boolean = false
   lang: Languages = Languages.eng
   private _isGameStarted: boolean = false
-  // private _isMainMenu: boolean = true
-  isSound: boolean = true
+  private _isSound: boolean = true
+  selectedMap?: string = undefined
 
   // isRules //
   public get isRules(): boolean {
@@ -71,12 +71,32 @@ export class GameState implements IHashParams {
   }
   //
 
-  constructor(newParams?: IHashParams) {
+  // isSound
+  public get isSound(): boolean {
+    return this._isSound
+  }
+  public set isSound(flag: boolean) {
+    if (this._isSound != flag) {
+      this._isSound = flag
+      const evendLoad: ILocSettingsEventLoad =
+        { type: LocSettingsList.isSound, value: flag }
+      EventBus.Dispatch(
+        BusEventsList[BusEventsList.changeLocSettings], evendLoad)
+    }
+  }
+  //
+
+  constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {
       this.lang = newParams.lang
       this.isRules = newParams.isRules
       this.isGame = newParams.isGame
       this.isMaps = newParams.isMaps
+    }
+
+    if (locSettings) {
+      this._isSound = locSettings.isSound
+      this.selectedMap = locSettings.selectedMap
     }
   }
 
@@ -84,5 +104,26 @@ export class GameState implements IHashParams {
     const newState = new GameState()
     Object.assign(newState, newValues)
     return newState
+  }
+
+  static SubscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
+
+    const eventBusCallback = (eventData: CustomEventInit) => {
+      callbackWihBindThis.call(that, eventData)
+    }
+
+    EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
+
+    const game = Game()
+    if (game) {
+      const data: CustomEventInit = { detail: game.state }
+      callbackWihBindThis.call(that, data)
+    }
+
+    return eventBusCallback
+  }
+
+  static OffStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
+    EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
   }
 }

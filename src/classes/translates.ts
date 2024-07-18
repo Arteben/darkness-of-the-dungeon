@@ -1,17 +1,19 @@
 import { default as uiTranlates } from '@/translates/ui.json'
 
-import { MineDarkness } from '@/classes/mine-darkness'
 import { Languages } from '@/types/enums'
 import { IJsonTranslatesType } from '@/types/main-types'
+import { GameState } from '@/classes/game-state'
 
 export class Translates {
 
-  game: MineDarkness | undefined
+  state: GameState
+
+  constructor(state: GameState) {
+    this.state = state
+  }
 
   private getLang() {
-    if (!this.game) return
-
-    const stateLang = this.game.state.lang
+    const stateLang = this.state.lang
     return Languages[stateLang] as ('ru' | 'eng')
   }
 

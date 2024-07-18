@@ -1,6 +1,6 @@
 import { Languages } from '@/types/enums'
-import { IHashParams, ChangeGameStateData } from '@/types/main-types'
-import { EventBus } from '@/classes/event-bus'
+import { IHashParams } from '@/types/main-types'
+import { GameState } from '@/classes/game-state'
 import { Game } from '@/classes/mine-darkness'
 
 export class GameHashes {
@@ -29,8 +29,7 @@ export class GameHashes {
     this.isGame = hashParams.isGame
     this.isMaps = hashParams.isMaps
 
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
+    GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
 
     window.addEventListener('hashchange', (e: HashChangeEvent) => {
       this.onHashChange()
@@ -114,11 +113,11 @@ export class GameHashes {
     game.state.isGame = this.isGame
     game.state.isMaps = this.isMaps
 
-    game.SetNewStateValues(game.state)
+    game.dispatchStateChanges()
   }
 
   onChangeGameState(eventData: unknown) {
-    const state = (eventData as ChangeGameStateData).detail
+    const state = (eventData as CustomEventInit).detail
     let isChanged = false
     let isRaplaceChanged = false
 

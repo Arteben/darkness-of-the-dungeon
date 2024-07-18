@@ -1,3 +1,5 @@
+import { GameStateElement } from '@/classes/gamestate-element'
+
 import '@/ui-elements/menu-button'
 import { LitElement, css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
@@ -6,60 +8,40 @@ import {
   MainButtonType,
   MainButtonRenderInfo,
 } from '@/types/main-types'
-import { BusEventsList } from '@/types/enums'
 
-import { Game, MineDarkness } from '@/classes/mine-darkness'
-import { EventBus } from '@/classes/event-bus'
+import { GameState } from '@/classes/game-state'
 
 const buttons: Array<MainButtonType> = [
-  { type: 'mainMenu', hidden: false, names: ['hMenuToMain'] }
+  { type: 'mainMenu', names: ['hMenuToMain'] }
 ]
 
 @customElement('head-menu')
-export class MainMenu extends LitElement {
+export class MainMenu extends GameStateElement {
 
-  private gameLink: MineDarkness | null = Game()
-
-  @state()
-  private _renderButtons: Array<MainButtonRenderInfo> = []
-
-  connectedCallback() {
-    super.connectedCallback()
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback()
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
-  }
-
-  private onChangeGameState(eventData: unknown) {
+  getRenderButtons(state: GameState) {
     const renderButtons: Array<MainButtonRenderInfo> = []
 
     buttons.forEach((button) => {
       const newButton: MainButtonRenderInfo = { type: button.type, hidden: false, name: '' }
 
-      if (!this.gameLink) return
-      newButton.name = this.gameLink.loc(button.names[0])
+      newButton.name = this.loc(button.names[0])
 
       renderButtons.push(newButton)
     })
 
-    this._renderButtons = renderButtons
+    return renderButtons
   }
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
 
-    if (!this.gameLink) return
-
     switch (type) {
       case 'mainMenu':
-        this.gameLink.state.isMainMenu = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        this._state.isMainMenu = true
         break
     }
+
+    this.dispatchState()
   }
 
   render() {
@@ -78,7 +60,7 @@ export class MainMenu extends LitElement {
     }
 
     return html`
-        ${this._renderButtons.map(el => renderOrderButton(el))}
+        ${this.getRenderButtons(this._state).map(el => renderOrderButton(el))}
     `
   }
 

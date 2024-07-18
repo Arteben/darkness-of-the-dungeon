@@ -1,16 +1,15 @@
+import { GameStateElement } from '@/classes/gamestate-element'
+
 import '@/ui-elements/menu-button'
-import { LitElement, css, html } from 'lit'
+import { css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import {
   MainButtonType,
-  ChangeGameStateData,
   MainButtonRenderInfo,
 } from '@/types/main-types'
-import { BusEventsList, Languages } from '@/types/enums'
-
-import { Game, MineDarkness } from '@/classes/mine-darkness'
-import { EventBus } from '@/classes/event-bus'
+import { Languages } from '@/types/enums'
+import { GameState } from '@/classes/game-state'
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
   isSpecial: boolean
@@ -18,36 +17,18 @@ interface MenuButtonRenderInfo extends MainButtonRenderInfo {
 
 const buttons: Array<MainButtonType> = [
   {
-    type: 'gameStart', hidden: false,
-    names: ['menuGameStart', 'menuGameContinue']
+    type: 'gameStart', names: ['menuGameStart', 'menuGameContinue']
   },
-  { type: 'rules', hidden: false, names: ['menuRules'] },
-  { type: 'maps', hidden: false, names: ['menuSelectMap'] },
-  { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
-  { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
+  { type: 'rules', names: ['menuRules'] },
+  { type: 'maps', names: ['menuselectedMap'] },
+  { type: 'turnSound', names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
+  { type: 'lang', names: ['menuToEng', 'menuToRu'] },
 ]
 
 @customElement('main-menu')
-export class MainMenu extends LitElement {
+export class MainMenu extends GameStateElement {
 
-  private gameLink: MineDarkness | null = Game()
-
-  @state()
-  private _renderButtons: Array<MenuButtonRenderInfo> = []
-
-  connectedCallback() {
-    super.connectedCallback()
-    this.onChangeGameState = this.onChangeGameState.bind(this)
-    EventBus.OnChangeGameStateItselfThis(this.onChangeGameState)
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback()
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], this.onChangeGameState)
-  }
-
-  private onChangeGameState(eventData: unknown) {
-    const state = (eventData as ChangeGameStateData).detail
+  getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []
 
     buttons.forEach((button) => {
@@ -63,7 +44,7 @@ export class MainMenu extends LitElement {
           }
           break
         case 'turnSound':
-          newButton.name = state.isSound ? button.names[1] : button.names[0]
+          newButton.name = state.isSound ? button.names[0] : button.names[1]
           break
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
@@ -73,38 +54,38 @@ export class MainMenu extends LitElement {
           break
       }
 
-      if (!this.gameLink) return
-      newButton.name = this.gameLink.loc(newButton.name)
+      newButton.name = this.loc(newButton.name)
 
       renderButtons.push(newButton)
     })
 
-    this._renderButtons = renderButtons
+    return renderButtons
   }
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
 
-    if (!this.gameLink) return
+    const state = this._state
 
     switch (type) {
       case 'gameStart':
-        this.gameLink.state.isGame = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isGame = true
         break
       case 'lang':
-        this.gameLink.state.lang = this.gameLink.state.lang == Languages.ru ? Languages.eng : Languages.ru
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.lang = state.lang == Languages.ru ? Languages.eng : Languages.ru
         break
       case 'rules':
-        this.gameLink.state.isRules = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isRules = true
         break
       case 'maps':
-        this.gameLink.state.isMaps = true
-        this.gameLink.SetNewStateValues(this.gameLink.state)
+        state.isMaps = true
+        break
+      case 'turnSound':
+        state.isSound = !state.isSound
         break
     }
+
+    this.dispatchState()
   }
 
   render() {
@@ -123,7 +104,7 @@ export class MainMenu extends LitElement {
     }
 
     return html`
-        ${this._renderButtons.map(el => renderOrderButton(el))}
+        ${this.getRenderButtons(this._state).map(el => renderOrderButton(el))}
     `
   }
 
