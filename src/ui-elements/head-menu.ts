@@ -34,17 +34,14 @@ export class MainMenu extends GameStateElement {
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
-    const game = this._game
-
-    if (!game)
-      return
 
     switch (type) {
       case 'mainMenu':
-        game.state.isMainMenu = true
+        this._state.isMainMenu = true
         break
     }
-    game.dispatchStateChanges()
+
+    this.dispatchState()
   }
 
   render() {

@@ -1,4 +1,3 @@
-import { MineDarkness } from '@/classes/mine-darkness'
 import { MainEngineScene } from '@/classes/main-engine-scene'
 import { GameState } from '@/classes/game-state'
 
@@ -7,7 +6,7 @@ import { Game, WEBGL, Types } from 'phaser'
 
 export class GameEngine {
   configEngine: Types.Core.GameConfig
-  game: MineDarkness
+  gameState: GameState
   engine: Phaser.Game
   mainScene: MainEngineScene
 
@@ -16,8 +15,8 @@ export class GameEngine {
     height: 384,
   }
 
-  constructor(parent: HTMLElement, element: HTMLCanvasElement, game: MineDarkness) {
-    this.game = game
+  constructor(parent: HTMLElement, element: HTMLCanvasElement, state: GameState) {
+    this.gameState = state
     this.mainScene = new MainEngineScene('main-scene')
 
     this.configEngine = {
@@ -48,7 +47,7 @@ export class GameEngine {
   }
 
   private onChangeState () {
-    if (this.game.state.isGame) {
+    if (this.gameState.isGame) {
       if (this.engine.isPaused) { this.engine.resume() }
     } else if (!this.engine.isPaused) {
       this.engine.pause()

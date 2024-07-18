@@ -1,6 +1,6 @@
 import { BusEventsList } from '@/types/enums'
 
-import { IHashParams, IJsonTranslatesType, ILocSettings } from '@/types/main-types'
+import { IJsonTranslatesType } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
@@ -10,17 +10,17 @@ import { GameEngine } from '@/classes/game-engine'
 import '@/game-app'
 import { GameApp } from '@/game-app'
 
+export let mineDarkness: MineDarkness
+
 export class MineDarkness {
   state: GameState
   gameApp: GameApp
   loc: (a: string, b?: IJsonTranslatesType) => string
+  engine?: GameEngine
 
-  constructor(localState: IHashParams, locSettings: ILocSettings, gameApp: GameApp) {
+  constructor(state: GameState, locals: Translates, gameApp: GameApp) {
     // get object with methods with translates
-    this.state = new GameState(localState, locSettings)
-
-    const locals = new Translates(this.state)
-
+    this.state = state
     this.loc = locals.loc.bind(locals)
     this.gameApp = gameApp
   }
@@ -30,11 +30,10 @@ export class MineDarkness {
   }
 }
 
-let game: MineDarkness
-
-export function InitGame(localState: IHashParams, locSettings: ILocSettings) {
+export function InitGame(state: GameState, locals: Translates) {
   const gameApp = document.createElement('game-app')
-  game = new MineDarkness(localState, locSettings, gameApp)
+
+  mineDarkness = new MineDarkness(state, locals, gameApp)
 
   const body = document.querySelector('body')
   if (gameApp == null || body == null) {
@@ -46,16 +45,16 @@ export function InitGame(localState: IHashParams, locSettings: ILocSettings) {
   body.appendChild(gameApp)
 
   // search and get convas for phaser
-  game.gameApp.canvasParent.then((parent: HTMLElement | null) => {
+  mineDarkness.gameApp.canvasParent.then((parent: HTMLElement | null) => {
     if (!parent) return
-    game.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
+    mineDarkness.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
       if (!element) return
-      new GameEngine(parent, element, game)
-      EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], game.state)
+      mineDarkness.engine = new GameEngine(parent, element, state)
+      EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], state)
     }, () => { })
   }, () => { })
 }
 
 export function Game() {
-  return game ? game : null
+  return mineDarkness ? mineDarkness : null
 }

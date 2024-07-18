@@ -64,11 +64,8 @@ export class MainMenu extends GameStateElement {
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
-    const game = this._game
 
-    if (!game) return
-
-    const state = game.state
+    const state = this._state
 
     switch (type) {
       case 'gameStart':
@@ -88,7 +85,7 @@ export class MainMenu extends GameStateElement {
         break
     }
 
-    game.dispatchStateChanges()
+    this.dispatchState()
   }
 
   render() {
