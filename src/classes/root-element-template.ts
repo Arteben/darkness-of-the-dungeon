@@ -1,8 +1,5 @@
 import { LitElement } from 'lit'
 
-import '@/ui-elements/main-menu'
-import '@/ui-elements/head-menu'
-
 import { GameState } from '@/classes/game-state'
 import { Game, MineDarkness } from '@/classes/mine-darkness'
 

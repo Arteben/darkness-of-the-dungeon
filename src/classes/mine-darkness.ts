@@ -17,16 +17,12 @@ export class MineDarkness {
 
   constructor(localState: IHashParams, locSettings: ILocSettings, gameApp: GameApp) {
     // get object with methods with translates
-    const locals = new Translates()
-
     this.state = new GameState(localState, locSettings)
-    this.loc = locals.loc.bind(locals)
-    locals.game = this
-    this.gameApp = gameApp
-  }
 
-  setLocFunc(locs: Translates) {
-    this.loc = locs.loc.bind(locs)
+    const locals = new Translates(this.state)
+
+    this.loc = locals.loc.bind(locals)
+    this.gameApp = gameApp
   }
 
   dispatchStateChanges() {
