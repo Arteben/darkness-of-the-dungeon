@@ -47,13 +47,13 @@ export class MainMenu extends LitElement {
       border-radius: 9px;
     }
 
-    button.mainMenu {
+    button.mainMenu, button.mapsMenu {
       font-size: 15px;
       width: 160px;
       padding: 10px 20px;
     }
 
-    button.mainMenu.light {
+    button.mainMenu.light, button.mapsMenu.light {
       color: #ffffff;
       background-image: linear-gradient(270deg, #410c0c, #6d2626);
     }

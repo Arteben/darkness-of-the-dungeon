@@ -22,8 +22,8 @@ export interface MainButtonType {
 
 export interface MainButtonRenderInfo {
   type: string
-  hidden: boolean
   name: string
+  hidden?: boolean
 }
 
 export interface IHashParams {
@@ -34,7 +34,7 @@ export interface IHashParams {
 }
 
 export interface IJsonTranslatesType {
-  [index: string]: {ru: string, eng: string}
+  [index: string]: { ru: string, eng: string }
 }
 
 export interface ILocSettings {
@@ -47,4 +47,10 @@ export type locSettingsValue = string | boolean
 export interface ILocSettingsEventLoad {
   type: LocSettingsList
   value: locSettingsValue
+}
+
+export interface IJsonMap {
+    name: string
+    file: string
+    level: string
 }

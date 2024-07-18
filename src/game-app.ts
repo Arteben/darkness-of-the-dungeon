@@ -6,6 +6,7 @@ import { styleMap } from 'lit/directives/style-map.js'
 
 import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
+import '@/ui-elements/maps-menu'
 
 @customElement('game-app')
 export class GameApp extends GameStateElement {
@@ -20,13 +21,15 @@ export class GameApp extends GameStateElement {
     const mainMenu = this._state.isMainMenu ? html`<main-menu></main-menu>` : ''
     const headMenu = !this._state.isMainMenu ? html`<head-menu></head-menu>` : ''
     const convasDisplay = { 'display': (this._state.isGame) ? 'block' : 'none' }
+    const mapsMenu = this._state.isMaps ? html`<maps-menu></maps-menu>` : ''
 
     return html`
       <div>
         ${mainMenu}
+        ${mapsMenu}
+        <canvas style=${styleMap(convasDisplay)}></canvas>
         ${headMenu}
         <mobile-controls></mobile-controls>
-        <canvas style=${styleMap(convasDisplay)}></canvas>
       </div>
     `
   }
