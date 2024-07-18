@@ -17,7 +17,6 @@ export interface MainMenuEventData {
 
 export interface MainButtonType {
   type: string
-  hidden: boolean
   names: Array<string>
 }
 

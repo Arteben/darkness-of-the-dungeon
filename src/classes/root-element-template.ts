@@ -26,4 +26,13 @@ export class GameRootElement extends LitElement {
     this._state = state
     this.requestUpdate()
   }
+
+  loc(someString: string): string {
+    if (!this._game) {
+      console.error('the component dosent find object game!!!!!!')
+      return ''
+    }
+
+    return this._game.loc(someString)
+  }
 }

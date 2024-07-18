@@ -1,5 +1,7 @@
+import { GameRootElement } from '@/classes/root-element-template'
+
 import '@/ui-elements/menu-button'
-import { LitElement, css, html } from 'lit'
+import { css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import {
@@ -7,8 +9,6 @@ import {
   MainButtonRenderInfo,
 } from '@/types/main-types'
 import { Languages } from '@/types/enums'
-
-import { Game, MineDarkness } from '@/classes/mine-darkness'
 import { GameState } from '@/classes/game-state'
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
@@ -17,39 +17,18 @@ interface MenuButtonRenderInfo extends MainButtonRenderInfo {
 
 const buttons: Array<MainButtonType> = [
   {
-    type: 'gameStart', hidden: false,
-    names: ['menuGameStart', 'menuGameContinue']
+    type: 'gameStart', names: ['menuGameStart', 'menuGameContinue']
   },
-  { type: 'rules', hidden: false, names: ['menuRules'] },
-  { type: 'maps', hidden: false, names: ['menuselectedMap'] },
-  { type: 'turnSound', hidden: false, names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
-  { type: 'lang', hidden: false, names: ['menuToEng', 'menuToRu'] },
+  { type: 'rules', names: ['menuRules'] },
+  { type: 'maps', names: ['menuselectedMap'] },
+  { type: 'turnSound', names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
+  { type: 'lang', names: ['menuToEng', 'menuToRu'] },
 ]
 
-let changeStateCallback = (eventData: CustomEventInit) => {}
-
 @customElement('main-menu')
-export class MainMenu extends LitElement {
-  @state()
-  private _renderButtons: Array<MenuButtonRenderInfo> = []
+export class MainMenu extends GameRootElement {
 
-  @state()
-  private _state: GameState = new GameState()
-
-  connectedCallback() {
-    super.connectedCallback()
-    changeStateCallback =
-      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback()
-    GameState.OffStateChangesSubscribe(changeStateCallback)
-  }
-
-  onChangeGameState(eventData: unknown) {
-    const state = (eventData as CustomEventInit).detail
-    this._state = state
+  getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []
 
     buttons.forEach((button) => {
@@ -75,19 +54,17 @@ export class MainMenu extends LitElement {
           break
       }
 
-      const game = Game()
-      if (!game) return
-      newButton.name = game.loc(newButton.name)
+      newButton.name = this.loc(newButton.name)
 
       renderButtons.push(newButton)
     })
 
-    this._renderButtons = renderButtons
+    return renderButtons
   }
 
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
-    const game = Game()
+    const game = this._game
 
     if (!game) return
 
@@ -130,7 +107,7 @@ export class MainMenu extends LitElement {
     }
 
     return html`
-        ${this._renderButtons.map(el => renderOrderButton(el))}
+        ${this.getRenderButtons(this._state).map(el => renderOrderButton(el))}
     `
   }
 
