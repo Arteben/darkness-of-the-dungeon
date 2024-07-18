@@ -1,4 +1,4 @@
-import { GameRootElement } from '@/classes/root-element-template'
+import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/menu-button'
 import { css, html } from 'lit'
@@ -26,7 +26,7 @@ const buttons: Array<MainButtonType> = [
 ]
 
 @customElement('main-menu')
-export class MainMenu extends GameRootElement {
+export class MainMenu extends GameStateElement {
 
   getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []

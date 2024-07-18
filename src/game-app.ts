@@ -1,4 +1,4 @@
-import { GameRootElement } from '@/classes/root-element-template'
+import { GameStateElement } from '@/classes/gamestate-element'
 
 import { css, html } from 'lit'
 import { customElement, state, queryAsync } from 'lit/decorators.js'
@@ -8,7 +8,7 @@ import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
 
 @customElement('game-app')
-export class GameApp extends GameRootElement {
+export class GameApp extends GameStateElement {
 
   @queryAsync('canvas')
   phaserCanvas!: Promise<HTMLCanvasElement | null>
