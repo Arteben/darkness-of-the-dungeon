@@ -1,32 +1,50 @@
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/menu-button'
+import '@/ui-elements/special-title'
 import { css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import {
   MainButtonType,
   MainButtonRenderInfo,
+  IJsonMap,
 } from '@/types/main-types'
 import { Languages } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
+import { default as JsonMapList } from '@/assets/maps/map-list.json'
+
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
   isSpecial: boolean
+  hidden: boolean
 }
 
 const buttons: Array<MainButtonType> = [
-  {
-    type: 'gameStart', names: ['menuGameStart', 'menuGameContinue']
-  },
+  { type: 'gameStart', names: ['menuGameStart', 'menuGameContinue'] },
   { type: 'rules', names: ['menuRules'] },
-  { type: 'maps', names: ['menuselectedMap'] },
+  { type: 'maps', names: ['menuSelectMap', 'menuChangeMap'] },
+  { type: 'selectedMapsTitle', names: ['menuSelectedMapTitle'] },
   { type: 'turnSound', names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', names: ['menuToEng', 'menuToRu'] },
 ]
 
 @customElement('main-menu')
 export class MainMenu extends GameStateElement {
+
+  getSelectedMap() {
+    const mapList = JsonMapList as IJsonMap[]
+    const selectedMap = this._state.selectedMap
+
+    if (!selectedMap)
+      return ''
+
+    const findedMapIndex = mapList.findIndex((el) => el.name == selectedMap)
+    if (findedMapIndex == -1)
+      return ''
+
+    return mapList[findedMapIndex]
+  }
 
   getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []
@@ -49,6 +67,11 @@ export class MainMenu extends GameStateElement {
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
           break
+        case 'maps':
+          newButton.name = this.getSelectedMap() ? button.names[1] : button.names[0]
+          break
+        case 'selectedMapsTitle':
+          newButton.hidden = !Boolean(this.getSelectedMap())
         default:
           newButton.name = button.names[0]
           break
@@ -92,6 +115,20 @@ export class MainMenu extends GameStateElement {
     const renderOrderButton = (buttonData: MenuButtonRenderInfo) => {
       if (buttonData.hidden) {
         return html``
+      }
+
+      if (buttonData.type == 'selectedMapsTitle') {
+        const map = this.getSelectedMap()
+
+        if (!map) {
+          return html``
+        }
+
+        return html`
+          <special-title>
+            ${this.loc(map.name)} (${this.loc(map.level)})
+          </special-title>
+        `
       }
 
       return html`

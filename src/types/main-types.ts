@@ -23,7 +23,6 @@ export interface MainButtonType {
 export interface MainButtonRenderInfo {
   type: string
   name: string
-  hidden?: boolean
 }
 
 export interface IHashParams {

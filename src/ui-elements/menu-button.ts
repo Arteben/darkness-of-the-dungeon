@@ -33,7 +33,7 @@ export class MainMenu extends LitElement {
   static styles = css`
     :host {
       display: block;
-      margin: 10px 0px;
+      margin: 7px 0px;
     }
 
     button {
@@ -51,6 +51,13 @@ export class MainMenu extends LitElement {
       font-size: 15px;
       width: 160px;
       padding: 10px 20px;
+    }
+
+    button.mapsMenu {
+      width: 250px;
+      padding: 10px 10px;
+      background-image: linear-gradient(166deg, #004509, #2d2d2d);
+      border-color: black;
     }
 
     button.mainMenu.light, button.mapsMenu.light {
