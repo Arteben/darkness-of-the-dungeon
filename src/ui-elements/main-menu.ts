@@ -126,6 +126,7 @@ export class MainMenu extends GameStateElement {
 
         return html`
           <special-title>
+          ${this.loc('menuSelectedMap')} <br>
             ${this.loc(map.name)} (${this.loc(map.level)})
           </special-title>
         `

@@ -75,5 +75,15 @@ export class MainMenu extends LitElement {
     button:hover, button:active {
       outline: #eeeded solid 1px;
     }
+
+    /* maps menu light */
+    button.mapsMenu.light {
+      background-image: linear-gradient(270deg, #5c5c5c, #3a3a3a);
+    }
+    button.mapsMenu.light:hover, button.mapsMenu.light:active {
+      outline: none;
+    }
+    /*  */
+
   `
 }

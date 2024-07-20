@@ -55,13 +55,18 @@
     "ru": "Очень cложный",
     "eng": "very hard"
   },
-  
+  "menuSelectedMap": {
+    "ru": "Выбранная карта:",
+    "eng": "Selected map:"
+  },
+
+
   "map0": {
     "ru": "Скрип теней",
     "eng": "Shadow's Crypt"
   },
   "map1": {
-    "ru": "Бездна пещера",
+    "ru": "Бездна пещер",
     "eng": "Abyssal Cavern"
   },
   "map2": {
