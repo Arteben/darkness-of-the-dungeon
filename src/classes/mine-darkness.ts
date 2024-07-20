@@ -59,6 +59,15 @@ export function InitGame(state: GameState, locals: Translates) {
   }
 
   // select any map if map not selected!
+  if (!mineDarkness.getSelectedMap()) {
+    const mapList = JsonMapList as IJsonMap[]
+    if (mapList.length > 0) {
+      mineDarkness.state.selectedMap = mapList[0].name
+    } else {
+      console.error('MAPS arent unviable')
+      return
+    }
+  }
 
   // append gameApp elements to html
   body.appendChild(gameApp)
