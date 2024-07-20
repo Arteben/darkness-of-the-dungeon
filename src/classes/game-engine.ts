@@ -4,10 +4,28 @@ import { GameState } from '@/classes/game-state'
 import { IResolution } from '@/types/phaser-types'
 import { Game, WEBGL, Types } from 'phaser'
 
+const config = {
+  // width: this.sceneResolution.width,
+  // height: this.sceneResolution.height,
+  // canvas: element,
+  // parent,
+  // scene: [this.mainScene],
+  type: WEBGL,
+  backgroundColor: '#1b262c',
+  pixelArt: true,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { x: 0, y: 300 },
+      debug: false
+    }
+  },
+}
+
 export class GameEngine {
   configEngine: Types.Core.GameConfig
   gameState: GameState
-  engine: Phaser.Game
+  engine?: Phaser.Game
   mainScene: MainEngineScene
 
   sceneResolution: IResolution = {
@@ -15,30 +33,13 @@ export class GameEngine {
     height: 384,
   }
 
-  constructor(parent: HTMLElement, element: HTMLCanvasElement, state: GameState) {
+  constructor(state: GameState) {
     this.gameState = state
     this.mainScene = new MainEngineScene('main-scene')
-
-    this.configEngine = {
-      width: this.sceneResolution.width,
-      height: this.sceneResolution.height,
-      type: WEBGL,
-      canvas: element,
-      parent,
-      scene: [this.mainScene],
-      backgroundColor: '#1b262c',
-      pixelArt: true,
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { x: 0, y: 300 },
-          debug: false
-        }
-      },
-    }
-
-    this.engine = new Game(this.configEngine)
-    this.engine.pause()
+    this.configEngine = config
+    this.configEngine.width = this.sceneResolution.width
+    this.configEngine.height = this.sceneResolution.height
+    this.configEngine.scene = [ this.mainScene ]
 
     GameState.SubscribeAndUpdateStateChanges(this.onChangeState, this)
 
@@ -46,7 +47,18 @@ export class GameEngine {
     this.onWindowResize()
   }
 
+  createEngine(parent: HTMLElement, element: HTMLCanvasElement) {
+    this.configEngine.parent = parent
+    this.configEngine.canvas = element
+    this.engine = new Game(this.configEngine)
+    this.engine.pause()
+  }
+
   private onChangeState () {
+    if (!this.engine) {
+      return
+    }
+
     if (this.gameState.isGame) {
       if (this.engine.isPaused) { this.engine.resume() }
     } else if (!this.engine.isPaused) {
@@ -77,8 +89,9 @@ export class GameEngine {
       newSize.width = winSizes.width
       newSize.height =winSizes.width / gameProportion
     }
-
-    this.engine.canvas.style.width = newSize.width + 'px'
-    this.engine.canvas.style.height = newSize.height + 'px'
+    if (this.engine) {
+      this.engine.canvas.style.width = newSize.width + 'px'
+      this.engine.canvas.style.height = newSize.height + 'px'
+    }
   }
 }

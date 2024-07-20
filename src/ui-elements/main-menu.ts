@@ -12,7 +12,6 @@ import {
 } from '@/types/main-types'
 import { Languages } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
-import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
@@ -33,17 +32,11 @@ const buttons: Array<MainButtonType> = [
 export class MainMenu extends GameStateElement {
 
   getSelectedMap() {
-    const mapList = JsonMapList as IJsonMap[]
-    const selectedMap = this._state.selectedMap
+    if (this._game) {
+      return this._game.getSelectedMap()
+    }
 
-    if (!selectedMap)
-      return ''
-
-    const findedMapIndex = mapList.findIndex((el) => el.name == selectedMap)
-    if (findedMapIndex == -1)
-      return ''
-
-    return mapList[findedMapIndex]
+    return ''
   }
 
   getRenderButtons(state: GameState) {
