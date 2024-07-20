@@ -12,7 +12,7 @@ export class GameState implements IHashParams, ILocSettings {
   lang: Languages = Languages.eng
   private _isGameStarted: boolean = false
   private _isSound: boolean = true
-  selectedMap?: string = undefined
+  private _selectedMap?: string
 
   // isRules //
   public get isRules(): boolean {
@@ -86,6 +86,21 @@ export class GameState implements IHashParams, ILocSettings {
   }
   //
 
+  // selected map
+  public get selectedMap(): string | undefined {
+    return this._selectedMap
+  }
+  public set selectedMap(str: string) {
+    if (this._selectedMap != str) {
+      this._selectedMap = str
+      const evendLoad: ILocSettingsEventLoad =
+        { type: LocSettingsList.selectedMap, value: str }
+      EventBus.Dispatch(
+        BusEventsList[BusEventsList.changeLocSettings], evendLoad)
+    }
+  }
+  //
+
   constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {
       this.lang = newParams.lang
@@ -96,7 +111,7 @@ export class GameState implements IHashParams, ILocSettings {
 
     if (locSettings) {
       this._isSound = locSettings.isSound
-      this.selectedMap = locSettings.selectedMap
+      this._selectedMap = locSettings.selectedMap
     }
   }
 

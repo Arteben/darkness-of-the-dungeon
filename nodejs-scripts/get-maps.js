@@ -47,13 +47,14 @@ const createLabyrinth = (degree) => {
   }
 };
 
-const getElementMapList = (nameMapFile, w, h) => {
+const getElementMapList = (name, nameMapFile, w, h) => {
   const levels = ['easy', 'middle', 'hard', 'veryhard'];
   const getLevels = (width, height) => {
     const div = Math.floor((width + height) / 100);
     return div > (levels.length - 1) ? (levels.length - 1) : div;
   }
   return {
+    name,
     file: config.maps + nameMapFile,
     level: levels[getLevels(w, h)],
   }
@@ -72,14 +73,15 @@ const mapList = [];
 
 const setMap = (degreeOfWidth, id) => {
   const mapStrings = getMapStrings(degreeOfWidth);
-  const mapName = `map${id}.txt`;
-  const pathMap = `${projectAbsPath}/src/assets/${config.maps}${mapName}`;
+  const mapName = `map${id}`;
+  const fileName = `${mapName}.txt`;
+  const pathMap = `${projectAbsPath}/src/assets/${config.maps}${fileName}`;
   const syncStream = fs.createWriteStream(pathMap);
   mapStrings.strings.forEach((element) => {
     syncStream.write(element + '\n');
   });
   syncStream.end();
-  mapList.push(getElementMapList(mapName, mapStrings.width, mapStrings.height));
+  mapList.push(getElementMapList(mapName, fileName, mapStrings.width, mapStrings.height));
 };
 
 let mapId = 0;
@@ -91,7 +93,7 @@ config.mapSizes.forEach((mapConfig) => {
 })
 
 
-const jsonPath = `${projectAbsPath}/src/assets/${config.json}`;
+const jsonPath = `${projectAbsPath}/src/assets/${config.maps}/${config.json}`;
 
 fs.writeFile(jsonPath, JSON.stringify(mapList, null, 2), (error) => {
   if (error) {

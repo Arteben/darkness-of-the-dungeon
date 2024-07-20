@@ -31,8 +31,74 @@
     "ru": "Основное меню",
     "eng": "Back to main menu"
   },
-  "menuselectedMap": {
+  "menuSelectMap": {
     "ru": "Выбрать карту",
-    "eng": "Select map"
+    "eng": "Select the map"
+  },
+  "menuChangeMap": {
+    "ru": "Сменить карту",
+    "eng": "Change the map"
+  },
+  "easy": {
+    "ru": "легкий",
+    "eng": "easy"
+  },
+  "middle": {
+    "ru": "средний",
+    "eng": "middle"
+  },
+  "hard": {
+    "ru": "cложный",
+    "eng": "hard"
+  },
+  "veryhard": {
+    "ru": "Очень cложный",
+    "eng": "very hard"
+  },
+  "menuSelectedMap": {
+    "ru": "Выбранная карта:",
+    "eng": "Selected map:"
+  },
+
+
+  "map0": {
+    "ru": "Скрип теней",
+    "eng": "Shadow's Crypt"
+  },
+  "map1": {
+    "ru": "Бездна пещер",
+    "eng": "Abyssal Cavern"
+  },
+  "map2": {
+    "ru": "Логово дракона",
+    "eng": "Dragon's Lair"
+  },
+  "map3": {
+    "ru": "Забытые катакомбы",
+    "eng": "Forgotten Catacombs"
+  },
+  "map4": {
+    "ru": "Мрачный замок",
+    "eng": "Grimstone Keep"
+  },
+  "map5": {
+    "ru": "Пустошь укуса",
+    "eng": "Bite Hollow"
+  },
+  "map6": {
+    "ru": "Проклятые шахты",
+    "eng": "Haunted Mines"
+  },
+  "map7": {
+    "ru": "Храм кровавой луны",
+    "eng": "Bloodmoon Temple"
+  },
+  "map8": {
+    "ru": "Затерянный лабиринт",
+    "eng": "Lost Labyrinth"
+  },
+  "map9": {
+    "ru": "Глубины инферно",
+    "eng": "Inferno Depths"
   }
 }
