@@ -1,7 +1,7 @@
 import { Languages } from '@/types/enums'
 import { IHashParams } from '@/types/main-types'
 import { GameState } from '@/classes/game-state'
-import { Game } from '@/classes/mine-darkness'
+import { getMineDarkness } from '@/classes/mine-darkness'
 
 export class GameHashes {
 
@@ -78,8 +78,9 @@ export class GameHashes {
   }
 
   onHashChange() {
-    const game = Game()
-    if (!game) return
+    const game = getMineDarkness()
+    if (!game)
+      return
 
     const newParams = this.getHashParams()
     let isChanged = false

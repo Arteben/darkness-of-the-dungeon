@@ -2,8 +2,11 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import { IMapTilesIndexes } from '@/types/phaser-types'
 
+import DudeSet from '@assets/dude.png'
+
 import textMapRaw from '@assets/maps/map4.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
+
 const tileIndexes: IMapTilesIndexes = {
   '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
 }
@@ -41,6 +44,10 @@ export class MainEngineScene extends Scene {
     this._groundLayer = this.getLayerForSymbols(['#'], 'groundLayer', map, tileset, symbolMap)
     this._envLayer = this.getLayerForSymbols(['D', 't', 'k', 'B', 'w', 'T', 'A'], 'env-layer', map, tileset, symbolMap)
 
+    const dude = this.physics.add.sprite(100, 450, 'dude')
+
+    console.log('grandLayer', this._groundLayer)
+
     this.cameras.main.setScroll(0, 0)
     this.cameras.main.setBounds(0, 0,
               symbolMap[0].length * this._tileWidth, symbolMap.length * this._tileWidth)
@@ -71,6 +78,8 @@ export class MainEngineScene extends Scene {
 
     this.load.image('tileSet', tilesRaw)
     this.load.text('textMap', textMapRaw)
+
+    this.load.spritesheet('dude', DudeSet, { frameWidth: 32, frameHeight: 48 })
   }
 
   private onDrawProgressBar(value: number) {

@@ -1,14 +1,14 @@
 import { LitElement } from 'lit'
 
 import { GameState } from '@/classes/game-state'
-import { Game, MineDarkness } from '@/classes/mine-darkness'
+import { getMineDarkness, MineDarkness } from '@/classes/mine-darkness'
 
 export class GameStateElement extends LitElement {
 
   private changeStateCallback = (eventData: CustomEventInit) => {}
 
   _state: GameState = new GameState()
-  _game: MineDarkness | null = Game()
+  _game: MineDarkness | null = getMineDarkness()
 
   connectedCallback() {
     super.connectedCallback()

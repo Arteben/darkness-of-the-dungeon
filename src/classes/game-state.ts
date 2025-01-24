@@ -2,7 +2,7 @@ import { Languages, BusEventsList, LocSettingsList } from '@/types/enums'
 import { IHashParams, ILocSettingsEventLoad, ILocSettings } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
-import { Game } from '@/classes/mine-darkness'
+import { getMineDarkness } from './mine-darkness'
 
 export class GameState implements IHashParams, ILocSettings {
 
@@ -129,9 +129,8 @@ export class GameState implements IHashParams, ILocSettings {
 
     EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
 
-    const game = Game()
-    if (game) {
-      const data: CustomEventInit = { detail: game.state }
+    if (getMineDarkness()) {
+      const data: CustomEventInit = { detail: getMineDarkness()?.state }
       callbackWihBindThis.call(that, data)
     }
 
