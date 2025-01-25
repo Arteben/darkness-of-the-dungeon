@@ -1,3 +1,5 @@
+import { BusEventsList } from '@/types/enums'
+
 let eventBus: EventBus
 
 export class EventBus {

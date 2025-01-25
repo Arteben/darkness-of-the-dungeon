@@ -1,4 +1,4 @@
-import { setMineDarknessGame, MineDarkness } from '@/classes/mine-darkness'
+import { MineDarkness } from '@/classes/mine-darkness'
 import { GameState } from '@/classes/game-state'
 import { Translates } from '@/classes/translates'
 import { EventBus } from '@/classes/event-bus'
@@ -11,6 +11,7 @@ const locSettings = new GameLocSettings().getLocSettings()
 
 const gameState = new GameState(hashParams, locSettings)
 const locals = new Translates(gameState)
+const mineDarknessGame = new MineDarkness(gameState, locals)
 
 initGame: {
   const gameApp = document.createElement('game-app')
@@ -20,9 +21,6 @@ initGame: {
     break initGame
   }
 
-  const mineDarknessGame = new MineDarkness(gameState, locals, gameApp)
-  setMineDarknessGame(mineDarknessGame)
-
   // append gameApp elements to html
   body.appendChild(gameApp)
 
@@ -31,7 +29,7 @@ initGame: {
     if (!parent) return
     gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
       if (!element) return
-      mineDarknessGame?.createPhaserGame(element, parent)
+      mineDarknessGame?.createPhaserGame(element, parent, gameApp)
       mineDarknessGame?.onWindowResize()
     }, () => { })
   }, () => { })

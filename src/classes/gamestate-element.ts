@@ -1,39 +1,33 @@
 import { LitElement } from 'lit'
 
-import { mineDarknessGame } from '@/classes/mine-darkness'
-
-import { IStateParams } from '@/types/main-types'
+import { GameState } from '@/classes/game-state'
+import { getMineDarknessGame } from '@/classes/mine-darkness'
 
 export class GameStateElement extends LitElement {
-  _game = mineDarknessGame
-  _state: IStateParams = {} as IStateParams
+
+  private changeStateCallback = (eventData: CustomEventInit) => { }
+
+  _state: GameState = new GameState()
+  _game = getMineDarknessGame()
 
   connectedCallback() {
     super.connectedCallback()
     if (this._game) {
-      this._game.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
+      this.changeStateCallback = this._game.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
     }
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    if (this._game)
-      this._game.offStateChangesSubscribe(this.onChangeGameState)
+    this._game?.offStateChangesSubscribe(this.changeStateCallback)
   }
 
   private onChangeGameState(eventData: unknown) {
     if (!this._game) {
-      console.error('the element dosent find object game!!!!!!')
       return
     }
 
-    this._state = {
-      page: this._game.state.page,
-      isSound: this._game.state.isSound,
-      lang: this._game.state.lang,
-      isGameStarted: this._game.state.isGameStarted,
-    }
-
+    this._state = this._game.state
     this.requestUpdate()
   }
 

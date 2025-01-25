@@ -18,14 +18,15 @@ import { MainEngineScene } from '@/classes/main-engine-scene'
 
 export let mineDarknessGame: MineDarkness | null = null
 
-export function setMineDarknessGame(game: MineDarkness) {
-  return mineDarknessGame = game
+export function getMineDarknessGame() {
+  return mineDarknessGame
 }
 
 export class MineDarkness {
   state: GameState
-  gameApp: GameApp
+
   loc: (a: string, b?: IJsonTranslatesType) => string
+
   phConfig: Types.Core.GameConfig = {
     width: 640,
     height: 384,
@@ -45,13 +46,14 @@ export class MineDarkness {
   }
 
   phaser?: PhaserGame
+  gameApp?: GameApp
 
-  constructor(state: GameState, locals: Translates, gameApp: GameApp) {
+  constructor(state: GameState, locals: Translates) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    mineDarknessGame = this
     // get object with methods with translates
     this.state = state
     this.loc = locals.loc.bind(locals)
-
-    this.gameApp = gameApp
 
     this.phConfig.scene = [new MainEngineScene('main-scene')]
 
@@ -66,19 +68,12 @@ export class MineDarkness {
       }
     }
 
-    this.subscribeStateChanges(this.onChangeGameState, this)
+    this.subscribeStateChangesWithoutData(this.onChangeGameState, this)
     window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
   }
 
-  createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement) {
-    this.phConfig.parent = parentApp
-    this.phConfig.canvas = canvas
-    this.phaser = new PhaserGame(this.phConfig)
-    this.phaser.pause()
-  }
-
-  subscribeStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) : (eventData: CustomEventInit) => void {
-     const eventBusCallback = (eventData: CustomEventInit) => {
+  subscribeStateChangesWithoutData(callbackWihBindThis: (e: unknown) => void, that: any): (eventData: CustomEventInit) => void {
+    const eventBusCallback = (eventData: CustomEventInit) => {
       callbackWihBindThis.call(that, eventData)
     }
     EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
@@ -86,7 +81,7 @@ export class MineDarkness {
   }
 
   subscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
-    const eventBusCallback = this.subscribeStateChanges(callbackWihBindThis, that)
+    const eventBusCallback = this.subscribeStateChangesWithoutData(callbackWihBindThis, that)
     const data: CustomEventInit = { detail: this.state }
     callbackWihBindThis.call(that, data)
     return eventBusCallback
@@ -94,6 +89,14 @@ export class MineDarkness {
 
   offStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
     EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
+  }
+
+  createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
+    this.gameApp = appElement
+    this.phConfig.parent = parentApp
+    this.phConfig.canvas = canvas
+    this.phaser = new PhaserGame(this.phConfig)
+    this.phaser.pause()
   }
 
   getSelectedMap() {
