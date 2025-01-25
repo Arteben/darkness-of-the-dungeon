@@ -37,7 +37,7 @@ export class MainMenu extends GameStateElement {
 
     switch (type) {
       case 'mainMenu':
-        this._pages = GamePages.mainMenu
+        this._state.page = GamePages.mainMenu
         break
     }
   }

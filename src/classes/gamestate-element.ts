@@ -1,27 +1,12 @@
 import { LitElement } from 'lit'
-import { property } from 'lit/decorators.js'
 
 import { mineDarknessGame } from '@/classes/mine-darkness'
 
-import { GamePages, Languages } from '@/types/enums'
+import { IStateParams } from '@/types/main-types'
 
 export class GameStateElement extends LitElement {
   _game = mineDarknessGame
-
-  @property()
-  _pages = GamePages.mainMenu
-
-  @property({attribute: false})
-  _isGameStarted = false
-
-  @property({attribute: false})
-  _isSound = true
-
-  @property({attribute: false})
-  _selectedMap: string | undefined  = ''
-
-  @property({attribute: false})
-  _lang: Languages = Languages.eng
+  _state: IStateParams = {} as IStateParams
 
   connectedCallback() {
     super.connectedCallback()
@@ -42,12 +27,12 @@ export class GameStateElement extends LitElement {
       return
     }
 
-    console.log('new page', this._pages, this._game.state.page)
-    this._pages = this._game.state.page
-    this._isGameStarted = this._game.state.isGameStarted
-    this._isSound = this._game.state.isSound
-    this._selectedMap = this._game.state.selectedMap
-    this._lang = this._game.state.lang
+    this._state = {
+      page: this._game.state.page,
+      isSound: this._game.state.isSound,
+      lang: this._game.state.lang,
+      isGameStarted: this._game.state.isGameStarted,
+    }
 
     this.requestUpdate()
   }

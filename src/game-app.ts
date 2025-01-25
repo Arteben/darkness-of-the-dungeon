@@ -25,7 +25,7 @@ export class GameApp extends GameStateElement {
     let convasDisplay = { 'display': 'none' }
     let mapsMenu = html``
 
-    switch (this._pages) {
+    switch (this._state.page) {
       case GamePages.mainMenu:
         mainMenu = html`<main-menu></main-menu>`
         headMenu = html``
@@ -38,7 +38,7 @@ export class GameApp extends GameStateElement {
         break
     }
 
-    console.log('render game-app', this._pages)
+    console.log('GameApp render')
 
     return html`
       <div>
