@@ -38,4 +38,23 @@ export class EventBus {
   static off(name: string, callback: (e: Event) => void) {
     eventBus.removeEventListener(name, callback)
   }
+
+  static subscribeStateChanges(callbackWihBindThis: (e: unknown) => void, that: any): (eventData: CustomEventInit) => void {
+    const eventBusCallback = (eventData: CustomEventInit) => {
+      callbackWihBindThis.call(that, eventData)
+    }
+    EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
+    return eventBusCallback
+  }
+
+  static subscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
+    const eventBusCallback = EventBus.subscribeStateChanges(callbackWihBindThis, that)
+    const data: CustomEventInit = { detail: null }
+    callbackWihBindThis.call(that, data)
+    return eventBusCallback
+  }
+
+  static offStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
+    EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
+  }
 }

@@ -38,8 +38,6 @@ export class GameApp extends GameStateElement {
         break
     }
 
-    console.log('GameApp render')
-
     return html`
       <div>
         ${mainMenu}

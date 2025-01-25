@@ -1,4 +1,4 @@
-import { BusEventsList, GamePages } from '@/types/enums'
+import { GamePages } from '@/types/enums'
 
 import { IJsonTranslatesType, IJsonMap } from '@/types/main-types'
 
@@ -14,7 +14,7 @@ import { GameApp } from '@/game-app'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
-import { MainEngineScene } from '@/classes/main-engine-scene'
+import { MainEngine } from '@/classes/main-engine'
 
 export let mineDarknessGame: MineDarkness | null = null
 
@@ -55,7 +55,7 @@ export class MineDarkness {
     this.state = state
     this.loc = locals.loc.bind(locals)
 
-    this.phConfig.scene = [new MainEngineScene('main-scene')]
+    this.phConfig.scene = [new MainEngine('main-scene')]
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -68,27 +68,8 @@ export class MineDarkness {
       }
     }
 
-    this.subscribeStateChangesWithoutData(this.onChangeGameState, this)
+    EventBus.subscribeStateChanges(this.onChangeGameState, this)
     window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
-  }
-
-  subscribeStateChangesWithoutData(callbackWihBindThis: (e: unknown) => void, that: any): (eventData: CustomEventInit) => void {
-    const eventBusCallback = (eventData: CustomEventInit) => {
-      callbackWihBindThis.call(that, eventData)
-    }
-    EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
-    return eventBusCallback
-  }
-
-  subscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
-    const eventBusCallback = this.subscribeStateChangesWithoutData(callbackWihBindThis, that)
-    const data: CustomEventInit = { detail: this.state }
-    callbackWihBindThis.call(that, data)
-    return eventBusCallback
-  }
-
-  offStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
   }
 
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {

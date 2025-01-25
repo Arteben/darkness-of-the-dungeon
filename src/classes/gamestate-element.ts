@@ -1,6 +1,8 @@
 import { LitElement } from 'lit'
 
 import { GameState } from '@/classes/game-state'
+import { EventBus } from '@/classes/event-bus'
+
 import { getMineDarknessGame } from '@/classes/mine-darkness'
 
 export class GameStateElement extends LitElement {
@@ -12,14 +14,12 @@ export class GameStateElement extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    if (this._game) {
-      this.changeStateCallback = this._game.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
-    }
+    this.changeStateCallback = EventBus.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    this._game?.offStateChangesSubscribe(this.changeStateCallback)
+    EventBus.offStateChangesSubscribe(this.changeStateCallback)
   }
 
   private onChangeGameState(eventData: unknown) {

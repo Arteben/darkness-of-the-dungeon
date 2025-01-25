@@ -11,7 +11,7 @@ const tileIndexes: IMapTilesIndexes = {
   '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
 }
 
-export class MainEngineScene extends Scene {
+export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
   _controls!: Phaser.Cameras.Controls.FixedKeyControl
 

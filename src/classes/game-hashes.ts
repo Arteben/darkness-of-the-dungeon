@@ -1,6 +1,8 @@
 import { GamePages, Languages } from '@/types/enums'
 import { IHashParams } from '@/types/main-types'
-import { mineDarknessGame } from '@/classes/mine-darkness'
+import { EventBus } from '@/classes/event-bus'
+
+import { getMineDarknessGame } from '@/classes/mine-darkness'
 
 export class GameHashes {
 
@@ -24,8 +26,7 @@ export class GameHashes {
     this.lang = hashParams.lang
     this.page = hashParams.page
 
-    if (mineDarknessGame)
-      mineDarknessGame.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
+    EventBus.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
 
     window.addEventListener('hashchange', (e: HashChangeEvent) => {
       this.onHashChange()
@@ -73,7 +74,7 @@ export class GameHashes {
   }
 
   onHashChange() {
-    const game = mineDarknessGame
+    const game = getMineDarknessGame()
     if (!game)
       return
 
@@ -91,18 +92,21 @@ export class GameHashes {
   }
 
   onChangeGameState(eventData: unknown) {
-    const state = (eventData as CustomEventInit).detail
+    const game = getMineDarknessGame()
+    if (!game)
+      return
+
     let isChanged = false
     let isRaplaceChanged = false
 
-    if (state.lang != this.lang) {
+    if (game.state.lang != this.lang) {
       isRaplaceChanged = true
-      this.lang = state.lang
+      this.lang = game.state.lang
     }
 
-    if (state.page != this.page) {
+    if (game.state.page != this.page) {
       isChanged = true
-      this.page = state.page
+      this.page = game.state.page
     }
 
     if (!(isChanged || isRaplaceChanged)) {

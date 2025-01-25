@@ -1,15 +1,11 @@
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/menu-button'
-import { LitElement, css, html, unsafeCSS } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { css, html, unsafeCSS } from 'lit'
+import { customElement } from 'lit/decorators.js'
 
-import {
-  MainButtonRenderInfo,
-  IJsonMap,
-} from '@/types/main-types'
-
-import { GameState } from '@/classes/game-state'
+import { GamePages } from '@/types/enums'
+import { MainButtonRenderInfo, IJsonMap } from '@/types/main-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
@@ -23,12 +19,12 @@ const topIndent = 70
 @customElement('maps-menu')
 export class MapsMenu extends GameStateElement {
 
-  getMapListButtons(state: GameState) {
+  getMapListButtons() {
     const mapButtons: Array<IMapButton> = []
     const mapList: IJsonMap[] = JsonMapList
 
     mapList.forEach((mapButton) => {
-      const newButton: IMapButton = { type: '', name: '', selected: false, difficult: 'easy' }
+      const newButton: IMapButton = { type: '', name: '', selected: false, difficult: 'easy', hidden: false }
 
       newButton.name = this.loc(mapButton.name)
       newButton.type = mapButton.name
@@ -45,10 +41,11 @@ export class MapsMenu extends GameStateElement {
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
 
-    if(type !== this._state.selectedMap) {
+    if (type !== this._state.selectedMap) {
       this._state.selectedMap = type
-      this._state.isMaps = false
-      this.dispatchState()
+      if (this._game) {
+        this._game.state.page = GamePages.mainMenu
+      }
     }
   }
 
@@ -65,7 +62,7 @@ export class MapsMenu extends GameStateElement {
 
     return html`
     <div>
-      ${this.getMapListButtons(this._state).map(el => renderOrderButton(el))}
+      ${this.getMapListButtons().map(el => renderOrderButton(el))}
     </div>
     `
   }
