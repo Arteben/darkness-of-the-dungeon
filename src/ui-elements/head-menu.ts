@@ -9,7 +9,7 @@ import {
   MainButtonRenderInfo,
 } from '@/types/main-types'
 
-import { GameState } from '@/classes/game-state'
+import { GamePages } from '@/types/enums'
 
 const buttons: Array<MainButtonType> = [
   { type: 'mainMenu', names: ['hMenuToMain'] }
@@ -18,7 +18,7 @@ const buttons: Array<MainButtonType> = [
 @customElement('head-menu')
 export class MainMenu extends GameStateElement {
 
-  getRenderButtons(state: GameState) {
+  getRenderButtons() {
     const renderButtons: Array<MainButtonRenderInfo> = []
 
     buttons.forEach((button) => {
@@ -37,11 +37,9 @@ export class MainMenu extends GameStateElement {
 
     switch (type) {
       case 'mainMenu':
-        this._state.isMainMenu = true
+        this._pages = GamePages.mainMenu
         break
     }
-
-    this.dispatchState()
   }
 
   render() {
@@ -60,7 +58,7 @@ export class MainMenu extends GameStateElement {
     }
 
     return html`
-        ${this.getRenderButtons(this._state).map(el => renderOrderButton(el))}
+        ${this.getRenderButtons().map(el => renderOrderButton(el))}
     `
   }
 

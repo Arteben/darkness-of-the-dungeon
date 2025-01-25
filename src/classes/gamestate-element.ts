@@ -1,30 +1,53 @@
 import { LitElement } from 'lit'
+import { property } from 'lit/decorators.js'
 
-import { GameState } from '@/classes/game-state'
-import { getMineDarkness, MineDarkness } from '@/classes/mine-darkness'
+import { mineDarknessGame } from '@/classes/mine-darkness'
+
+import { GamePages, Languages } from '@/types/enums'
 
 export class GameStateElement extends LitElement {
+  _game = mineDarknessGame
 
-  private changeStateCallback = (eventData: CustomEventInit) => {}
+  @property()
+  _pages = GamePages.mainMenu
 
-  _state: GameState = new GameState()
-  _game: MineDarkness | null = getMineDarkness()
+  @property({attribute: false})
+  _isGameStarted = false
+
+  @property({attribute: false})
+  _isSound = true
+
+  @property({attribute: false})
+  _selectedMap: string | undefined  = ''
+
+  @property({attribute: false})
+  _lang: Languages = Languages.eng
 
   connectedCallback() {
     super.connectedCallback()
-    this.changeStateCallback =
-      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
+    if (this._game) {
+      this._game.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
+    }
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    GameState.OffStateChangesSubscribe(this.changeStateCallback)
+    if (this._game)
+      this._game.offStateChangesSubscribe(this.onChangeGameState)
   }
 
   private onChangeGameState(eventData: unknown) {
-    const state = (eventData as CustomEventInit).detail
-    if (this._state !== state)
-      this._state = state
+    if (!this._game) {
+      console.error('the element dosent find object game!!!!!!')
+      return
+    }
+
+    console.log('new page', this._pages, this._game.state.page)
+    this._pages = this._game.state.page
+    this._isGameStarted = this._game.state.isGameStarted
+    this._isSound = this._game.state.isSound
+    this._selectedMap = this._game.state.selectedMap
+    this._lang = this._game.state.lang
 
     this.requestUpdate()
   }
@@ -36,13 +59,5 @@ export class GameStateElement extends LitElement {
     }
 
     return this._game.loc(someString)
-  }
-
-  dispatchState() {
-    if(this._game) {
-      this._game.dispatchStateChanges()
-    } else {
-      console.error('the element dosent find object game, for dispatch gamaState!!!!!!')
-    }
   }
 }

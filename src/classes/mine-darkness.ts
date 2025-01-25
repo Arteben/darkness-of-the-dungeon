@@ -1,4 +1,4 @@
-import { BusEventsList } from '@/types/enums'
+import { BusEventsList, GamePages } from '@/types/enums'
 
 import { IJsonTranslatesType, IJsonMap } from '@/types/main-types'
 
@@ -16,32 +16,35 @@ import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
 import { MainEngineScene } from '@/classes/main-engine-scene'
 
-export let mineDarkness: MineDarkness | null = null
+export let mineDarknessGame: MineDarkness | null = null
 
-const phaserConfig = {
-  width: 640,
-  height: 384,
-  // canvas: HTMLCanvasElement,
-  // parent,
-  // scene: [this.mainScene],
-  type: WEBGL,
-  backgroundColor: '#1b262c',
-  pixelArt: true,
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { x: 0, y: 300 },
-      debug: false
-    }
-  },
+export function setMineDarknessGame(game: MineDarkness) {
+  return mineDarknessGame = game
 }
 
 export class MineDarkness {
   state: GameState
   gameApp: GameApp
   loc: (a: string, b?: IJsonTranslatesType) => string
-  phConfig: Types.Core.GameConfig = phaserConfig
-  game?: PhaserGame
+  phConfig: Types.Core.GameConfig = {
+    width: 640,
+    height: 384,
+    // canvas: HTMLCanvasElement,
+    // parent,
+    // scene: [this.mainScene],
+    type: WEBGL,
+    backgroundColor: '#1b262c',
+    pixelArt: true,
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { x: 0, y: 300 },
+        debug: false
+      }
+    },
+  }
+
+  phaser?: PhaserGame
 
   constructor(state: GameState, locals: Translates, gameApp: GameApp) {
     // get object with methods with translates
@@ -50,7 +53,7 @@ export class MineDarkness {
 
     this.gameApp = gameApp
 
-    this.phConfig.scene = [ new MainEngineScene('main-scene') ]
+    this.phConfig.scene = [new MainEngineScene('main-scene')]
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -63,19 +66,34 @@ export class MineDarkness {
       }
     }
 
-    GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
-    window.addEventListener('resize',(event: UIEvent) => { this.onWindowResize() })
+    this.subscribeStateChanges(this.onChangeGameState, this)
+    window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
   }
 
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement) {
     this.phConfig.parent = parentApp
     this.phConfig.canvas = canvas
-    this.game = new PhaserGame(phaserConfig)
-    this.game.pause()
+    this.phaser = new PhaserGame(this.phConfig)
+    this.phaser.pause()
   }
 
-  dispatchStateChanges() {
-    EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], this.state)
+  subscribeStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) : (eventData: CustomEventInit) => void {
+     const eventBusCallback = (eventData: CustomEventInit) => {
+      callbackWihBindThis.call(that, eventData)
+    }
+    EventBus.On(BusEventsList[BusEventsList.changeGameState], eventBusCallback)
+    return eventBusCallback
+  }
+
+  subscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
+    const eventBusCallback = this.subscribeStateChanges(callbackWihBindThis, that)
+    const data: CustomEventInit = { detail: this.state }
+    callbackWihBindThis.call(that, data)
+    return eventBusCallback
+  }
+
+  offStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
+    EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
   }
 
   getSelectedMap() {
@@ -92,19 +110,19 @@ export class MineDarkness {
     return mapList[findedMapIndex]
   }
 
-  private onChangeGameState () {
-    if (!this.game) {
+  private onChangeGameState() {
+    if (!this.phaser) {
       return
     }
 
-    if (this.state.isGame) {
-      if (this.game.isPaused) { this.game.resume() }
-    } else if (!this.game.isPaused) {
-      this.game.pause()
+    if (this.state.page == GamePages.game) {
+      if (this.phaser.isPaused) { this.phaser.resume() }
+    } else if (!this.phaser.isPaused) {
+      this.phaser.pause()
     }
   }
 
-  onWindowResize () {
+  onWindowResize() {
     const winSizes: IResolution = {
       width: window.innerWidth, height: window.innerHeight,
     }
@@ -113,7 +131,13 @@ export class MineDarkness {
       width: 0, height: 0,
     }
 
-    const gameProportion = phaserConfig.width / phaserConfig.height
+    if (!this.phConfig) {
+      return
+    }
+
+    const width = this.phConfig.width as number
+    const height = this.phConfig.height as number
+    const gameProportion = width / height
 
     if (winSizes.width > winSizes.height) {
       newSize.width = gameProportion * winSizes.height
@@ -123,42 +147,13 @@ export class MineDarkness {
       } else {
         newSize.height = winSizes.height
       }
-    }  else {
+    } else {
       newSize.width = winSizes.width
-      newSize.height =winSizes.width / gameProportion
+      newSize.height = winSizes.width / gameProportion
     }
-    if (this.game) {
-      this.game.canvas.style.width = newSize.width + 'px'
-      this.game.canvas.style.height = newSize.height + 'px'
+    if (this.phaser) {
+      this.phaser.canvas.style.width = newSize.width + 'px'
+      this.phaser.canvas.style.height = newSize.height + 'px'
     }
   }
-}
-
-export function InitGame(state: GameState, locals: Translates) {
-  const gameApp = document.createElement('game-app')
-  const body = document.querySelector('body')
-  if (gameApp == null || body == null) {
-    console.error('BODY OR GameApp equals null')
-    return
-  }
-
-  mineDarkness = new MineDarkness(state, locals, gameApp)
-
-  // append gameApp elements to html
-  body.appendChild(gameApp)
-
-  // search and get convas for phaser
-  gameApp.canvasParent.then((parent: HTMLElement | null) => {
-    if (!parent) return
-    gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
-      if (!element) return
-      mineDarkness?.createPhaserGame(element, parent)
-      mineDarkness?.dispatchStateChanges()
-      mineDarkness?.onWindowResize()
-    }, () => { })
-  }, () => { })
-}
-
-export function getMineDarkness() {
-  return mineDarkness
 }

@@ -1,6 +1,7 @@
 import {
   Languages,
   LocSettingsList,
+  GamePages,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -23,13 +24,12 @@ export interface MainButtonType {
 export interface MainButtonRenderInfo {
   type: string
   name: string
+  hidden: boolean
 }
 
 export interface IHashParams {
   lang: Languages
-  isRules: boolean
-  isGame: boolean
-  isMaps: boolean
+  page: GamePages
 }
 
 export interface IJsonTranslatesType {
@@ -52,4 +52,12 @@ export interface IJsonMap {
     name: string
     file: string
     level: string
+}
+
+export interface IStateParams extends IHashParams, ILocSettings {
+  lang: Languages
+  page: GamePages
+  isGameStarted: boolean
+  isSound: boolean
+  selectedMap?: string
 }

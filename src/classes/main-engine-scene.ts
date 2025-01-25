@@ -46,7 +46,7 @@ export class MainEngineScene extends Scene {
 
     const dude = this.physics.add.sprite(100, 450, 'dude')
 
-    console.log('grandLayer', this._groundLayer)
+    // console.log('grandLayer', this._groundLayer)
 
     this.cameras.main.setScroll(0, 0)
     this.cameras.main.setBounds(0, 0,
