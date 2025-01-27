@@ -1,7 +1,7 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import DudeSet from '@assets/dude.png'
-import textMapRaw from '@assets/maps/map1.txt?url'
+import textMapRaw from '@assets/maps/map0.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
@@ -17,6 +17,8 @@ export class MainEngine extends Scene {
   _kyes: dudeKyes | undefined
   _mapLevels!: MapSceneLevels
   _dude!: Types.Physics.Arcade.SpriteWithDynamicBody
+
+  _dudeStay: boolean = true
 
   constructor(name: string) {
     super(name)
@@ -45,8 +47,8 @@ export class MainEngine extends Scene {
     }
     this._cameraControls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig)
 
-    this._dude = this.physics.add.sprite(100, 470, 'dude')
-    this._dude.setBounce(0.2)
+    this._dude = this.physics.add.sprite(50, 0, 'dude')
+    this._dude.setBounce(0.1)
     this._dude.setCollideWorldBounds(true)
     this._dude.body.setGravityY(100)
 
@@ -77,15 +79,18 @@ export class MainEngine extends Scene {
   update(time: number, delta: number): void {
     this._cameraControls.update(delta)
 
+    // dude movements
     if (!this._kyes) return
 
     if (this._kyes.a.isDown) {
       this._dude.setVelocityX(-160)
       this._dude.anims.play('leftDude', true)
-    }
-    else if (this._kyes.d.isDown) {
+    } else if (this._kyes.d.isDown) {
       this._dude.setVelocityX(160)
       this._dude.anims.play('rightDude', true)
+    } else {
+      this._dude.setVelocityX(0)
+      this._dude.anims.play('turn', true)
     }
   }
 
