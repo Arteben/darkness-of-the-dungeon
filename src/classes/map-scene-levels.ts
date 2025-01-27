@@ -13,7 +13,7 @@ const tileIndexes: IMapTilesIndexes = {
 export class MapSceneLevels {
   _tileIndexes = tileIndexes
 
-  symbolMap: Array<string>
+  _symbolMap: Array<string>
 
   groundLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
@@ -26,7 +26,7 @@ export class MapSceneLevels {
   constructor(engine: MainEngine, nameSymbolMap: string, groundTileSetName: string) {
 
     const symbolMap: Array<string> = engine.cache.text.get(nameSymbolMap).split('\n')
-    this.symbolMap = symbolMap
+    this._symbolMap = symbolMap
     if (symbolMap[symbolMap.length - 1].length == 0) {
       symbolMap.splice(symbolMap.length - 1, 1)
     }
@@ -37,7 +37,7 @@ export class MapSceneLevels {
     }
 
     this.mapWidth = symbolMap[0].length * this._tileWidth
-    this.mapHeight  = symbolMap.length * this._tileWidth
+    this.mapHeight = symbolMap.length * this._tileWidth
 
     const map = engine.make.tilemap({
       width: symbolMap[0].length, height: symbolMap.length,
@@ -46,12 +46,15 @@ export class MapSceneLevels {
 
     const tileset = map.addTilesetImage(groundTileSetName) as Phaser.Tilemaps.Tileset
 
-    this.groundLayer = MapSceneLevels.getLayerForSymbols(['#'], 'groundLayer', map, tileset, symbolMap)
-    this.envLayer = MapSceneLevels.getLayerForSymbols(['D', 't', 'k', 'B', 'w', 'T', 'A'], 'env-layer', map, tileset, symbolMap)
+    this.groundLayer = this.getLayerForSymbols(['#'], 'groundLayer', map, tileset)
+    this.groundLayer?.setCollisionByExclusion([-1])
+    this.envLayer = this.getLayerForSymbols(['D', 't', 'k', 'B', 'w', 'T', 'A'], 'envLayer', map, tileset)
   }
 
-  static getLayerForSymbols(
-    symbols: string[], nameLayer: string, map: Phaser.Tilemaps.Tilemap, tiles: Phaser.Tilemaps.Tileset, symMap: string[]) {
+  getLayerForSymbols(
+    symbols: string[], nameLayer: string, map: Phaser.Tilemaps.Tilemap, tiles: Phaser.Tilemaps.Tileset,) {
+
+    const symMap = this._symbolMap
 
     const width = symMap[0].length
     const height = symMap.length
@@ -87,7 +90,10 @@ export class MapSceneLevels {
     }
 
     const layer = map.createBlankLayer(nameLayer, tiles)
-    if (!layer) { return null }
+    if (!layer) {
+      return null
+    }
+
     layer.putTilesAt(indexesMap, 0, 0)
     return layer
   }
