@@ -61,3 +61,19 @@ export interface IStateParams extends IHashParams, ILocSettings {
   isSound: boolean
   selectedMap?: string
 }
+
+// phaser types
+export interface IResolution {
+  width: number
+  height: number
+}
+
+export interface IMapTilesIndexes {
+  [index: string]: number
+}
+
+export interface INumberCoords {
+  w: number
+  h: number
+}
+//

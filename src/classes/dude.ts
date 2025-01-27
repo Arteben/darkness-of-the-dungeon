@@ -2,6 +2,7 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
+import { IResolution, INumberCoords } from '@/types/main-types'
 
 export interface dudeKyes {
   a: Phaser.Input.Keyboard.Key
@@ -14,13 +15,25 @@ export class Dude {
 
   _dudeStay: boolean = true
 
-  constructor(engine: MainEngine, mapLevels: MapSceneLevels) {
+  _frame: IResolution
+
+  constructor(engine: MainEngine, mapLevels: MapSceneLevels, frameResolution: IResolution) {
     this._kyes = engine.input?.keyboard?.addKeys({
       a: Phaser.Input.Keyboard.KeyCodes.A,
       d: Phaser.Input.Keyboard.KeyCodes.D,
     }) as dudeKyes
 
-    this._dude = engine.physics.add.sprite(50, 0, 'dude')
+    this._frame = frameResolution
+
+    const startMapCoords = mapLevels.getCoordsForFirstSymbol('B')
+    const startCoords: INumberCoords = { w: 0, h: 0 }
+
+    if (startMapCoords) {
+      startCoords.w = startMapCoords.w + this._frame.width / 2
+      startCoords.h = startMapCoords.h
+    }
+
+    this._dude = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
     this._dude.setBounce(0.1)
     this._dude.setCollideWorldBounds(true)
     this._dude.body.setGravityY(100)

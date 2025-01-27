@@ -1,17 +1,13 @@
-import { Scene, GameObjects, Types, Physics } from 'phaser'
-
 import { MainEngine } from '@/classes/main-engine'
 
-import { IMapTilesIndexes } from '@/types/phaser-types'
+import { IMapTilesIndexes, INumberCoords } from '@/types/main-types'
 
 // import DudeSet from '@assets/dude.png'
 
-const tileIndexes: IMapTilesIndexes = {
-  '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
-}
-
 export class MapSceneLevels {
-  _tileIndexes = tileIndexes
+  _tileIndexes: IMapTilesIndexes = {
+    '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
+  }
 
   _symbolMap: Array<string>
 
@@ -51,7 +47,7 @@ export class MapSceneLevels {
     this.envLayer = this.getLayerForSymbols(['D', 't', 'k', 'B', 'w', 'T', 'A'], 'envLayer', map, tileset)
   }
 
-  getLayerForSymbols(
+  private getLayerForSymbols(
     symbols: string[], nameLayer: string, map: Phaser.Tilemaps.Tilemap, tiles: Phaser.Tilemaps.Tileset,) {
 
     const symMap = this._symbolMap
@@ -73,10 +69,10 @@ export class MapSceneLevels {
           if (!notNulls(symMap, i, j)) return false
 
           if (symMap[i][j] == element) {
-            if (notNulls(symMap, i - 1, j) && symMap[i - 1][j] == element && tileIndexes[element + element]) {
-              indexesMap[i][j] = tileIndexes[element + element]
+            if (notNulls(symMap, i - 1, j) && symMap[i - 1][j] == element && this._tileIndexes[element + element]) {
+              indexesMap[i][j] = this._tileIndexes[element + element]
             } else {
-              indexesMap[i][j] = tileIndexes[element]
+              indexesMap[i][j] = this._tileIndexes[element]
             }
             // stop search for these symbols
             return true
@@ -96,5 +92,30 @@ export class MapSceneLevels {
 
     layer.putTilesAt(indexesMap, 0, 0)
     return layer
+  }
+
+  getCoordsForFirstSymbol(symb: string) {
+
+    let coords: INumberCoords | null = null
+    let wCoord
+    let hCoord
+
+    for (let i = 0; i < this._symbolMap.length; i++) {
+      const lineString = this._symbolMap[i]
+      hCoord = lineString.indexOf(symb)
+      if (hCoord > -1) {
+        wCoord = i
+        break
+      }
+    }
+
+    if (wCoord != undefined && hCoord != undefined) {
+      coords = {
+        h: wCoord * this._tileWidth,
+        w: hCoord * this._tileWidth
+      }
+    }
+
+    return coords
   }
 }

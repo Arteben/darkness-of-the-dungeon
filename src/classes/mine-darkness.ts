@@ -1,9 +1,8 @@
 import { GamePages } from '@/types/enums'
 
-import { IJsonTranslatesType, IJsonMap } from '@/types/main-types'
+import { IJsonTranslatesType, IJsonMap, IResolution } from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame } from 'phaser'
-import { IResolution } from '@/types/phaser-types'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'

@@ -1,4 +1,5 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
+import { IResolution } from '@/types/main-types'
 
 import DudeSet from '@assets/dude.png'
 import textMapRaw from '@assets/maps/map0.txt?url'
@@ -35,7 +36,7 @@ export class MainEngine extends Scene {
     }
     this._cameraControls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig)
 
-    this._dude = new Dude(this, this._mapLevels)
+    this._dude = new Dude(this, this._mapLevels, {width: 32, height: 48} as IResolution)
   }
 
   update(time: number, delta: number): void {
