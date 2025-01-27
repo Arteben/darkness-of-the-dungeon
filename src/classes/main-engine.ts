@@ -7,12 +7,14 @@ import tilesRaw from '@assets/kenny_platformer_32.png'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
+import { MainCamera } from '@/classes/main-camara'
 
 export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
   _cameraControls!: Phaser.Cameras.Controls.FixedKeyControl
   _mapLevels!: MapSceneLevels
   _dude!: Dude
+  _mainCamera!: MainCamera
 
   constructor(name: string) {
     super(name)
@@ -20,28 +22,12 @@ export class MainEngine extends Scene {
 
   create() {
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
-
-    this.cameras.main.setScroll(0, 0)
-    this.cameras.main.setBounds(0, 0, this._mapLevels?.mapWidth, this._mapLevels?.mapHeight)
-
-    const arrowCameraControls = this.input.keyboard?.createCursorKeys()
-    if (!arrowCameraControls) return
-    const controlConfig = {
-      camera: this.cameras.main,
-      left: arrowCameraControls.left,
-      right: arrowCameraControls.right,
-      up: arrowCameraControls.up,
-      down: arrowCameraControls.down,
-      speed: 1
-    }
-    this._cameraControls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig)
-
+    this._mainCamera = new MainCamera(this, this._mapLevels)
     this._dude = new Dude(this, this._mapLevels, {width: 32, height: 48} as IResolution)
   }
 
   update(time: number, delta: number): void {
-    this._cameraControls.update(delta)
-
+    this._mainCamera.cameraControls.update(delta)
     this._dude.update(time, delta)
   }
 
