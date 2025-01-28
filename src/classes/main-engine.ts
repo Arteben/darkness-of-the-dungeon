@@ -7,14 +7,14 @@ import tilesRaw from '@assets/kenny_platformer_32.png'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
-import { MainCamera } from '@/classes/main-camara'
+import { SceneCamera } from '@/classes/scene-camera'
 
 export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
   _cameraControls!: Phaser.Cameras.Controls.FixedKeyControl
   _mapLevels!: MapSceneLevels
   _dude!: Dude
-  _mainCamera!: MainCamera
+  _camera!: SceneCamera
 
   constructor(name: string) {
     super(name)
@@ -22,12 +22,15 @@ export class MainEngine extends Scene {
 
   create() {
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
-    this._mainCamera = new MainCamera(this, this._mapLevels)
+    this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
+    this._camera = new SceneCamera(this)
+    this._camera.main.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapWidth)
     this._dude = new Dude(this, this._mapLevels, {width: 32, height: 48} as IResolution)
+    this._camera.main.startFollow(this._dude.image, true, 1, 0.8, 0, 100)
   }
 
   update(time: number, delta: number): void {
-    this._mainCamera.cameraControls.update(delta)
+    // this._camera.cameraControls.update(delta)
     this._dude.update(time, delta)
   }
 

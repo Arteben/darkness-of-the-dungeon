@@ -1,16 +1,13 @@
 import { MainEngine } from '@/classes/main-engine'
-import { MapSceneLevels } from '@/classes/map-scene-levels'
 
-export class MainCamera {
+export class SceneCamera {
   cameraControls!: Phaser.Cameras.Controls.FixedKeyControl
-  _camera: Phaser.Cameras.Scene2D.Camera
+  main: Phaser.Cameras.Scene2D.Camera
 
-  constructor(engine: MainEngine, mapLevels: MapSceneLevels) {
+  constructor(engine: MainEngine) {
 
-    this._camera = engine.cameras.main
-    this._camera.setScroll(0, 0)
-    this._camera.setBounds(0, 0, mapLevels.mapWidth, mapLevels.mapHeight)
-
+    this.main = engine.cameras.main
+    this.main.setScroll(0, 0)
     const arrowCameraControls = engine.input.keyboard?.createCursorKeys()
     if (!arrowCameraControls) return
 

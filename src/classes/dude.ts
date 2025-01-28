@@ -11,7 +11,7 @@ export interface dudeKyes {
 
 export class Dude {
   _kyes: dudeKyes | undefined
-  _dude!: Types.Physics.Arcade.SpriteWithDynamicBody
+  image: Types.Physics.Arcade.SpriteWithDynamicBody
 
   _dudeStay: boolean = true
 
@@ -33,28 +33,28 @@ export class Dude {
       startCoords.h = startMapCoords.h
     }
 
-    this._dude = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
-    this._dude.setBounce(0.1)
-    this._dude.setCollideWorldBounds(true)
-    this._dude.body.setGravityY(100)
+    this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
+    this.image.setBounce(0.1)
+    this.image.setCollideWorldBounds(true)
+    this.image.body.setGravityY(100)
 
     if (!mapLevels.groundLayer) return
-    engine.physics.add.collider(this._dude, mapLevels.groundLayer)
+    engine.physics.add.collider(this.image, mapLevels.groundLayer)
 
-    this._dude.anims.create({
+    this.image.anims.create({
       key: 'leftDude',
       frames: engine.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1
     })
 
-    this._dude.anims.create({
+    this.image.anims.create({
       key: 'turnDude',
       frames: [{ key: 'dude', frame: 4 }],
       frameRate: 20
     })
 
-    this._dude.anims.create({
+    this.image.anims.create({
       key: 'rightDude',
       frames: engine.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
       frameRate: 10,
@@ -67,14 +67,14 @@ export class Dude {
     if (!this._kyes) return
 
     if (this._kyes.a.isDown) {
-      this._dude.setVelocityX(-160)
-      this._dude.anims.play('leftDude', true)
+      this.image.setVelocityX(-160)
+      this.image.anims.play('leftDude', true)
     } else if (this._kyes.d.isDown) {
-      this._dude.setVelocityX(160)
-      this._dude.anims.play('rightDude', true)
+      this.image.setVelocityX(160)
+      this.image.anims.play('rightDude', true)
     } else {
-      this._dude.setVelocityX(0)
-      this._dude.anims.play('turnDude', true)
+      this.image.setVelocityX(0)
+      this.image.anims.play('turnDude', true)
     }
   }
 
