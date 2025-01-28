@@ -49,9 +49,9 @@ export interface ILocSettingsEventLoad {
 }
 
 export interface IJsonMap {
-    name: string
-    file: string
-    level: string
+  name: string
+  file: string
+  level: string
 }
 
 export interface IStateParams extends IHashParams, ILocSettings {
@@ -77,3 +77,14 @@ export interface INumberCoords {
   h: number
 }
 //
+
+export interface mainKeys {
+  up: Phaser.Input.Keyboard.Key
+  down: Phaser.Input.Keyboard.Key
+  left: Phaser.Input.Keyboard.Key
+  right: Phaser.Input.Keyboard.Key
+  space: Phaser.Input.Keyboard.Key
+  shift: Phaser.Input.Keyboard.Key
+  a: Phaser.Input.Keyboard.Key
+  d: Phaser.Input.Keyboard.Key
+}

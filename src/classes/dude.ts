@@ -2,29 +2,16 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
-import { IResolution, INumberCoords } from '@/types/main-types'
-
-export interface dudeKyes {
-  a: Phaser.Input.Keyboard.Key
-  d: Phaser.Input.Keyboard.Key
-}
+import { IResolution, INumberCoords, mainKeys } from '@/types/main-types'
 
 export class Dude {
-  _kyes: dudeKyes | undefined
   image: Types.Physics.Arcade.SpriteWithDynamicBody
-
   _dudeStay: boolean = true
-
   _frame: IResolution
 
   constructor(engine: MainEngine, mapLevels: MapSceneLevels, frameResolution: IResolution) {
-    this._kyes = engine.input?.keyboard?.addKeys({
-      a: Phaser.Input.Keyboard.KeyCodes.A,
-      d: Phaser.Input.Keyboard.KeyCodes.D,
-    }) as dudeKyes
 
     this._frame = frameResolution
-
     const startMapCoords = mapLevels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
 
@@ -36,7 +23,7 @@ export class Dude {
     this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
     this.image.setBounce(0.1)
     this.image.setCollideWorldBounds(true)
-    this.image.body.setGravityY(100)
+    this.image.body.setGravityY(0)
 
     if (!mapLevels.groundLayer) return
     engine.physics.add.collider(this.image, mapLevels.groundLayer)
@@ -62,20 +49,22 @@ export class Dude {
     })
   }
 
-  update(time: number, delta: number): void {
-    // dude movements
-    if (!this._kyes) return
-
-    if (this._kyes.a.isDown) {
+  update(keys: mainKeys, time: number, delta: number): void {
+    if (keys.left.isDown) {
       this.image.setVelocityX(-160)
       this.image.anims.play('leftDude', true)
-    } else if (this._kyes.d.isDown) {
+    } else if (keys.right.isDown) {
       this.image.setVelocityX(160)
       this.image.anims.play('rightDude', true)
+    } else if (keys.up.isDown) {
+      this.image.setVelocityY(-100)
+      this.image.anims.play('turnDude', false)
+    } else if (keys.down.isDown && !this.image.body.touching.down) {
+      this.image.setVelocityY(100)
+      this.image.anims.play('turnDude', false)
     } else {
       this.image.setVelocityX(0)
       this.image.anims.play('turnDude', true)
     }
   }
-
 }

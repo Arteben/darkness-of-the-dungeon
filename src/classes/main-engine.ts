@@ -1,5 +1,5 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
-import { IResolution } from '@/types/main-types'
+import { IResolution, mainKeys } from '@/types/main-types'
 
 import DudeSet from '@assets/dude.png'
 import textMapRaw from '@assets/maps/map0.txt?url'
@@ -15,23 +15,28 @@ export class MainEngine extends Scene {
   _mapLevels!: MapSceneLevels
   _dude!: Dude
   _camera!: SceneCamera
+  _keys!: mainKeys
 
   constructor(name: string) {
     super(name)
   }
 
   create() {
+    this.setMainKyes()
+
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
-    this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera = new SceneCamera(this)
+    this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera.main.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapWidth)
-    this._dude = new Dude(this, this._mapLevels, {width: 32, height: 48} as IResolution)
+    this._dude = new Dude(this, this._mapLevels, { width: 32, height: 48 } as IResolution)
     this._camera.main.startFollow(this._dude.image, true, 1, 0.8, 0, 100)
   }
 
   update(time: number, delta: number): void {
     // this._camera.cameraControls.update(delta)
-    this._dude.update(time, delta)
+    if (this._keys) {
+      this._dude.update(this._keys, time, delta)
+    }
   }
 
   preload() {
@@ -52,5 +57,18 @@ export class MainEngine extends Scene {
     this._progress.fillStyle(0xffffdd, 1)
     const gameSize = this.scale.gameSize
     this._progress.fillRect(0, (gameSize.height - 22), gameSize.width * value, 20)
+  }
+
+  private setMainKyes() {
+    this._keys = this.input?.keyboard?.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.UP,
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+      a: Phaser.Input.Keyboard.KeyCodes.A,
+      d: Phaser.Input.Keyboard.KeyCodes.D,
+    }) as mainKeys
   }
 }
