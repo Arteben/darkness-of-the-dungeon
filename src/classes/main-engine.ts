@@ -27,13 +27,11 @@ export class MainEngine extends Scene {
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
     this._camera = new SceneCamera(this)
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
-    this._camera.main.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapWidth)
-    this._dude = new Dude(this, this._mapLevels, { width: 32, height: 48 } as IResolution)
-    this._camera.main.startFollow(this._dude.image, true, 1, 0.8, 0, 100)
+    this._camera.main.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
+    this._dude = new Dude(this, this._mapLevels, this._camera, { width: 32, height: 48 } as IResolution)
   }
 
   update(time: number, delta: number): void {
-    // this._camera.cameraControls.update(delta)
     if (this._keys) {
       this._dude.update(this._keys, time, delta)
     }

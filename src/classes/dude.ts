@@ -2,14 +2,17 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
+import { SceneCamera } from '@/classes/scene-camera'
 import { IResolution, INumberCoords, mainKeys } from '@/types/main-types'
 
 export class Dude {
   image: Types.Physics.Arcade.SpriteWithDynamicBody
   _dudeStay: boolean = true
   _frame: IResolution
+  _camera: SceneCamera
 
-  constructor(engine: MainEngine, mapLevels: MapSceneLevels, frameResolution: IResolution) {
+  constructor(
+    engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, frameResolution: IResolution) {
 
     this._frame = frameResolution
     const startMapCoords = mapLevels.getCoordsForFirstSymbol('B')
@@ -23,7 +26,15 @@ export class Dude {
     this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
     this.image.setBounce(0.1)
     this.image.setCollideWorldBounds(true)
-    this.image.body.setGravityY(0)
+    this.image.body.setAllowGravity(true)
+    this.image.body.setGravityY(50)
+    // test
+
+    this._camera = camera
+
+    this._camera.startFollow(this.image)
+    this.setStandartOffset()
+    this._camera.setDefaultZoom()
 
     if (!mapLevels.groundLayer) return
     engine.physics.add.collider(this.image, mapLevels.groundLayer)
@@ -49,6 +60,10 @@ export class Dude {
     })
   }
 
+  setStandartOffset() {
+    this._camera.setFollowOffser(0, 100)
+  }
+
   update(keys: mainKeys, time: number, delta: number): void {
     if (keys.left.isDown) {
       this.image.setVelocityX(-160)
@@ -62,9 +77,14 @@ export class Dude {
     } else if (keys.down.isDown && !this.image.body.touching.down) {
       this.image.setVelocityY(100)
       this.image.anims.play('turnDude', false)
+      this._camera.setFollowOffser(0, -100)
     } else {
       this.image.setVelocityX(0)
+      // this.image.setVelocityY(0)
       this.image.anims.play('turnDude', true)
+      this.setStandartOffset()
     }
+
+    this._camera.isZooming = keys.shift.isDown
   }
 }
