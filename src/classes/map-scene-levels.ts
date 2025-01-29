@@ -12,6 +12,7 @@ export class MapSceneLevels {
   _symbolMap: Array<string>
 
   groundLayer!: Phaser.Tilemaps.TilemapLayer | null
+  stairsLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
 
   _tileWidth = 32
@@ -40,18 +41,28 @@ export class MapSceneLevels {
       tileWidth: this._tileWidth, tileHeight: this._tileWidth
     })
 
-    const tileset = map.addTilesetImage(groundTileSetName) as Phaser.Tilemaps.Tileset
+    map.addTilesetImage(groundTileSetName)
 
-    this.groundLayer = this.getLayerForSymbols(['#'], 'groundLayer', map, tileset)
+    this.groundLayer = this.createLayer(['#'], 'groundLayer', groundTileSetName, map)
     this.groundLayer?.setCollisionByExclusion([-1])
-    this.envLayer = this.getLayerForSymbols(['D', 't', 'k', 'B', 'w', 'T', 'A'], 'envLayer', map, tileset)
+
+    this.stairsLayer = this.createLayer(['t', 'T'], 'stairsLayer', groundTileSetName, map)
+    this.stairsLayer?.setCollisionByExclusion([-1])
+
+    this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A'], 'envLayer', groundTileSetName, map)
   }
 
-  private getLayerForSymbols(
-    symbols: string[], nameLayer: string, map: Phaser.Tilemaps.Tilemap, tiles: Phaser.Tilemaps.Tileset,) {
+  private createLayer(
+    symbols: string[], nameKey: string, tileset: string, map: Phaser.Tilemaps.Tilemap) {
 
+    const indexes = this.getIndexesForTiles(symbols)
+
+    const layer = map.createBlankLayer(nameKey, tileset)
+    return layer && layer.putTilesAt(indexes, 0, 0) || null
+  }
+
+  private getIndexesForTiles(symbols: string[]) {
     const symMap = this._symbolMap
-
     const width = symMap[0].length
     const height = symMap.length
 
@@ -85,13 +96,7 @@ export class MapSceneLevels {
       }
     }
 
-    const layer = map.createBlankLayer(nameLayer, tiles)
-    if (!layer) {
-      return null
-    }
-
-    layer.putTilesAt(indexesMap, 0, 0)
-    return layer
+    return indexesMap
   }
 
   getCoordsForFirstSymbol(symb: string) {

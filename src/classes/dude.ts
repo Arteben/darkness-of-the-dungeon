@@ -11,6 +11,16 @@ export class Dude {
   _frame: IResolution
   _camera: SceneCamera
 
+  // isGravInfluence
+  private _isGravInfluence: boolean = true
+  public set isGravInfluence(value: boolean) {
+    this.setIsGrafInfluence(value)
+  }
+  public get isGravInfluence(): boolean {
+    return this._isGravInfluence
+  }
+  //
+
   constructor(
     engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, frameResolution: IResolution) {
 
@@ -24,11 +34,9 @@ export class Dude {
     }
 
     this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
-    this.image.setBounce(0.1)
+    this.image.setBounce(0)
     this.image.setCollideWorldBounds(true)
-    this.image.body.setAllowGravity(true)
-    this.image.body.setGravityY(50)
-    // test
+    this.isGravInfluence = true
 
     this._camera = camera
 
@@ -86,5 +94,15 @@ export class Dude {
     }
 
     this._camera.isZooming = keys.shift.isDown
+  }
+
+  private setIsGrafInfluence(flag: boolean) {
+    if (flag) {
+      this.image.body.setGravityY(100)
+    } else {
+      this.image.body.setGravityY(0)
+    }
+    this._isGravInfluence = flag
+    this.image.body.setAllowGravity(flag)
   }
 }

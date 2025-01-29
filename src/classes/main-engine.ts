@@ -29,6 +29,15 @@ export class MainEngine extends Scene {
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera.main.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._dude = new Dude(this, this._mapLevels, this._camera, { width: 32, height: 48 } as IResolution)
+
+    if (!this._mapLevels.stairsLayer) return
+
+    // this.physics.add.overlap(
+    //   this._dude.image,
+    //   this._mapLevels.stairsLayer,
+    //   (player, platform) => {
+    //     console.log('you have collision with', player, platform)
+    //   })
   }
 
   update(time: number, delta: number): void {
