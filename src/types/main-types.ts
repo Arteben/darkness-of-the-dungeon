@@ -76,6 +76,11 @@ export interface INumberCoords {
   w: number
   h: number
 }
+
+export interface ITilesCoords {
+  x: number
+  y: number
+}
 //
 
 export interface mainKeys {
@@ -88,3 +93,6 @@ export interface mainKeys {
   a: Phaser.Input.Keyboard.Key
   d: Phaser.Input.Keyboard.Key
 }
+
+export type overlapCallbackParams =
+  Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.Body | Phaser.Tilemaps.Tile

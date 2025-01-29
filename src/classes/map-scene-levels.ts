@@ -1,6 +1,6 @@
 import { MainEngine } from '@/classes/main-engine'
 
-import { IMapTilesIndexes, INumberCoords } from '@/types/main-types'
+import { IMapTilesIndexes, INumberCoords, ITilesCoords } from '@/types/main-types'
 
 // import DudeSet from '@assets/dude.png'
 
@@ -47,7 +47,7 @@ export class MapSceneLevels {
     this.groundLayer?.setCollisionByExclusion([-1])
 
     this.stairsLayer = this.createLayer(['t', 'T'], 'stairsLayer', groundTileSetName, map)
-    this.stairsLayer?.setCollisionByExclusion([-1])
+    // this.stairsLayer?.setCollisionByExclusion([18, 33])
 
     this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A'], 'envLayer', groundTileSetName, map)
   }
@@ -122,5 +122,13 @@ export class MapSceneLevels {
     }
 
     return coords
+  }
+
+  getTilesForCoords(width: number, heigh: number): ITilesCoords {
+    const tileSize = this._tileWidth
+    return {
+      x: Math.floor(width / tileSize),
+      y: Math.floor(heigh / tileSize)
+    }
   }
 }
