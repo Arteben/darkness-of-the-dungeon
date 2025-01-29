@@ -23,3 +23,10 @@ export enum LocSettingsList {
   isSound,
   selectedMap
 }
+
+export enum GamePages {
+  mainMenu,
+  rules,
+  game,
+  maps,
+}

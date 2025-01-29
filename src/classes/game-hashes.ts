@@ -1,7 +1,8 @@
-import { Languages } from '@/types/enums'
+import { GamePages, Languages } from '@/types/enums'
 import { IHashParams } from '@/types/main-types'
-import { GameState } from '@/classes/game-state'
-import { Game } from '@/classes/mine-darkness'
+import { EventBus } from '@/classes/event-bus'
+
+import { getMineDarknessGame } from '@/classes/mine-darkness'
 
 export class GameHashes {
 
@@ -16,20 +17,16 @@ export class GameHashes {
 
   // params
   lang: Languages = Languages.eng
-  isRules: boolean = false
-  isGame: boolean = false
-  isMaps: boolean = false
+  page: GamePages = GamePages.mainMenu
   //
 
   constructor() {
     this.location = window.location
     const hashParams = this.getHashParams()
     this.lang = hashParams.lang
-    this.isRules = hashParams.isRules
-    this.isGame = hashParams.isGame
-    this.isMaps = hashParams.isMaps
+    this.page = hashParams.page
 
-    GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
+    EventBus.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
 
     window.addEventListener('hashchange', (e: HashChangeEvent) => {
       this.onHashChange()
@@ -39,20 +36,21 @@ export class GameHashes {
 
   private getHashParams() {
     const params: IHashParams = {
-      lang: this.lang, isRules: this.isRules, isGame: this.isGame, isMaps: this.isMaps,
+      lang: this.lang, page: this.page
     }
     const langRexp = new RegExp('^#[a-z]+')
     const rulesRexp = new RegExp('^#[a-z]+\/'+ this.hashes.rules + '$', 'i')
     const gameRexp = new RegExp('^#[a-z]+\/' + this.hashes.game + '$', 'i')
     const mapsRexp = new RegExp('^#[a-z]+\/' + this.hashes.maps + '$', 'i')
 
-    params.isRules = params.isGame = params.isMaps = false
     if (rulesRexp.test(this.location.hash)) {
-      params.isRules = true
+      params.page = GamePages.rules
     } else if (gameRexp.test(this.location.hash)) {
-      params.isGame = true
+      params.page = GamePages.game
     } else if (mapsRexp.test(this.location.hash)) {
-      params.isMaps = true
+      params.page = GamePages.maps
+    } else {
+      params.page = GamePages.mainMenu
     }
 
     const langSearches = this.location.hash.match(langRexp)
@@ -70,75 +68,45 @@ export class GameHashes {
 
   getLocalState(): IHashParams {
     return {
-      isRules: this.isRules,
       lang: this.lang,
-      isGame: this.isGame,
-      isMaps: this.isMaps,
+      page: this.page
     }
   }
 
   onHashChange() {
-    const game = Game()
-    if (!game) return
+    const game = getMineDarknessGame()
+    if (!game)
+      return
 
     const newParams = this.getHashParams()
-    let isChanged = false
 
-    if (newParams.isRules != this.isRules) {
-      isChanged = true
-      this.isRules = newParams.isRules
-    }
-
-    if (newParams.isGame != this.isGame) {
-      isChanged = true
-      this.isGame = newParams.isGame
-    }
-
-    if (newParams.isMaps != this.isMaps) {
-      isChanged = true
-      this.isMaps = newParams.isMaps
+    if (newParams.page != this.page) {
+      this.page = newParams.page
+      game.state.page = this.page
     }
 
     if (newParams.lang != this.lang) {
-      isChanged = true
       this.lang = newParams.lang
+      game.state.lang = this.lang
     }
-
-    if (!isChanged) {
-      return
-    }
-
-    game.state.isRules = this.isRules
-    game.state.lang = this.lang
-    game.state.isGame = this.isGame
-    game.state.isMaps = this.isMaps
-
-    game.dispatchStateChanges()
   }
 
   onChangeGameState(eventData: unknown) {
-    const state = (eventData as CustomEventInit).detail
+    const game = getMineDarknessGame()
+    if (!game)
+      return
+
     let isChanged = false
     let isRaplaceChanged = false
 
-    if (state.lang != this.lang) {
+    if (game.state.lang != this.lang) {
       isRaplaceChanged = true
-      this.lang = state.lang
+      this.lang = game.state.lang
     }
 
-    if (state.isRules != this.isRules) {
+    if (game.state.page != this.page) {
       isChanged = true
-      this.isRules = state.isRules
-    }
-
-    if (state.isGame != this.isGame) {
-      isChanged = true
-      this.isGame = state.isGame
-    }
-
-    if (state.isMaps != this.isMaps) {
-      isChanged = true
-      this.isMaps = state.isMaps
+      this.page = game.state.page
     }
 
     if (!(isChanged || isRaplaceChanged)) {
@@ -147,12 +115,16 @@ export class GameHashes {
 
     let newHash = '#' + (this.lang == Languages.eng ? this.hashes.eng : this.hashes.ru)
 
-    if (this.isRules) {
-      newHash += '/' + this.hashes.rules
-    } else if (this.isGame) {
-      newHash += '/' + this.hashes.game
-    } else if (this.isMaps) {
-      newHash += '/' + this.hashes.maps
+    switch (this.page) {
+      case GamePages.rules:
+        newHash += '/' + this.hashes.rules
+        break
+      case GamePages.game:
+        newHash += '/' + this.hashes.game
+        break
+      case GamePages.maps:
+        newHash += '/' + this.hashes.maps
+        break
     }
 
     if (isChanged) {

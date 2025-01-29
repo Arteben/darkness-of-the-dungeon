@@ -1,8 +1,10 @@
+
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import { css, html } from 'lit'
-import { customElement, state, queryAsync } from 'lit/decorators.js'
+import { customElement, queryAsync } from 'lit/decorators.js'
 import { styleMap } from 'lit/directives/style-map.js'
+import { GamePages } from '@/types/enums'
 
 import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
@@ -18,10 +20,23 @@ export class GameApp extends GameStateElement {
   canvasParent!: Promise<HTMLElement | null>
 
   render() {
-    const mainMenu = this._state.isMainMenu ? html`<main-menu></main-menu>` : ''
-    const headMenu = !this._state.isMainMenu ? html`<head-menu></head-menu>` : ''
-    const convasDisplay = { 'display': (this._state.isGame) ? 'block' : 'none' }
-    const mapsMenu = this._state.isMaps ? html`<maps-menu></maps-menu>` : ''
+    let mainMenu = html``
+    let headMenu = html`<head-menu></head-menu>`
+    let convasDisplay = { 'display': 'none' }
+    let mapsMenu = html``
+
+    switch (this._state.page) {
+      case GamePages.mainMenu:
+        mainMenu = html`<main-menu></main-menu>`
+        headMenu = html``
+        break
+      case GamePages.game:
+        convasDisplay = { 'display': 'block' }
+        break
+      case GamePages.maps:
+        mapsMenu = html`<maps-menu></maps-menu>`
+        break
+    }
 
     return html`
       <div>

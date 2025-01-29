@@ -1,31 +1,33 @@
 import { LitElement } from 'lit'
 
 import { GameState } from '@/classes/game-state'
-import { Game, MineDarkness } from '@/classes/mine-darkness'
+import { EventBus } from '@/classes/event-bus'
+
+import { getMineDarknessGame } from '@/classes/mine-darkness'
 
 export class GameStateElement extends LitElement {
 
-  private changeStateCallback = (eventData: CustomEventInit) => {}
+  private changeStateCallback = (eventData: CustomEventInit) => { }
 
   _state: GameState = new GameState()
-  _game: MineDarkness | null = Game()
+  _game = getMineDarknessGame()
 
   connectedCallback() {
     super.connectedCallback()
-    this.changeStateCallback =
-      GameState.SubscribeAndUpdateStateChanges(this.onChangeGameState, this)
+    this.changeStateCallback = EventBus.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    GameState.OffStateChangesSubscribe(this.changeStateCallback)
+    EventBus.offStateChangesSubscribe(this.changeStateCallback)
   }
 
   private onChangeGameState(eventData: unknown) {
-    const state = (eventData as CustomEventInit).detail
-    if (this._state !== state)
-      this._state = state
+    if (!this._game) {
+      return
+    }
 
+    this._state = this._game.state
     this.requestUpdate()
   }
 
@@ -36,13 +38,5 @@ export class GameStateElement extends LitElement {
     }
 
     return this._game.loc(someString)
-  }
-
-  dispatchState() {
-    if(this._game) {
-      this._game.dispatchStateChanges()
-    } else {
-      console.error('the element dosent find object game, for dispatch gamaState!!!!!!')
-    }
   }
 }

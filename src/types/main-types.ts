@@ -1,6 +1,7 @@
 import {
   Languages,
   LocSettingsList,
+  GamePages,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -23,13 +24,12 @@ export interface MainButtonType {
 export interface MainButtonRenderInfo {
   type: string
   name: string
+  hidden: boolean
 }
 
 export interface IHashParams {
   lang: Languages
-  isRules: boolean
-  isGame: boolean
-  isMaps: boolean
+  page: GamePages
 }
 
 export interface IJsonTranslatesType {
@@ -49,7 +49,42 @@ export interface ILocSettingsEventLoad {
 }
 
 export interface IJsonMap {
-    name: string
-    file: string
-    level: string
+  name: string
+  file: string
+  level: string
+}
+
+export interface IStateParams extends IHashParams, ILocSettings {
+  lang: Languages
+  page: GamePages
+  isGameStarted: boolean
+  isSound: boolean
+  selectedMap?: string
+}
+
+// phaser types
+export interface IResolution {
+  width: number
+  height: number
+}
+
+export interface IMapTilesIndexes {
+  [index: string]: number
+}
+
+export interface INumberCoords {
+  w: number
+  h: number
+}
+//
+
+export interface mainKeys {
+  up: Phaser.Input.Keyboard.Key
+  down: Phaser.Input.Keyboard.Key
+  left: Phaser.Input.Keyboard.Key
+  right: Phaser.Input.Keyboard.Key
+  space: Phaser.Input.Keyboard.Key
+  shift: Phaser.Input.Keyboard.Key
+  a: Phaser.Input.Keyboard.Key
+  d: Phaser.Input.Keyboard.Key
 }

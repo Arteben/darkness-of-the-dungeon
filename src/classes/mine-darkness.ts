@@ -1,35 +1,82 @@
-import { BusEventsList } from '@/types/enums'
+import { GamePages } from '@/types/enums'
 
-import { IJsonTranslatesType, IJsonMap } from '@/types/main-types'
+import { IJsonTranslatesType, IJsonMap, IResolution } from '@/types/main-types'
+
+import { WEBGL, Types, Game as PhaserGame } from 'phaser'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
 import { Translates } from '@/classes/translates'
-import { GameEngine } from '@/classes/game-engine'
 
 import '@/game-app'
 import { GameApp } from '@/game-app'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
-export let mineDarkness: MineDarkness
+import { MainEngine } from '@/classes/main-engine'
+
+export let mineDarknessGame: MineDarkness | null = null
+
+export function getMineDarknessGame() {
+  return mineDarknessGame
+}
 
 export class MineDarkness {
   state: GameState
-  gameApp: GameApp
-  loc: (a: string, b?: IJsonTranslatesType) => string
-  engine: GameEngine
 
-  constructor(state: GameState, locals: Translates, gameApp: GameApp) {
+  loc: (a: string, b?: IJsonTranslatesType) => string
+
+  phConfig: Types.Core.GameConfig = {
+    width: 640,
+    height: 384,
+    // canvas: HTMLCanvasElement,
+    // parent,
+    // scene: [this.mainScene],
+    type: WEBGL,
+    backgroundColor: '#1b262c',
+    pixelArt: true,
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { x: 0, y: 300 },
+        debug: false
+      }
+    },
+  }
+
+  phaser?: PhaserGame
+  gameApp?: GameApp
+
+  constructor(state: GameState, locals: Translates) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    mineDarknessGame = this
     // get object with methods with translates
     this.state = state
     this.loc = locals.loc.bind(locals)
-    this.gameApp = gameApp
-    this.engine = new GameEngine(state)
+
+    this.phConfig.scene = [new MainEngine('main-scene')]
+
+    // select any map if map not selected!
+    if (!this.getSelectedMap()) {
+      const mapList = JsonMapList as IJsonMap[]
+      if (mapList.length > 0) {
+        this.state.selectedMap = mapList[0].name
+      } else {
+        console.error('MAPS arent unviable')
+        return
+      }
+    }
+
+    EventBus.subscribeStateChanges(this.onChangeGameState, this)
+    window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
   }
 
-  dispatchStateChanges() {
-    EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], this.state)
+  createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
+    this.gameApp = appElement
+    this.phConfig.parent = parentApp
+    this.phConfig.canvas = canvas
+    this.phaser = new PhaserGame(this.phConfig)
+    this.phaser.pause()
   }
 
   getSelectedMap() {
@@ -45,44 +92,51 @@ export class MineDarkness {
 
     return mapList[findedMapIndex]
   }
-}
 
-export function InitGame(state: GameState, locals: Translates) {
-  const gameApp = document.createElement('game-app')
-
-  mineDarkness = new MineDarkness(state, locals, gameApp)
-
-  const body = document.querySelector('body')
-  if (gameApp == null || body == null) {
-    console.error('BODY OR GameApp equals null')
-    return
-  }
-
-  // select any map if map not selected!
-  if (!mineDarkness.getSelectedMap()) {
-    const mapList = JsonMapList as IJsonMap[]
-    if (mapList.length > 0) {
-      mineDarkness.state.selectedMap = mapList[0].name
-    } else {
-      console.error('MAPS arent unviable')
+  private onChangeGameState() {
+    if (!this.phaser) {
       return
+    }
+
+    if (this.state.page == GamePages.game) {
+      if (this.phaser.isPaused) { this.phaser.resume() }
+    } else if (!this.phaser.isPaused) {
+      this.phaser.pause()
     }
   }
 
-  // append gameApp elements to html
-  body.appendChild(gameApp)
+  onWindowResize() {
+    const winSizes: IResolution = {
+      width: window.innerWidth, height: window.innerHeight,
+    }
 
-  // search and get convas for phaser
-  mineDarkness.gameApp.canvasParent.then((parent: HTMLElement | null) => {
-    if (!parent) return
-    mineDarkness.gameApp.phaserCanvas.then((element: HTMLCanvasElement | null) => {
-      if (!element) return
-      mineDarkness.engine.createEngine(parent, element)
-      EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], state)
-    }, () => { })
-  }, () => { })
-}
+    const newSize: IResolution = {
+      width: 0, height: 0,
+    }
 
-export function Game() {
-  return mineDarkness ? mineDarkness : null
+    if (!this.phConfig) {
+      return
+    }
+
+    const width = this.phConfig.width as number
+    const height = this.phConfig.height as number
+    const gameProportion = width / height
+
+    if (winSizes.width > winSizes.height) {
+      newSize.width = gameProportion * winSizes.height
+      if (newSize.width > winSizes.width) {
+        newSize.width = winSizes.width
+        newSize.height = winSizes.width / gameProportion
+      } else {
+        newSize.height = winSizes.height
+      }
+    } else {
+      newSize.width = winSizes.width
+      newSize.height = winSizes.width / gameProportion
+    }
+    if (this.phaser) {
+      this.phaser.canvas.style.width = newSize.width + 'px'
+      this.phaser.canvas.style.height = newSize.height + 'px'
+    }
+  }
 }

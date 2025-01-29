@@ -8,9 +8,8 @@ import { customElement, state } from 'lit/decorators.js'
 import {
   MainButtonType,
   MainButtonRenderInfo,
-  IJsonMap,
 } from '@/types/main-types'
-import { Languages } from '@/types/enums'
+import { Languages, GamePages } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
 
 
@@ -81,30 +80,37 @@ export class MainMenu extends GameStateElement {
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
 
-    const state = this._state
+    if (!this._game) {
+      return
+    }
+
+    const state = this._game.state
 
     switch (type) {
       case 'gameStart':
-        state.isGame = true
+        state.page = GamePages.game
         break
       case 'lang':
         state.lang = state.lang == Languages.ru ? Languages.eng : Languages.ru
         break
       case 'rules':
-        state.isRules = true
+        state.page = GamePages.rules
         break
       case 'maps':
-        state.isMaps = true
+        state.page = GamePages.maps
         break
       case 'turnSound':
         state.isSound = !state.isSound
         break
     }
-
-    this.dispatchState()
   }
 
   render() {
+
+    if (!this._game) {
+      return
+    }
+
     const renderOrderButton = (buttonData: MenuButtonRenderInfo) => {
       if (buttonData.hidden) {
         return html``
@@ -135,7 +141,7 @@ export class MainMenu extends GameStateElement {
     }
 
     return html`
-        ${this.getRenderButtons(this._state).map(el => renderOrderButton(el))}
+        ${this.getRenderButtons(this._game.state).map(el => renderOrderButton(el))}
     `
   }
 
