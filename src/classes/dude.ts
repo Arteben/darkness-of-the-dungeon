@@ -60,7 +60,7 @@ export class Dude {
     })
   }
 
-  setStandartOffset() {
+  private setStandartOffset() {
     this._camera.setFollowOffser(0, 100)
   }
 

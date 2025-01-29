@@ -9,19 +9,9 @@ export class SceneCamera {
   _maxZoomLevel = 0.2
 
   // isZooming
-  _isZooming: boolean = false
+  private _isZooming: boolean = false
   public set isZooming(value: boolean) {
-    if (value) {
-      if (!this._isZooming) {
-        this._isZooming = true
-        this.main.useBounds = false
-      }
-      this.increaseZoom(0.04)
-    } else if (this._isZooming) {
-      this._isZooming = false
-      this.main.useBounds = true
-      this.setDefaultZoom()
-    }
+    this.setIsZooming(value)
   }
   public get isZooming(): boolean {
     return this._isZooming
@@ -48,20 +38,30 @@ export class SceneCamera {
     }
   }
 
-  setZoom(zoomLevel: number) {
-    this.main.setZoom(zoomLevel)
-  }
-
   setDefaultZoom() {
     this._zoomLevel = this._defaultZoom
-    this.setZoom(this._defaultZoom)
+    this.main.setZoom(this._defaultZoom)
   }
 
-  increaseZoom(value: number) {
+  private increaseZoom(value: number) {
     const newValue = this._zoomLevel - value
     if (newValue >= this._maxZoomLevel) {
       this._zoomLevel = newValue
-      this.setZoom(this._zoomLevel)
+      this.main.setZoom(this._zoomLevel)
+    }
+  }
+
+  private setIsZooming(value: boolean) {
+    if (value) {
+      if (!this._isZooming) {
+        this._isZooming = true
+        this.main.useBounds = false
+      }
+      this.increaseZoom(0.04)
+    } else if (this._isZooming) {
+      this._isZooming = false
+      this.main.useBounds = true
+      this.setDefaultZoom()
     }
   }
 }
