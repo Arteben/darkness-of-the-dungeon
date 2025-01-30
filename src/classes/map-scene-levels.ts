@@ -52,7 +52,7 @@ export class MapSceneLevels {
     this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A'], 'envLayer', groundTileSetName, map)
   }
 
-  private createLayer(
+  createLayer(
     symbols: string[], nameKey: string, tileset: string, map: Phaser.Tilemaps.Tilemap) {
 
     const indexes = this.getIndexesForTiles(symbols)
@@ -61,7 +61,7 @@ export class MapSceneLevels {
     return layer && layer.putTilesAt(indexes, 0, 0) || null
   }
 
-  private getIndexesForTiles(symbols: string[]) {
+  getIndexesForTiles(symbols: string[]) {
     const symMap = this._symbolMap
     const width = symMap[0].length
     const height = symMap.length
@@ -130,5 +130,9 @@ export class MapSceneLevels {
       x: Math.floor(width / tileSize),
       y: Math.floor(heigh / tileSize)
     }
+  }
+
+  getTileNum(sym: string) {
+    return this._tileIndexes[sym]
   }
 }

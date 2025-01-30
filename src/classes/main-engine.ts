@@ -1,13 +1,23 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
-import { IResolution, mainKeys } from '@/types/main-types'
 
-import DudeSet from '@assets/dude.png'
+import { IResolution,
+  mainKeys,
+  overlapCallbackParams,
+  IconTips,
+} from '@/types/main-types'
+
+// assets
+import dudeSet from '@assets/dude.png'
 import textMapRaw from '@assets/maps/map0.txt?url'
 import tilesRaw from '@assets/kenny_platformer_32.png'
+import tipIcons from '@assets/tip-icons.png'
+//
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
+import { IconTip } from '@/classes/icon-tip'
+
 
 export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
@@ -16,12 +26,15 @@ export class MainEngine extends Scene {
   _dude!: Dude
   _camera!: SceneCamera
   _keys!: mainKeys
+  _tips: IconTips = {}
 
   constructor(name: string) {
     super(name)
   }
 
   create() {
+    // console.log(this.textures.list)
+
     this.setMainKyes()
 
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
@@ -31,6 +44,18 @@ export class MainEngine extends Scene {
     this._dude = new Dude(this, this._mapLevels, this._camera, { width: 32, height: 48 } as IResolution)
 
     this._camera.startFollow(this._dude.image)
+
+    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
+
+    // create overlap dude with stairs for vertical movements
+    if (this._mapLevels.stairsLayer) {
+      this.physics.add.overlap(this._dude.image, this._mapLevels.stairsLayer,
+        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
+          this._dude.updateOverlapCallback(
+            prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile, this._tips.stairsTip)
+        })
+    }
+    //
   }
 
   update(time: number, delta: number): void {
@@ -49,17 +74,18 @@ export class MainEngine extends Scene {
     this.load.image('tileSet', tilesRaw)
     this.load.text('textMap', textMapRaw)
 
-    this.load.spritesheet('dude', DudeSet, { frameWidth: 32, frameHeight: 48 })
+    this.load.spritesheet('dude', dudeSet, { frameWidth: 32, frameHeight: 48 })
+    this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
   }
 
-  private onDrawProgressBar(value: number) {
+  onDrawProgressBar(value: number) {
     this._progress.clear()
     this._progress.fillStyle(0xffffdd, 1)
     const gameSize = this.scale.gameSize
     this._progress.fillRect(0, (gameSize.height - 22), gameSize.width * value, 20)
   }
 
-  private setMainKyes() {
+  setMainKyes() {
     this._keys = this.input?.keyboard?.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.UP,
       down: Phaser.Input.Keyboard.KeyCodes.DOWN,

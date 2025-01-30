@@ -1,3 +1,5 @@
+import { IconTip } from '@/classes/icon-tip'
+
 import {
   Languages,
   LocSettingsList,
@@ -77,6 +79,11 @@ export interface INumberCoords {
   h: number
 }
 
+export interface IScreenSizes {
+  x: number
+  y: number
+}
+
 export interface ITilesCoords {
   x: number
   y: number
@@ -96,3 +103,7 @@ export interface mainKeys {
 
 export type overlapCallbackParams =
   Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.Body | Phaser.Tilemaps.Tile
+
+export interface IconTips {
+  [index: string]: IconTip
+}
