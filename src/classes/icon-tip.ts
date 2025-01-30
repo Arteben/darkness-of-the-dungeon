@@ -30,7 +30,11 @@ export class IconTip {
     this._camera = camera
   }
 
-  update(time: number, delta: number): void {
+  update(t: number): void {
+    if (this.isVisible) {
+      const offset = 0.004 * (t % 1000) - 2
+      this._sprite.y = this._sprite.y - offset
+    }
   }
 
   setIcon(isShow: boolean, coords: INumberCoords | null) {
@@ -42,8 +46,12 @@ export class IconTip {
       return
 
     const cameraOffset = this._camera.getScrollOffsets()
-    const verticalOffset = -10
+    let verticalOffset = -40
     let horOffset = 50
+
+    if (cameraOffset.y === 0) {
+      verticalOffset = -10
+    }
 
     if (cameraOffset.x !== 0) {
       horOffset = -(horOffset)

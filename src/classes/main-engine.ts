@@ -58,10 +58,12 @@ export class MainEngine extends Scene {
     //
   }
 
-  update(time: number, delta: number): void {
+  update(time: number): void {
     if (this._keys) {
-      this._dude.update(this._keys, this._camera, time, delta)
+      this._dude.update(this._keys, this._camera)
     }
+
+    this._tips['stairsTip']?.update(time)
   }
 
   preload() {

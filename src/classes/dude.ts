@@ -69,7 +69,7 @@ export class Dude {
     })
   }
 
-  update(keys: mainKeys, camera: SceneCamera, time: number, delta: number): void {
+  update(keys: mainKeys, camera: SceneCamera): void {
     if (keys.left.isDown) {
       this.image.setVelocityX(-160)
       this.image.anims.play('leftDude', true)
