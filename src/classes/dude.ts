@@ -3,6 +3,8 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
+import { IconTip } from '@/classes/icon-tip'
+
 import {
   IResolution, INumberCoords, mainKeys, overlapCallbackParams
 } from '@/types/main-types'
@@ -46,13 +48,6 @@ export class Dude {
       engine.physics.add.collider(this.image, this._levels.groundLayer)
     }
 
-    if (this._levels.stairsLayer) {
-      engine.physics.add.overlap(this.image, this._levels.stairsLayer,
-        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this.updateOverlapCallback(prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
-        })
-    }
-
     this.image.anims.create({
       key: 'leftDude',
       frames: engine.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -74,7 +69,7 @@ export class Dude {
     })
   }
 
-  update(keys: mainKeys, camera: SceneCamera, time: number, delta: number): void {
+  update(keys: mainKeys, camera: SceneCamera): void {
     if (keys.left.isDown) {
       this.image.setVelocityX(-160)
       this.image.anims.play('leftDude', true)
@@ -107,11 +102,22 @@ export class Dude {
     this._isGravInfluence = flag
     this.image.body.setAllowGravity(flag)
   }
-  private updateOverlapCallback(dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
+
+  updateOverlapCallback(
+    dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile, starirsTip: IconTip) {
     const levels = this._levels
     const coords = levels.getTilesForCoords(dude.x, dude.y)
+
     if (tile.x == coords.x && tile.y == coords.y) {
-      this.isGravInfluence = (tile.index == -1)
+      const isStairs =
+        tile.index == levels.getTileNum('tt') || tile.index == levels.getTileNum('T')
+      this.isGravInfluence = !isStairs
+      if (isStairs) {
+        const iconCoords: INumberCoords = {w: dude.x, h: dude.y}
+        starirsTip.setIcon(true, iconCoords)
+      } else {
+        starirsTip.setIcon(false, null)
+      }
     }
   }
 }
