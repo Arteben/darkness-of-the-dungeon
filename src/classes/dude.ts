@@ -3,19 +3,33 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
-import { IResolution, INumberCoords, mainKeys } from '@/types/main-types'
+import {
+  IResolution, INumberCoords, mainKeys, overlapCallbackParams
+} from '@/types/main-types'
 
 export class Dude {
   image: Types.Physics.Arcade.SpriteWithDynamicBody
   _dudeStay: boolean = true
   _frame: IResolution
-  _camera: SceneCamera
+  _levels: MapSceneLevels
+
+  // isGravInfluence
+  private _isGravInfluence: boolean = true
+  public set isGravInfluence(value: boolean) {
+    this.setIsGrafInfluence(value)
+  }
+  public get isGravInfluence(): boolean {
+    return this._isGravInfluence
+  }
+  //
 
   constructor(
     engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, frameResolution: IResolution) {
 
     this._frame = frameResolution
-    const startMapCoords = mapLevels.getCoordsForFirstSymbol('B')
+    this._levels = mapLevels
+
+    const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
 
     if (startMapCoords) {
@@ -24,20 +38,20 @@ export class Dude {
     }
 
     this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
-    this.image.setBounce(0.1)
+    this.image.setBounce(0)
     this.image.setCollideWorldBounds(true)
-    this.image.body.setAllowGravity(true)
-    this.image.body.setGravityY(50)
-    // test
+    this.isGravInfluence = true
 
-    this._camera = camera
+    if (this._levels.groundLayer) {
+      engine.physics.add.collider(this.image, this._levels.groundLayer)
+    }
 
-    this._camera.startFollow(this.image)
-    this.setStandartOffset()
-    this._camera.setDefaultZoom()
-
-    if (!mapLevels.groundLayer) return
-    engine.physics.add.collider(this.image, mapLevels.groundLayer)
+    if (this._levels.stairsLayer) {
+      engine.physics.add.overlap(this.image, this._levels.stairsLayer,
+        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
+          this.updateOverlapCallback(prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
+        })
+    }
 
     this.image.anims.create({
       key: 'leftDude',
@@ -60,11 +74,7 @@ export class Dude {
     })
   }
 
-  private setStandartOffset() {
-    this._camera.setFollowOffser(0, 100)
-  }
-
-  update(keys: mainKeys, time: number, delta: number): void {
+  update(keys: mainKeys, camera: SceneCamera, time: number, delta: number): void {
     if (keys.left.isDown) {
       this.image.setVelocityX(-160)
       this.image.anims.play('leftDude', true)
@@ -77,14 +87,31 @@ export class Dude {
     } else if (keys.down.isDown && !this.image.body.touching.down) {
       this.image.setVelocityY(100)
       this.image.anims.play('turnDude', false)
-      this._camera.setFollowOffser(0, -100)
+      camera.setDownMoveOffset()
     } else {
       this.image.setVelocityX(0)
       // this.image.setVelocityY(0)
       this.image.anims.play('turnDude', true)
-      this.setStandartOffset()
+      camera.setStandartOffset()
     }
 
-    this._camera.isZooming = keys.shift.isDown
+    camera.isZooming = keys.shift.isDown
+  }
+
+  private setIsGrafInfluence(flag: boolean) {
+    if (flag) {
+      this.image.body.setGravityY(100)
+    } else {
+      this.image.body.setGravityY(0)
+    }
+    this._isGravInfluence = flag
+    this.image.body.setAllowGravity(flag)
+  }
+  private updateOverlapCallback(dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
+    const levels = this._levels
+    const coords = levels.getTilesForCoords(dude.x, dude.y)
+    if (tile.x == coords.x && tile.y == coords.y) {
+      this.isGravInfluence = (tile.index == -1)
+    }
   }
 }

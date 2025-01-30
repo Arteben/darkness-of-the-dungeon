@@ -25,15 +25,17 @@ export class MainEngine extends Scene {
     this.setMainKyes()
 
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
-    this._camera = new SceneCamera(this)
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
-    this._camera.main.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
+
+    this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._dude = new Dude(this, this._mapLevels, this._camera, { width: 32, height: 48 } as IResolution)
+
+    this._camera.startFollow(this._dude.image)
   }
 
   update(time: number, delta: number): void {
     if (this._keys) {
-      this._dude.update(this._keys, time, delta)
+      this._dude.update(this._keys, this._camera, time, delta)
     }
   }
 
