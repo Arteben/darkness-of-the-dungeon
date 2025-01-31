@@ -34,7 +34,7 @@ export class GameHashes {
 
   }
 
-  private getHashParams() {
+  getHashParams() {
     const params: IHashParams = {
       lang: this.lang, page: this.page
     }

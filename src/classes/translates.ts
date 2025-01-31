@@ -12,7 +12,7 @@ export class Translates {
     this.state = state
   }
 
-  private getLang() {
+  getLang() {
     const stateLang = this.state.lang
     return Languages[stateLang] as ('ru' | 'eng')
   }

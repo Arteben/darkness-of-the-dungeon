@@ -1,9 +1,11 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
 
+import { IScreenSizes } from '@/types/main-types'
+
 import { MainEngine } from '@/classes/main-engine'
 
 export class SceneCamera {
-  private _main: Phaser.Cameras.Scene2D.Camera
+  _main: Phaser.Cameras.Scene2D.Camera
   _defaultZoom = 1
   _zoomLevel: number = this._defaultZoom
   _maxZoomLevel = 0.2
@@ -71,6 +73,13 @@ export class SceneCamera {
       this._isZooming = false
       this._main.useBounds = true
       this.setDefaultZoom()
+    }
+  }
+
+  getScrollOffsets(): IScreenSizes {
+    return {
+      x: this._main.scrollX,
+      y: this._main.scrollY,
     }
   }
 }
