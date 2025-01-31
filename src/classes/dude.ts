@@ -6,30 +6,147 @@ import { SceneCamera } from '@/classes/scene-camera'
 import { IconTip } from '@/classes/icon-tip'
 
 import {
-  IResolution, INumberCoords, mainKeys, overlapCallbackParams
+  IResolution,
+  INumberCoords,
+  mainKeys,
+  IconTips,
 } from '@/types/main-types'
+import { DudeStates } from '@/types/enums'
 
 export class Dude {
   image: Types.Physics.Arcade.SpriteWithDynamicBody
   _dudeStay: boolean = true
   _frame: IResolution
   _levels: MapSceneLevels
+  _camera: SceneCamera
+  _tips: IconTips
 
-  // isGravInfluence
-  private _isGravInfluence: boolean = true
-  public set isGravInfluence(value: boolean) {
-    this.setIsGrafInfluence(value)
+  // @ts-ignore // isNearStairs
+  private _isNearStairs: boolean
+  public set isNearStairs(value: boolean) {
+    this.setIsNearStairs(value)
   }
-  public get isGravInfluence(): boolean {
-    return this._isGravInfluence
+  public get isNearStairs(): boolean {
+    return this._isNearStairs
+  }
+  //
+
+  //@ts-ignore // isDudeState
+  private _dudeMoveState: DudeStates
+  public set dudeMoveState(newState: DudeStates) {
+    this.dudeMoveStateUpdating(newState)
+  }
+  public get dudeMoveState(): DudeStates {
+    return this._dudeMoveState
+  }
+
+  // isLeft
+  private _isLeftMove: boolean = false
+  public set isLeftMove(value: boolean) {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        if (value) {
+          this.dudeMovementUpdating(true)
+        } else if (this._isLeftMove) {
+          this.dudeStayUpdating()
+        }
+        break
+      case DudeStates.climbing:
+        if (value) {
+          this.dudeMoveState = DudeStates.walk
+        }
+        break
+      case DudeStates.fighting:
+    }
+    this._isLeftMove = value
+  }
+  public get isLeftMove(): boolean {
+    return this._isLeftMove
+  }
+  //
+
+  // isRightMove
+  private _isRightMove: boolean = false
+  public set isRightMove(value: boolean) {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        if (value) {
+          this.dudeMovementUpdating(false)
+        } else if (this._isRightMove) {
+          this.dudeStayUpdating()
+        }
+        break
+      case DudeStates.climbing:
+        if (value) {
+          this.dudeMoveState = DudeStates.walk
+        }
+        break
+      case DudeStates.fighting:
+    }
+    this._isRightMove = value
+  }
+  public get isRightMove(): boolean {
+    return this._isRightMove
+  }
+  //
+
+  // isUpKye
+  private _isUpMove: boolean = false
+  public set isUpMove(value: boolean) {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        if (value && this.isNearStairs) {
+          this.dudeMoveState = DudeStates.climbing
+        }
+        break
+      case DudeStates.climbing:
+        if (value) {
+          this.dudeClimbMovementUpdating(true)
+        } else if (this._isUpMove) {
+          this.dudeStayUpdating()
+        }
+        break
+      case DudeStates.fighting:
+    }
+    this._isUpMove = value
+  }
+  public get isUpMove(): boolean {
+    return this._isUpMove
+  }
+  //
+
+  // isDownKye
+  private _isDownMove: boolean = false
+  public set isDownMove(value: boolean) {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        if (value && this.isNearStairs) {
+          this.dudeMoveState = DudeStates.climbing
+        }
+        break
+      case DudeStates.climbing:
+        if (value) {
+          this.dudeClimbMovementUpdating(false)
+        } else if (this._isDownMove) {
+          this.dudeStayUpdating()
+        }
+        break
+      case DudeStates.fighting:
+    }
+    this._isDownMove = value
+  }
+  public get isDownMove(): boolean {
+    return this._isDownMove
   }
   //
 
   constructor(
-    engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, frameResolution: IResolution) {
+    engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, tips: IconTips, frameResolution: IResolution) {
 
     this._frame = frameResolution
     this._levels = mapLevels
+    this._camera = camera
+    this._tips = tips
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
@@ -42,7 +159,8 @@ export class Dude {
     this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
     this.image.setBounce(0)
     this.image.setCollideWorldBounds(true)
-    this.isGravInfluence = true
+    this.isNearStairs = false
+    this.dudeMoveState = DudeStates.walk
 
     if (this._levels.groundLayer) {
       engine.physics.add.collider(this.image, this._levels.groundLayer)
@@ -69,55 +187,104 @@ export class Dude {
     })
   }
 
-  update(keys: mainKeys, camera: SceneCamera): void {
-    if (keys.left.isDown) {
-      this.image.setVelocityX(-160)
-      this.image.anims.play('leftDude', true)
-    } else if (keys.right.isDown) {
-      this.image.setVelocityX(160)
-      this.image.anims.play('rightDude', true)
-    } else if (keys.up.isDown) {
-      this.image.setVelocityY(-100)
-      this.image.anims.play('turnDude', false)
-    } else if (keys.down.isDown && !this.image.body.touching.down) {
-      this.image.setVelocityY(100)
-      this.image.anims.play('turnDude', false)
-      camera.setDownMoveOffset()
-    } else {
-      this.image.setVelocityX(0)
-      // this.image.setVelocityY(0)
-      this.image.anims.play('turnDude', true)
-      camera.setStandartOffset()
-    }
-
-    camera.isZooming = keys.shift.isDown
+  update(keys: mainKeys): void {
+    this.isLeftMove = keys.left.isDown
+    this.isRightMove = keys.right.isDown
+    this.isUpMove = keys.up.isDown
+    this.isDownMove = keys.down.isDown
+    this._camera.isZooming = keys.shift.isDown
   }
 
-  private setIsGrafInfluence(flag: boolean) {
-    if (flag) {
+  private setIsNearStairs(flag: boolean) {
+    if (flag == this._isNearStairs)
+      return
+
+    if (!flag) {
       this.image.body.setGravityY(100)
     } else {
       this.image.body.setGravityY(0)
     }
-    this._isGravInfluence = flag
-    this.image.body.setAllowGravity(flag)
+    this._isNearStairs = flag
+    this.image.body.setAllowGravity(!flag)
   }
 
   updateOverlapCallback(
-    dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile, starirsTip: IconTip) {
+    dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
+
+    if (this.dudeMoveState != DudeStates.walk) {
+      return
+    }
+
     const levels = this._levels
     const coords = levels.getTilesForCoords(dude.x, dude.y)
+    const stairsTip = this._tips.stairsTip || null
 
     if (tile.x == coords.x && tile.y == coords.y) {
       const isStairs =
         tile.index == levels.getTileNum('tt') || tile.index == levels.getTileNum('T')
-      this.isGravInfluence = !isStairs
+      this.isNearStairs = isStairs
       if (isStairs) {
-        const iconCoords: INumberCoords = {w: dude.x, h: dude.y}
-        starirsTip.setIcon(true, iconCoords)
+        const iconCoords: INumberCoords = { w: dude.x, h: dude.y }
+        stairsTip?.setIcon(true, iconCoords)
       } else {
-        starirsTip.setIcon(false, null)
+        stairsTip?.setIcon(false, null)
       }
     }
   }
+
+  // movement's functions
+  // (left, right)
+  dudeMovementUpdating(isLeft: boolean) {
+    if (isLeft) {
+      this.image.setVelocityX(-160)
+      this.image.anims.play('leftDude', true)
+    } else {
+      this.image.setVelocityX(160)
+      this.image.anims.play('rightDude', true)
+    }
+  }
+  // up, down
+  dudeClimbMovementUpdating(isUp: boolean) {
+    if (isUp) {
+      this.image.setVelocityY(-100)
+    } else {
+      this.image.setVelocityY(150)
+    }
+  }
+  // stop for dude
+  dudeStayUpdating() {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        this.image.setVelocityX(0)
+        this.image.anims.play('turnDude', true)
+        break
+      case DudeStates.climbing:
+        console.log('call stop dude movement!')
+        this.image.setVelocityY(0)
+    }
+  }
+
+  // update dude state
+  // change move & climp & fight states
+  dudeMoveStateUpdating(newState: DudeStates) {
+    if (newState == this._dudeMoveState) return
+
+    switch (newState) {
+      case DudeStates.walk:
+        this.isNearStairs = false
+        break
+      case DudeStates.climbing:
+        this._tips.stairsTip?.setIcon(false, null)
+        this.isNearStairs = true
+        break
+      case DudeStates.fighting:
+        this.isNearStairs = false
+    }
+
+    this._dudeMoveState = newState
+    console.log('dude state', DudeStates[this._dudeMoveState])
+  }
+
+  // setIsClimbing(value: boolean) {
+  // }
 }
