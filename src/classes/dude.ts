@@ -39,6 +39,8 @@ export class Dude {
   public get dudeMoveState(): DudeStates {
     return this._dudeMoveState
   }
+  // climbing up OR down here?
+  _isClimbingUp: boolean = true
 
   // isLeft
   private _isLeftMove: boolean = false
@@ -93,18 +95,16 @@ export class Dude {
   // isUpKye
   private _isUpMove: boolean = false
   public set isUpMove(value: boolean) {
+    if (value == this._isUpMove) return
+
     switch (this.dudeMoveState) {
       case DudeStates.walk:
         if (value && this.isNearStairs) {
           this.dudeMoveState = DudeStates.climbing
+          this._isClimbingUp = true
         }
         break
       case DudeStates.climbing:
-        if (value) {
-          this.dudeClimbMovementUpdating(true)
-        } else if (this._isUpMove) {
-          this.dudeStayUpdating()
-        }
         break
       case DudeStates.fighting:
     }
@@ -122,14 +122,10 @@ export class Dude {
       case DudeStates.walk:
         if (value && this.isNearStairs) {
           this.dudeMoveState = DudeStates.climbing
+          this._isClimbingUp = false
         }
         break
       case DudeStates.climbing:
-        if (value) {
-          this.dudeClimbMovementUpdating(false)
-        } else if (this._isDownMove) {
-          this.dudeStayUpdating()
-        }
         break
       case DudeStates.fighting:
     }
@@ -188,11 +184,18 @@ export class Dude {
   }
 
   update(keys: mainKeys): void {
+    this._camera.isZooming = keys.shift.isDown
+    if (keys.shift.isDown) {
+      return
+    }
+
     this.isLeftMove = keys.left.isDown
     this.isRightMove = keys.right.isDown
+
     this.isUpMove = keys.up.isDown
     this.isDownMove = keys.down.isDown
-    this._camera.isZooming = keys.shift.isDown
+
+    this.stickyClimbing()
   }
 
   private setIsNearStairs(flag: boolean) {
@@ -200,7 +203,7 @@ export class Dude {
       return
 
     if (!flag) {
-      this.image.body.setGravityY(100)
+      this.image.body.setGravityY(1000)
     } else {
       this.image.body.setGravityY(0)
     }
@@ -220,15 +223,23 @@ export class Dude {
     const stairsTip = this._tips.stairsTip || null
 
     if (tile.x == coords.x && tile.y == coords.y) {
-      const isStairs =
-        tile.index == levels.getTileNum('tt') || tile.index == levels.getTileNum('T')
-      this.isNearStairs = isStairs
-      if (isStairs) {
+      this.isNearStairs = tile.index != -1
+      if (this.isNearStairs) {
         const iconCoords: INumberCoords = { w: dude.x, h: dude.y }
         stairsTip?.setIcon(true, iconCoords)
       } else {
         stairsTip?.setIcon(false, null)
       }
+    }
+  }
+
+  stickyClimbing() {
+    if (this.dudeMoveState != DudeStates.climbing) return
+
+    if (this._isClimbingUp) {
+      this.dudeClimbMovementUpdating(true)
+    } else {
+      this.dudeClimbMovementUpdating(false)
     }
   }
 
@@ -248,20 +259,19 @@ export class Dude {
     if (isUp) {
       this.image.setVelocityY(-100)
     } else {
-      this.image.setVelocityY(150)
+      this.image.setVelocityY(110)
     }
   }
   // stop for dude
   dudeStayUpdating() {
     switch (this.dudeMoveState) {
       case DudeStates.walk:
-        this.image.setVelocityX(0)
         this.image.anims.play('turnDude', true)
         break
       case DudeStates.climbing:
-        console.log('call stop dude movement!')
-        this.image.setVelocityY(0)
     }
+    this.image.setVelocityX(0)
+    this.image.setVelocityY(0)
   }
 
   // update dude state
@@ -276,6 +286,9 @@ export class Dude {
       case DudeStates.climbing:
         this._tips.stairsTip?.setIcon(false, null)
         this.isNearStairs = true
+        const dude = this.image
+        const coords = this._levels.getTilesForCoords(dude.x, dude.y)
+        dude.x = (coords.x + 0.5) * this._levels._tileWidth
         break
       case DudeStates.fighting:
         this.isNearStairs = false
