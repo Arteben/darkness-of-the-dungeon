@@ -53,7 +53,7 @@ export class MainEngine extends Scene {
     if (this._mapLevels.stairsLayer) {
       this.physics.add.overlap(this._dude.image, this._mapLevels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this._dude.updateOverlapCallback(
+          this._dude.overlapCallbackUpdating(
             prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
         })
     }

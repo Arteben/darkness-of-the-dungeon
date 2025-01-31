@@ -3,7 +3,6 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
-import { IconTip } from '@/classes/icon-tip'
 
 import {
   IResolution,
@@ -11,7 +10,7 @@ import {
   mainKeys,
   IconTips,
 } from '@/types/main-types'
-import { DudeStates } from '@/types/enums'
+import { DudeClimbingTypes, DudeStates } from '@/types/enums'
 
 export class Dude {
   image: Types.Physics.Arcade.SpriteWithDynamicBody
@@ -23,8 +22,16 @@ export class Dude {
 
   // @ts-ignore // isNearStairs
   private _isNearStairs: boolean
-  public set isNearStairs(value: boolean) {
-    this.setIsNearStairs(value)
+  public set isNearStairs(flag: boolean) {
+    if (flag == this._isNearStairs) return
+
+    if (flag) {
+      this.image.body.setGravityY(0)
+    } else {
+      this.image.body.setGravityY(1000)
+    }
+    this.image.body.setAllowGravity(!flag)
+    this._isNearStairs = flag
   }
   public get isNearStairs(): boolean {
     return this._isNearStairs
@@ -40,26 +47,31 @@ export class Dude {
     return this._dudeMoveState
   }
   // climbing up OR down here?
-  _isClimbingUp: boolean = true
+  private _climbingType: DudeClimbingTypes = DudeClimbingTypes.stand
+  public set climbingType(newValue: DudeClimbingTypes) {
+    if (newValue == this._climbingType) return
+
+    switch (newValue) {
+      case DudeClimbingTypes.up:
+        this._camera.setUpDownOffset(true)
+        break
+      case DudeClimbingTypes.down:
+        this._camera.setUpDownOffset(false)
+        break
+      case DudeClimbingTypes.stand:
+        this._camera.setStandartOffset()
+    }
+
+    this._climbingType = newValue
+  }
+  public get climbingType(): DudeClimbingTypes {
+    return this._climbingType
+  }
 
   // isLeft
   private _isLeftMove: boolean = false
   public set isLeftMove(value: boolean) {
-    switch (this.dudeMoveState) {
-      case DudeStates.walk:
-        if (value) {
-          this.dudeMovementUpdating(true)
-        } else if (this._isLeftMove) {
-          this.dudeStayUpdating()
-        }
-        break
-      case DudeStates.climbing:
-        if (value) {
-          this.dudeMoveState = DudeStates.walk
-        }
-        break
-      case DudeStates.fighting:
-    }
+    this.leftRightKyesUpdating(value, this._isLeftMove, true)
     this._isLeftMove = value
   }
   public get isLeftMove(): boolean {
@@ -70,21 +82,7 @@ export class Dude {
   // isRightMove
   private _isRightMove: boolean = false
   public set isRightMove(value: boolean) {
-    switch (this.dudeMoveState) {
-      case DudeStates.walk:
-        if (value) {
-          this.dudeMovementUpdating(false)
-        } else if (this._isRightMove) {
-          this.dudeStayUpdating()
-        }
-        break
-      case DudeStates.climbing:
-        if (value) {
-          this.dudeMoveState = DudeStates.walk
-        }
-        break
-      case DudeStates.fighting:
-    }
+    this.leftRightKyesUpdating(value, this._isRightMove, false)
     this._isRightMove = value
   }
   public get isRightMove(): boolean {
@@ -100,11 +98,14 @@ export class Dude {
     switch (this.dudeMoveState) {
       case DudeStates.walk:
         if (value && this.isNearStairs) {
+          this.climbingType = DudeClimbingTypes.up
           this.dudeMoveState = DudeStates.climbing
-          this._isClimbingUp = true
         }
         break
       case DudeStates.climbing:
+        if (this.climbingType != DudeClimbingTypes.up) {
+          this.climbingType = DudeClimbingTypes.up
+        }
         break
       case DudeStates.fighting:
     }
@@ -118,14 +119,19 @@ export class Dude {
   // isDownKye
   private _isDownMove: boolean = false
   public set isDownMove(value: boolean) {
+    if (value == this._isDownMove) return
+
     switch (this.dudeMoveState) {
       case DudeStates.walk:
         if (value && this.isNearStairs) {
+          this.climbingType = DudeClimbingTypes.down
           this.dudeMoveState = DudeStates.climbing
-          this._isClimbingUp = false
         }
         break
       case DudeStates.climbing:
+        if (this.climbingType != DudeClimbingTypes.down) {
+          this.climbingType = DudeClimbingTypes.down
+        }
         break
       case DudeStates.fighting:
     }
@@ -195,83 +201,19 @@ export class Dude {
     this.isUpMove = keys.up.isDown
     this.isDownMove = keys.down.isDown
 
-    this.stickyClimbing()
-  }
 
-  private setIsNearStairs(flag: boolean) {
-    if (flag == this._isNearStairs)
-      return
-
-    if (!flag) {
-      this.image.body.setGravityY(1000)
-    } else {
-      this.image.body.setGravityY(0)
-    }
-    this._isNearStairs = flag
-    this.image.body.setAllowGravity(!flag)
-  }
-
-  updateOverlapCallback(
-    dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
-
-    if (this.dudeMoveState != DudeStates.walk) {
-      return
-    }
-
-    const levels = this._levels
-    const coords = levels.getTilesForCoords(dude.x, dude.y)
-    const stairsTip = this._tips.stairsTip || null
-
-    if (tile.x == coords.x && tile.y == coords.y) {
-      this.isNearStairs = tile.index != -1
-      if (this.isNearStairs) {
-        const iconCoords: INumberCoords = { w: dude.x, h: dude.y }
-        stairsTip?.setIcon(true, iconCoords)
-      } else {
-        stairsTip?.setIcon(false, null)
+    if (this.dudeMoveState == DudeStates.climbing) {
+      switch (this.climbingType) {
+        case DudeClimbingTypes.up:
+          this.setDudeUpDownMoveSizes(true)
+          break
+        case DudeClimbingTypes.down:
+          this.setDudeUpDownMoveSizes(false)
+          break
+        default:
+          this.setDydeStaySizes()
       }
     }
-  }
-
-  stickyClimbing() {
-    if (this.dudeMoveState != DudeStates.climbing) return
-
-    if (this._isClimbingUp) {
-      this.dudeClimbMovementUpdating(true)
-    } else {
-      this.dudeClimbMovementUpdating(false)
-    }
-  }
-
-  // movement's functions
-  // (left, right)
-  dudeMovementUpdating(isLeft: boolean) {
-    if (isLeft) {
-      this.image.setVelocityX(-160)
-      this.image.anims.play('leftDude', true)
-    } else {
-      this.image.setVelocityX(160)
-      this.image.anims.play('rightDude', true)
-    }
-  }
-  // up, down
-  dudeClimbMovementUpdating(isUp: boolean) {
-    if (isUp) {
-      this.image.setVelocityY(-100)
-    } else {
-      this.image.setVelocityY(110)
-    }
-  }
-  // stop for dude
-  dudeStayUpdating() {
-    switch (this.dudeMoveState) {
-      case DudeStates.walk:
-        this.image.anims.play('turnDude', true)
-        break
-      case DudeStates.climbing:
-    }
-    this.image.setVelocityX(0)
-    this.image.setVelocityY(0)
   }
 
   // update dude state
@@ -295,9 +237,82 @@ export class Dude {
     }
 
     this._dudeMoveState = newState
-    console.log('dude state', DudeStates[this._dudeMoveState])
   }
 
-  // setIsClimbing(value: boolean) {
-  // }
+  // function for updating left\right bottons keys
+  leftRightKyesUpdating(newValue: boolean, oldValue: boolean, isLeft: boolean) {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        if (newValue) {
+          this.setDudeLeftRightMoveSizes(isLeft)
+        } else if (oldValue) {
+          this.setDydeStaySizes()
+        }
+        break
+      case DudeStates.climbing:
+        if (newValue) {
+          this.climbingType = DudeClimbingTypes.stand
+          this.dudeMoveState = DudeStates.walk
+        }
+        break
+      case DudeStates.fighting:
+    }
+  }
+
+
+  // see overlap the dude with some stairs
+  // if yes, set turn off gravity for dude and show tip
+  overlapCallbackUpdating(
+    dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
+    const levels = this._levels
+    const coords = levels.getTilesForCoords(dude.x, dude.y)
+    const stairsTip = this._tips.stairsTip || null
+
+    if (!(tile.x == coords.x && tile.y == coords.y)) return
+
+    this.isNearStairs = tile.index != -1
+
+    if (!this.isNearStairs) {
+      stairsTip?.setIcon(false, null)
+      if (this.dudeMoveState == DudeStates.climbing
+        && this.climbingType != DudeClimbingTypes.stand) {
+        this.climbingType = DudeClimbingTypes.stand
+      }
+    } else if (this.dudeMoveState == DudeStates.walk) {
+      const iconCoords: INumberCoords = { w: dude.x, h: dude.y }
+      stairsTip?.setIcon(true, iconCoords)
+    }
+  }
+
+
+  // dude movement's & anims
+  // (left, right or climbing) set sizes for movements
+  setDudeLeftRightMoveSizes(isLeft: boolean) {
+    if (isLeft) {
+      this.image.setVelocityX(-160)
+      this.image.anims.play('leftDude', true)
+    } else {
+      this.image.setVelocityX(160)
+      this.image.anims.play('rightDude', true)
+    }
+  }
+  // up, down
+  setDudeUpDownMoveSizes(isUp: boolean) {
+    if (isUp) {
+      this.image.setVelocityY(-100)
+    } else {
+      this.image.setVelocityY(110)
+    }
+  }
+  // stop for dude
+  setDydeStaySizes() {
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+        this.image.anims.play('turnDude', true)
+        break
+      case DudeStates.climbing:
+    }
+    this.image.setVelocityX(0)
+    this.image.setVelocityY(0)
+  }
 }

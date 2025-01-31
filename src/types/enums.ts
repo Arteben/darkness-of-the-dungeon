@@ -36,3 +36,9 @@ export enum DudeStates {
   climbing,
   fighting,
 }
+
+export enum DudeClimbingTypes {
+  up,
+  down,
+  stand,
+}
