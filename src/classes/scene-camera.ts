@@ -32,11 +32,15 @@ export class SceneCamera {
   }
 
   setStandartOffset() {
-    this.setFollowOffser(0, 100)
+    this.setFollowOffser(0, 20)
   }
 
-  setDownMoveOffset() {
-    this.setFollowOffser(0, -100)
+  setUpDownOffset(isUp: boolean) {
+    if (isUp) {
+      this.setFollowOffser(0, 140)
+    } else {
+      this.setFollowOffser(0, -100)
+    }
   }
 
   setFollowOffser(x: null | number, y: null | number) {

@@ -39,20 +39,22 @@ export class MainEngine extends Scene {
 
     this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
-
     this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
-    this._dude = new Dude(this, this._mapLevels, this._camera, { width: 32, height: 48 } as IResolution)
+
+    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
+
+    this._dude = new Dude(
+      this, this._mapLevels, this._camera, this._tips, { width: 32, height: 48 } as IResolution)
 
     this._camera.startFollow(this._dude.image)
 
-    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
 
     // create overlap dude with stairs for vertical movements
     if (this._mapLevels.stairsLayer) {
       this.physics.add.overlap(this._dude.image, this._mapLevels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this._dude.updateOverlapCallback(
-            prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile, this._tips.stairsTip)
+          this._dude.overlapCallbackUpdating(
+            prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
         })
     }
     //
@@ -60,7 +62,7 @@ export class MainEngine extends Scene {
 
   update(time: number): void {
     if (this._keys) {
-      this._dude.update(this._keys, this._camera)
+      this._dude.update(this._keys)
     }
 
     this._tips['stairsTip']?.update(time)

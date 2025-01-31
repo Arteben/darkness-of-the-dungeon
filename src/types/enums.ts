@@ -30,3 +30,15 @@ export enum GamePages {
   game,
   maps,
 }
+
+export enum DudeStates {
+  walk,
+  climbing,
+  fighting,
+}
+
+export enum DudeClimbingTypes {
+  up,
+  down,
+  stand,
+}
