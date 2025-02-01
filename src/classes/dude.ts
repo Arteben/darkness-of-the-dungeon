@@ -190,8 +190,8 @@ export class Dude {
   }
 
   update(keys: mainKeys): void {
-    this._camera.isZooming = keys.shift.isDown
-    if (keys.shift.isDown) {
+    this._camera.isZooming = keys.space.isDown
+    if (keys.space.isDown) {
       return
     }
 
