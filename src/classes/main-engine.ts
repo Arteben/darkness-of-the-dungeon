@@ -9,7 +9,7 @@ import { IResolution,
 // assets
 import dudeSet from '@assets/dude.png'
 import textMapRaw from '@assets/maps/map0.txt?url'
-import tilesRaw from '@assets/kenny_platformer_32.png'
+import tilesRaw from '@assets/castle-tiles.png'
 import tipIcons from '@assets/tip-icons.png'
 //
 
