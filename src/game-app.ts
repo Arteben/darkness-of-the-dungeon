@@ -62,7 +62,7 @@ export class GameApp extends GameStateElement {
   div {
     display: flex;
     /* background-image: linear-gradient(0deg, black, #272727); */
-    background: #06050d
+    background: #06050d;
     display: flex;
     flex-direction: column;
     justify-content: center;
