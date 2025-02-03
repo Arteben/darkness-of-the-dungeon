@@ -1,7 +1,9 @@
 import { GameStateElement } from '@/classes/gamestate-element'
 
+import headBackPng from '@/styles/images/stripHeadMenu.png'
+
 import '@/ui-elements/menu-button'
-import { LitElement, css, html } from 'lit'
+import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import {
@@ -69,9 +71,11 @@ export class MainMenu extends GameStateElement {
     align-items: center;
     height: 70px;
     width: 100%;
-    background-image: linear-gradient(to bottom, rgb(39 47 51), rgb(243 255 255 / 41%));
-    border: 0 solid #505254;
-    border-width: 0 0 3px 0;
+    /* background-image: linear-gradient(to bottom, rgb(39 47 51), rgb(243 255 255 / 41%)); */
+    background-image: url(${unsafeCSS(headBackPng)});
+    background-position: center;
+    background-repeat: repeat-x;
+    background-color: black;
   }
   `
 }
