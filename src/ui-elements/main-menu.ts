@@ -153,7 +153,7 @@ export class MainMenu extends GameStateElement {
       align-self: stretch;
       align-items: center;
       margin-top: 10px;
-      max-height: 900px;
+      max-height: 650px;
     }
   `
 }
