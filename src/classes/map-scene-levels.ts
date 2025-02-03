@@ -1,12 +1,17 @@
 import { MainEngine } from '@/classes/main-engine'
 
 import { IMapTilesIndexes, INumberCoords, ITilesCoords } from '@/types/main-types'
+import { TileSetModificators } from '@/types/enums'
 
 // import DudeSet from '@assets/dude.png'
 
 export class MapSceneLevels {
   _tileIndexes: IMapTilesIndexes = {
-    '#': 14, 'D': 53, 'DD': 58, 't': 18, 'tt': 23, 'k': 34, 'B': 7, 'w': 4, 'ww': 6, 'T': 33, 'A': 16
+    '#0': 9, '#15': 4, '#8': 17, '#4': 1,
+    '#12': 12, '#1': 10, '#2': 8,
+    '#10': 16, '#6': 0, '#5': 2, '#9': 18,
+    '#3': 3, '#14': 42, '#16': 40, '#17': 24, '#13': 26, '#7': 11, '#11': 19,
+    'D': 55, 't': 52, 'tt': 53, 'k': 54, 'B': 13, 'A': 50
   }
 
   _symbolMap: Array<string>
@@ -42,33 +47,32 @@ export class MapSceneLevels {
     })
 
     map.addTilesetImage(groundTileSetName)
-
-    this.groundLayer = this.createLayer(['#'], 'groundLayer', groundTileSetName, map)
+    this.groundLayer = this.createLayer(['#'], 'groundLayer', TileSetModificators.ground, groundTileSetName, map)
     this.groundLayer?.setCollisionByExclusion([-1])
 
-    this.stairsLayer = this.createLayer(['t', 'T'], 'stairsLayer', groundTileSetName, map)
+    this.stairsLayer = this.createLayer(['t'], 'stairsLayer', TileSetModificators.ladders, groundTileSetName, map)
     // this.stairsLayer?.setCollisionByExclusion([18, 33])
 
-    this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A'], 'envLayer', groundTileSetName, map)
+    this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A'], 'envLayer', TileSetModificators.none, groundTileSetName, map)
   }
 
   createLayer(
-    symbols: string[], nameKey: string, tileset: string, map: Phaser.Tilemaps.Tilemap) {
+    symbols: string[], nameKey: string, mod: TileSetModificators, tileset: string, map: Phaser.Tilemaps.Tilemap) {
 
-    const indexes = this.getIndexesForTiles(symbols)
+    const indexes = this.getIndexesForTiles(symbols, mod)
 
     const layer = map.createBlankLayer(nameKey, tileset)
     return layer && layer.putTilesAt(indexes, 0, 0) || null
   }
 
-  getIndexesForTiles(symbols: string[]) {
+  notNullsMapElement(strings: string[], i: number, j: number) {
+    return strings[i] && !(strings[i][j] == undefined || strings[i][j] == null)
+  }
+
+  getIndexesForTiles(symbols: string[], modificator: TileSetModificators) {
     const symMap = this._symbolMap
     const width = symMap[0].length
     const height = symMap.length
-
-    const notNulls = (strings: string[], i: number, j: number) => {
-      return strings[i] && !(strings[i][j] == undefined || strings[i][j] == null)
-    }
 
     const indexesMap: Array<Array<number>> = new Array(height)
     for (let i = 0; i < indexesMap.length; i++) {
@@ -77,14 +81,19 @@ export class MapSceneLevels {
         // orders symbolos for this layer
         symbols.findIndex((element) => {
           // check symbol map for null, undefined
-          if (!notNulls(symMap, i, j)) return false
+          if (!this.notNullsMapElement(symMap, i, j)) return false
 
           if (symMap[i][j] == element) {
-            if (notNulls(symMap, i - 1, j) && symMap[i - 1][j] == element && this._tileIndexes[element + element]) {
-              indexesMap[i][j] = this._tileIndexes[element + element]
+            if (modificator == TileSetModificators.ground) {
+              this.setElementForGroundMod(i, j, element, indexesMap)
+            }
+            // for stairs, draw begin for ladders
+            else if (modificator == TileSetModificators.ladders) {
+              this.setElementForLadderMod(i, j, element, indexesMap)
             } else {
               indexesMap[i][j] = this._tileIndexes[element]
             }
+
             // stop search for these symbols
             return true
           } else {
@@ -97,6 +106,50 @@ export class MapSceneLevels {
     }
 
     return indexesMap
+  }
+
+  setElementForLadderMod(i: number, j: number, element: string, map: Array<Array<number>>) {
+    const symMap = this._symbolMap
+    if (this.notNullsMapElement(symMap, i - 1, j) && symMap[i - 1][j] == element && this._tileIndexes[element + element]) {
+      map[i][j] = this._tileIndexes[element + element]
+    } else {
+      map[i][j] = this._tileIndexes[element]
+    }
+  }
+
+  setElementForGroundMod(i: number, j: number, element: string, map: Array<Array<number>>) {
+    const symMap = this._symbolMap
+
+    const notNull = (ip: number, jp: number) => {
+      return this.notNullsMapElement(symMap, ip, jp)
+    }
+
+    let spaceCounter = 0
+    if (notNull(i - 1, j) && symMap[i - 1][j] != element)
+      spaceCounter += 4
+
+    if (notNull(i + 1, j) && symMap[i + 1][j] != element)
+      spaceCounter += 8
+
+    if (notNull(i, j - 1) && symMap[i][j - 1] != element)
+      spaceCounter += 2
+
+    if (notNull(i, j + 1) && symMap[i][j + 1] != element)
+      spaceCounter += 1
+
+    if (spaceCounter == 0) {
+      if (notNull(i - 1, j - 1) && symMap[i - 1][j - 1] != element) {
+        spaceCounter = 14
+      } else if (notNull(i - 1, j + 1) && symMap[i - 1][j + 1] != element) {
+        spaceCounter = 16
+      } else if (notNull(i + 1, j + 1) && symMap[i + 1][j + 1] != element) {
+        spaceCounter = 17
+      } else if (notNull(i + 1, j - 1) && symMap[i + 1][j - 1] != element) {
+        spaceCounter = 13
+      }
+    }
+
+    map[i][j] = this._tileIndexes['#' + spaceCounter]
   }
 
   getCoordsForFirstSymbol(symb: string) {

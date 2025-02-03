@@ -42,3 +42,9 @@ export enum DudeClimbingTypes {
   down,
   stand,
 }
+
+export enum TileSetModificators {
+  none,
+  ladders,
+  ground
+}
