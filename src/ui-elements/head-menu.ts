@@ -50,7 +50,7 @@ export class MainMenu extends GameStateElement {
 
       return html`
         <menu-button
-          @click="${(e: Event) => {this.OnClickButton(buttonData.type, e)}}"
+          @click="${(e: Event) => { this.OnClickButton(buttonData.type, e) }}"
           placeClass="headMenu">
         ${buttonData.name}
       </menu-button>
@@ -63,16 +63,15 @@ export class MainMenu extends GameStateElement {
   }
 
   static styles = css`
-    :host {
-      position: fixed;
-      top: 0px;
-      display: flex;
-      flex-flow: row;
-      justify-content: start;
-      align-items: center;
-      height: 70px;
-      width: 100%;
-      background-image: linear-gradient(rgb(149 0 0 / 74%), rgb(151 0 0 / 41%));
-    }
+  :host {
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    height: 70px;
+    width: 100%;
+    background-image: linear-gradient(to bottom, rgb(39 47 51), rgb(243 255 255 / 41%));
+    border: 0 solid #505254;
+    border-width: 0 0 3px 0;
+  }
   `
 }

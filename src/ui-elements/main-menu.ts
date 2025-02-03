@@ -147,13 +147,12 @@ export class MainMenu extends GameStateElement {
 
   static styles = css`
     :host {
-      position: fixed;
       display: flex;
       flex-flow: column;
-      justify-content: center;
+      justify-content: space-around;
+      align-self: stretch;
       align-items: center;
-      height: 100%;
-      width: 100%;
+      margin-top: 10px;
     }
   `
 }

@@ -69,24 +69,13 @@ export class MapsMenu extends GameStateElement {
 
   static styles = css`
   :host {
-    position: fixed;
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: ${unsafeCSS(topIndent)}px;
-    height: calc(100% - ${unsafeCSS(topIndent)}px);
-    width: 100%;
-  }
-
-  div {
-    display: flex;
-    width: 100%;
-    max-height: 100%;
-    flex-flow: column;
-    justify-content: start;
-    align-items: center;
-    overflow-y: auto;
+    align-self: stretch;
+    margin-top: 20px;
+    width: 400px;
   }
   `
 }
