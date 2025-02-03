@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit'
+import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 
 @customElement('menu-button')
@@ -33,19 +33,20 @@ export class MainMenu extends LitElement {
   static styles = css`
     :host {
       display: block;
-      margin: 7px 0px;
+      margin: 10px 0px;
     }
 
     button {
-      display: inline-block;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: #ffd9a6;
-      background-image: linear-gradient(166deg, black, gray);
-      border: #000000 solid 2px;
-      border-radius: 9px;
-    }
+    font-family: Faberge;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #f7ffff;
+    background-color: #304147;
+    border: black solid 2px;
+    border-radius: 2px;
+  }
 
     button.mainMenu, button.mapsMenu {
       font-size: 15px;
@@ -56,18 +57,16 @@ export class MainMenu extends LitElement {
     button.mapsMenu {
       width: 250px;
       padding: 10px 10px;
-      background-image: linear-gradient(166deg, #004509, #2d2d2d);
       border-color: black;
     }
 
     button.mainMenu.light, button.mapsMenu.light {
       color: #ffffff;
-      background-image: linear-gradient(270deg, #410c0c, #6d2626);
+      background-color: #6d2626;
     }
 
     button.headMenu {
-      font-size: 10px;
-      padding: 0px 5px;
+      padding: 0px 15px;
       margin: 0px 50px;
       height: 50px;
     }
@@ -78,12 +77,10 @@ export class MainMenu extends LitElement {
 
     /* maps menu light */
     button.mapsMenu.light {
-      background-image: linear-gradient(270deg, #5c5c5c, #3a3a3a);
+      background-color: #202d1b;
     }
     button.mapsMenu.light:hover, button.mapsMenu.light:active {
       outline: none;
     }
-    /*  */
-
   `
 }
