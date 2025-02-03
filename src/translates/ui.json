@@ -56,8 +56,8 @@
     "eng": "very hard"
   },
   "menuSelectedMap": {
-    "ru": "Выбранная карта:",
-    "eng": "Selected map:"
+    "ru": "Карта:",
+    "eng": " Map:"
   },
 
 

@@ -43,9 +43,6 @@ export class MapsMenu extends GameStateElement {
 
     if (type !== this._state.selectedMap) {
       this._state.selectedMap = type
-      if (this._game) {
-        this._game.state.page = GamePages.mainMenu
-      }
     }
   }
 
