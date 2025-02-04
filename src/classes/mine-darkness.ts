@@ -3,7 +3,8 @@ import { GamePages, GameStateSettings } from '@/types/enums'
 import { IJsonTranslatesType,
   IJsonMap,
   IResolution,
-  GameStateChangeData
+  GameStateChangeData,
+  ISelectedMapForInit,
 } from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame, Scene } from 'phaser'
@@ -76,8 +77,9 @@ export class MineDarkness {
   }
 
   startMainEngine() {
-    if (!this.phaser) return
-    this.phaser.scene.start(this.mainSceneName, { selectedMap: this.getSelectedMap() })
+    const map = this.getSelectedMap()
+    if (!this.phaser || !map || !map.name) return
+    this.phaser.scene.start( this.mainSceneName, { nameMap: map.name } as ISelectedMapForInit)
     this.phaser.pause()
   }
 

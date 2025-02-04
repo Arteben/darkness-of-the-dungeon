@@ -116,3 +116,7 @@ export type GameStateChangeData = {
   state: GameState
   property: GameStateSettings
 }
+
+export interface ISelectedMapForInit {
+  nameMap: string
+}

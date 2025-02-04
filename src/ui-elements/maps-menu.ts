@@ -1,10 +1,9 @@
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/menu-button'
-import { css, html, unsafeCSS } from 'lit'
+import { css, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
-import { GamePages } from '@/types/enums'
 import { MainButtonRenderInfo, IJsonMap } from '@/types/main-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
@@ -13,8 +12,6 @@ interface IMapButton extends MainButtonRenderInfo {
   selected: boolean
   difficult: string
 }
-
-const topIndent = 70
 
 @customElement('maps-menu')
 export class MapsMenu extends GameStateElement {
