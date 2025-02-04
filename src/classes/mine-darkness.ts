@@ -1,6 +1,10 @@
-import { GamePages } from '@/types/enums'
+import { GamePages, GameStateSettings } from '@/types/enums'
 
-import { IJsonTranslatesType, IJsonMap, IResolution } from '@/types/main-types'
+import { IJsonTranslatesType,
+  IJsonMap,
+  IResolution,
+  GameStateChangeData
+} from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame, Scene } from 'phaser'
 
@@ -100,18 +104,23 @@ export class MineDarkness {
     return mapList[findedMapIndex]
   }
 
-  private onChangeGameState() {
-    if (!this.phaser) {
-      return
+  private onChangeGameState(data: any) {
+    const eventDetail = data.detail as GameStateChangeData
+    if (!this.phaser) return
+
+    if (eventDetail.property == GameStateSettings.pages) {
+      if (this.state.page == GamePages.game) {
+        if (this.phaser.isPaused) {
+          this.phaser.resume()
+        }
+        window.setTimeout(() => {this.onWindowResize()}, 100)
+      } else if (!this.phaser.isPaused) {
+        this.phaser.pause()
+      }
     }
 
-    if (this.state.page == GamePages.game) {
-      if (this.phaser.isPaused) {
-        this.phaser.resume()
-      }
-      window.setTimeout(() => {this.onWindowResize()}, 100)
-    } else if (!this.phaser.isPaused) {
-      this.phaser.pause()
+    if (eventDetail.property == GameStateSettings.selectedMap) {
+      this.restartMainEngine()
     }
   }
 

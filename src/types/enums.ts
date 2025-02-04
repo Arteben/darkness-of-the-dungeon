@@ -19,7 +19,15 @@ export enum BusEventsList {
   changeLocSettings,
 }
 
-export enum LocSettingsList {
+export enum GameStateSettings {
+  isSound,
+  selectedMap,
+  pages,
+  lang,
+  isGameStarted
+}
+
+export enum LocSettingsList  {
   isSound,
   selectedMap
 }

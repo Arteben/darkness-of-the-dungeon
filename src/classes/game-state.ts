@@ -1,5 +1,5 @@
-import { Languages, BusEventsList, GamePages } from '@/types/enums'
-import { IHashParams, ILocSettings, IStateParams } from '@/types/main-types'
+import { Languages, BusEventsList, GamePages, GameStateSettings } from '@/types/enums'
+import { IHashParams, ILocSettings, IStateParams, GameStateChangeData } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
 
@@ -14,7 +14,7 @@ export class GameState implements IStateParams {
   // pages
   public set page(page: GamePages) {
     this._page = page
-    this.triggerChnageState()
+    this.triggerChnageState(GameStateSettings.pages)
   }
   public get page(): GamePages {
     return this._page
@@ -22,7 +22,7 @@ export class GameState implements IStateParams {
   // lang
   public set lang(lang: Languages) {
     this._lang = lang
-    this.triggerChnageState()
+    this.triggerChnageState(GameStateSettings.lang)
   }
   public get lang(): Languages {
     return this._lang
@@ -31,7 +31,7 @@ export class GameState implements IStateParams {
   // isGameStarted
   public set isGameStarted(flag: boolean) {
     this._isGameStarted = flag
-    this.triggerChnageState()
+    this.triggerChnageState(GameStateSettings.isGameStarted)
   }
   public get isGameStarted(): boolean {
     return this._isGameStarted
@@ -41,7 +41,7 @@ export class GameState implements IStateParams {
   public set isSound(flag: boolean) {
     if (this._isSound != flag) {
       this._isSound = flag
-      this.triggerChnageState()
+      this.triggerChnageState(GameStateSettings.isSound)
     }
   }
   public get isSound(): boolean {
@@ -52,7 +52,7 @@ export class GameState implements IStateParams {
   public set selectedMap(str: string) {
     if (this._selectedMap != str) {
       this._selectedMap = str
-      this.triggerChnageState()
+      this.triggerChnageState(GameStateSettings.selectedMap)
     }
   }
   public get selectedMap(): string | undefined {
@@ -72,7 +72,11 @@ export class GameState implements IStateParams {
     }
   }
 
-  triggerChnageState() {
-    EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], this)
+  triggerChnageState(prop: GameStateSettings) {
+    const data: GameStateChangeData = {
+      property: prop,
+      state: this
+    }
+    EventBus.Dispatch(BusEventsList[BusEventsList.changeGameState], data)
   }
 }
