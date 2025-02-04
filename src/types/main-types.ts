@@ -107,3 +107,5 @@ export type overlapCallbackParams =
 export interface IconTips {
   [index: string]: IconTip
 }
+
+export type SelectedJsonMap = null | IJsonMap

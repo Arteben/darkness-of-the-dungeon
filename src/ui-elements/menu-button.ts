@@ -77,7 +77,7 @@ export class MainMenu extends LitElement {
 
     /* maps menu light */
     button.mapsMenu.light {
-      background-color: #202d1b;
+      background-color: #383e35;
     }
     button.mapsMenu.light:hover, button.mapsMenu.light:active {
       outline: none;

@@ -23,21 +23,13 @@ interface MenuButtonRenderInfo extends MainButtonRenderInfo {
 const buttons: Array<MainButtonType> = [
   { type: 'gameStart', names: ['menuGameStart', 'menuGameContinue'] },
   { type: 'rules', names: ['menuRules'] },
-  { type: 'maps', names: ['menuSelectMap', 'menuChangeMap'] },
+  { type: 'maps', names: ['menuChangeMap'] },
   { type: 'turnSound', names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', names: ['menuToEng', 'menuToRu'] },
 ]
 
 @customElement('main-menu')
 export class MainMenu extends GameStateElement {
-
-  getSelectedMap() {
-    if (this._game) {
-      return this._game.getSelectedMap()
-    }
-
-    return ''
-  }
 
   getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []
@@ -61,7 +53,7 @@ export class MainMenu extends GameStateElement {
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
           break
         case 'maps':
-          newButton.name = this.getSelectedMap() ? button.names[1] : button.names[0]
+          newButton.name = button.names[0]
           break
         default:
           newButton.name = button.names[0]

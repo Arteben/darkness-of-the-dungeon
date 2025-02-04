@@ -51,7 +51,7 @@ export class InfoPanel extends LitElement {
     h2.isSmall {
       margin: 5px 10px 5px 10px;
       border: none;
-      font-size: 28px;
+      font-size: 25px;
       align-self: start;
     }
 

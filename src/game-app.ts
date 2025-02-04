@@ -133,7 +133,7 @@ export class GameApp extends GameStateElement {
     align-items: start;
     justify-content: center;
     flex-grow: 1;
-    margin-top: 70px;
+    margin-top: 90px;
   }
 
   .mainElementsForMainMenu {

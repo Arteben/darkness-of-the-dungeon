@@ -52,7 +52,9 @@ export class MapsMenu extends GameStateElement {
           <menu-button
             @click="${(e: Event) => { this.OnClickButton(buttonData.type, e) }}"
             placeClass="mapsMenu" ?isSpecial="${buttonData.selected}">
-          ${buttonData.name} <br> <hr> ${buttonData.difficult}
+              <span class="mapTitle">${buttonData.name}</span>
+              <br/> <hr> 
+              <span>${buttonData.difficult}</span>
         </menu-button>
       `
     }
@@ -73,6 +75,10 @@ export class MapsMenu extends GameStateElement {
     align-self: stretch;
     margin-top: 20px;
     width: 400px;
+  }
+
+  span.mapTitle {
+    font-size: 18px;
   }
   `
 }

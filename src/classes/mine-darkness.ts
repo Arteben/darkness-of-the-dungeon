@@ -79,16 +79,16 @@ export class MineDarkness {
     this.phaser.pause()
   }
 
-  getSelectedMap() {
+  getSelectedMap(): IJsonMap | null {
     const mapList = JsonMapList as IJsonMap[]
     const selectedMap = this.state.selectedMap
 
     if (!selectedMap)
-      return ''
+      return null
 
     const findedMapIndex = mapList.findIndex((el) => el.name == selectedMap)
     if (findedMapIndex == -1)
-      return ''
+      return null
 
     return mapList[findedMapIndex]
   }

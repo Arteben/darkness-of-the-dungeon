@@ -2,6 +2,8 @@ import { GameStateElement } from '@/classes/gamestate-element'
 
 import headBackPng from '@/styles/images/stripHeadMenu.png'
 
+import '@/ui-elements/info-panel'
+
 import '@/ui-elements/menu-button'
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
@@ -13,69 +15,68 @@ import {
 
 import { GamePages } from '@/types/enums'
 
-const buttons: Array<MainButtonType> = [
-  { type: 'mainMenu', names: ['hMenuToMain'] }
-]
+// const buttons: Array<MainButtonType> = [
+//   { type: 'mainMenu', names: ['hMenuToMain'] }
+// ]
 
 @customElement('head-menu')
 export class MainMenu extends GameStateElement {
 
-  getRenderButtons() {
-    const renderButtons: Array<MainButtonRenderInfo> = []
-
-    buttons.forEach((button) => {
-      const newButton: MainButtonRenderInfo = { type: button.type, hidden: false, name: '' }
-
-      newButton.name = this.loc(button.names[0])
-
-      renderButtons.push(newButton)
-    })
-
-    return renderButtons
-  }
-
-  private OnClickButton(type: string, e: Event) {
-    e.stopPropagation()
-
-    switch (type) {
-      case 'mainMenu':
-        this._state.page = GamePages.mainMenu
-        break
-    }
-  }
-
   render() {
-    const renderOrderButton = (buttonData: MainButtonRenderInfo) => {
-      if (buttonData.hidden) {
-        return html``
-      }
+    const map = this.getSelectedMap()
+    let mapName = ''
+    if (map) {
+      mapName = this.loc(map.name)
+    }
 
       return html`
-        <menu-button
-          @click="${(e: Event) => { this.OnClickButton(buttonData.type, e) }}"
-          placeClass="headMenu">
-        ${buttonData.name}
-      </menu-button>
+        <div class="backgroundColor"></div>
+        <div class="headMenuDiveder">
+          <menu-button
+              @click="${(e: Event) => { this._state.page = GamePages.mainMenu }}"
+              placeClass="headMenu">
+            ${this.loc('hMenuToMain')}
+          </menu-button>
+        </div>
+        <div class="headMenuDiveder">
+          <info-panel ?smallMap=${true}>
+            <span slot="content">${mapName}</span>
+          </info-panel>
+        </div>
+        <div class="headMenuDiveder"></div>
       `
-    }
-
-    return html`
-        ${this.getRenderButtons().map(el => renderOrderButton(el))}
-    `
   }
 
   static styles = css`
-  :host {
-    flex-direction: row;
-    justify-content: start;
-    align-items: center;
-    height: 70px;
-    width: 100%;
-    /* background-image: linear-gradient(to bottom, rgb(39 47 51), rgb(243 255 255 / 41%)); */
-    background-image: url(${unsafeCSS(headBackPng)});
-    background-position: center;
-    background-repeat: repeat-x;
-    background-color: black;
-  }
+    :host {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+      height: 90px;
+      width: 100%;
+      background-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 1));
+    }
+
+    div.backgroundColor {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 90px;
+      background-image: url(${unsafeCSS(headBackPng)});
+      background-position: center;
+      background-repeat: repeat-x;
+    }
+
+    .headMenuDiveder {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1;
+      flex-basis: 33%;
+      z-index: 2;
+    }
   `
 }
