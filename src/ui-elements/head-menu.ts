@@ -53,9 +53,8 @@ export class MainMenu extends GameStateElement {
       flex-flow: row nowrap;
       justify-content: center;
       align-items: center;
-      height: 90px;
       width: 100%;
-      background-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 1));
+      background-color: #0d0f12;
     }
 
     div.backgroundColor {

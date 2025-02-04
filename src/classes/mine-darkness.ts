@@ -27,7 +27,7 @@ export class MineDarkness {
   loc: (a: string, b?: IJsonTranslatesType) => string
 
   phConfig: Types.Core.GameConfig = {
-    width: 640,
+    width: 800,
     height: 384,
     // canvas: HTMLCanvasElement,
     // parent,
@@ -46,6 +46,8 @@ export class MineDarkness {
 
   phaser?: PhaserGame
   gameApp?: GameApp
+
+  topMargin: number = 90
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -100,14 +102,22 @@ export class MineDarkness {
 
     if (this.state.page == GamePages.game) {
       if (this.phaser.isPaused) { this.phaser.resume() }
+      window.setTimeout(() => {this.onWindowResize()}, 100)
     } else if (!this.phaser.isPaused) {
       this.phaser.pause()
     }
   }
 
   onWindowResize() {
+    const headerElement = this.gameApp?.shadowRoot?.querySelector('div.topElements')
+    let topMargin = 0
+    if (headerElement) {
+      topMargin = Number(headerElement.clientHeight)
+    }
+
     const winSizes: IResolution = {
-      width: window.innerWidth, height: window.innerHeight,
+      width: window.innerWidth,
+      height: window.innerHeight - topMargin,
     }
 
     const newSize: IResolution = {
