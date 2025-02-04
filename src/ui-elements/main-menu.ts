@@ -2,6 +2,8 @@ import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/menu-button'
 import '@/ui-elements/special-title'
+import '@/ui-elements/info-panel'
+
 import { css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
@@ -21,22 +23,13 @@ interface MenuButtonRenderInfo extends MainButtonRenderInfo {
 const buttons: Array<MainButtonType> = [
   { type: 'gameStart', names: ['menuGameStart', 'menuGameContinue'] },
   { type: 'rules', names: ['menuRules'] },
-  { type: 'maps', names: ['menuSelectMap', 'menuChangeMap'] },
-  { type: 'selectedMapsTitle', names: ['menuSelectedMapTitle'] },
+  { type: 'maps', names: ['menuChangeMap'] },
   { type: 'turnSound', names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
   { type: 'lang', names: ['menuToEng', 'menuToRu'] },
 ]
 
 @customElement('main-menu')
 export class MainMenu extends GameStateElement {
-
-  getSelectedMap() {
-    if (this._game) {
-      return this._game.getSelectedMap()
-    }
-
-    return ''
-  }
 
   getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []
@@ -60,10 +53,8 @@ export class MainMenu extends GameStateElement {
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
           break
         case 'maps':
-          newButton.name = this.getSelectedMap() ? button.names[1] : button.names[0]
+          newButton.name = button.names[0]
           break
-        case 'selectedMapsTitle':
-          newButton.hidden = !Boolean(this.getSelectedMap())
         default:
           newButton.name = button.names[0]
           break
@@ -116,24 +107,21 @@ export class MainMenu extends GameStateElement {
         return html``
       }
 
-      if (buttonData.type == 'selectedMapsTitle') {
-        const map = this.getSelectedMap()
-
-        if (!map) {
-          return html``
-        }
-
-        return html`
-          <special-title>
-          ${this.loc('menuSelectedMap')} <br>
-            ${this.loc(map.name)} (${this.loc(map.level)})
-          </special-title>
+      let mapInfo = html``
+      const map = this.getSelectedMap()
+      if (buttonData.type == 'gameStart' && map) {
+        mapInfo = html`
+          <info-panel ?smallmap=${true} style="max-width:150px;">
+            <span slot="head">${this.loc('menuSelectedMap')}</span>
+            <span slot="content"> ${this.loc(map.name)} (${this.loc(map.level)})</span>
+          </info-panel>
         `
       }
 
       return html`
+        ${mapInfo}
         <menu-button
-          @click="${(e: Event) => {this.OnClickButton(buttonData.type, e)}}"
+          @click="${(e: Event) => { this.OnClickButton(buttonData.type, e) }}"
           ?isspecial="${buttonData.isSpecial}">
             ${buttonData.name}
         </menu-button>
@@ -153,7 +141,7 @@ export class MainMenu extends GameStateElement {
       align-self: stretch;
       align-items: center;
       margin-top: 10px;
-      max-height: 650px;
+      max-height: 550px;
     }
   `
 }

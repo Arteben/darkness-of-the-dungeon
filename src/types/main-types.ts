@@ -1,9 +1,11 @@
+import { GameState } from '@/classes/game-state'
 import { IconTip } from '@/classes/icon-tip'
 
 import {
   Languages,
   LocSettingsList,
   GamePages,
+  GameStateSettings,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -106,4 +108,15 @@ export type overlapCallbackParams =
 
 export interface IconTips {
   [index: string]: IconTip
+}
+
+export type SelectedJsonMap = null | IJsonMap
+
+export type GameStateChangeData = {
+  state: GameState
+  property: GameStateSettings
+}
+
+export interface ISelectedMapForInit {
+  nameMap: string
 }

@@ -1,6 +1,11 @@
 @font-face {
   font-family: Faberge;
-  src: url(/src/styles/faberge.otf);
+  src: url(/src/styles/fonts/faberge.otf);
+}
+
+@font-face {
+  font-family: Xarrovv;
+  src: url(/src/styles/fonts/Xarrovv.otf);
 }
 
 html, body {

@@ -1,23 +1,28 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
 
-import { IResolution,
+import {
+  IResolution,
   mainKeys,
   overlapCallbackParams,
   IconTips,
+  IJsonMap,
+  ISelectedMapForInit
 } from '@/types/main-types'
 
 // assets
 import dudeSet from '@assets/dude.png'
-import textMapRaw from '@assets/maps/map3.txt?url'
 import tilesRaw from '@assets/castle-tiles.png'
 import tipIcons from '@assets/tip-icons.png'
 //
-
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTip } from '@/classes/icon-tip'
+//
 
+import { default as JsonMapList } from '@/assets/maps/map-list.json'
+
+const mapList: IJsonMap[] = JsonMapList
 
 export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
@@ -27,9 +32,14 @@ export class MainEngine extends Scene {
   _camera!: SceneCamera
   _keys!: mainKeys
   _tips: IconTips = {}
+  _selectedMap: string = ''
 
-  constructor(name: string) {
-    super(name)
+  constructor() {
+    super()
+  }
+
+  init(map: ISelectedMapForInit) {
+    this._selectedMap = map.nameMap
   }
 
   create() {
@@ -37,7 +47,7 @@ export class MainEngine extends Scene {
 
     this.setMainKyes()
 
-    this._mapLevels = new MapSceneLevels(this, 'textMap', 'tileSet')
+    this._mapLevels = new MapSceneLevels(this, this._selectedMap, 'tileSet')
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
 
@@ -76,7 +86,11 @@ export class MainEngine extends Scene {
     //
 
     this.load.image('tileSet', tilesRaw)
-    this.load.text('textMap', textMapRaw)
+    // load for maps
+    // '/src/assets/maps/map3.txt'
+    mapList.forEach((el: IJsonMap)=> {
+      this.load.text(el.name, `/src/assets/${el.file}`)
+    })
 
     this.load.spritesheet('dude', dudeSet, { frameWidth: 32, frameHeight: 48 })
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })

@@ -1,5 +1,7 @@
 import { LitElement } from 'lit'
 
+import { SelectedJsonMap } from '@/types/main-types'
+
 import { GameState } from '@/classes/game-state'
 import { EventBus } from '@/classes/event-bus'
 
@@ -38,5 +40,13 @@ export class GameStateElement extends LitElement {
     }
 
     return this._game.loc(someString)
+  }
+
+  getSelectedMap(): SelectedJsonMap {
+    if (this._game) {
+      return this._game.getSelectedMap()
+    }
+
+    return null
   }
 }

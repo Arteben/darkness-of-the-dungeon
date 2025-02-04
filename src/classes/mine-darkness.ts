@@ -1,8 +1,13 @@
-import { GamePages } from '@/types/enums'
+import { GamePages, GameStateSettings } from '@/types/enums'
 
-import { IJsonTranslatesType, IJsonMap, IResolution } from '@/types/main-types'
+import { IJsonTranslatesType,
+  IJsonMap,
+  IResolution,
+  GameStateChangeData,
+  ISelectedMapForInit,
+} from '@/types/main-types'
 
-import { WEBGL, Types, Game as PhaserGame } from 'phaser'
+import { WEBGL, Types, Game as PhaserGame, Scene } from 'phaser'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
@@ -27,11 +32,11 @@ export class MineDarkness {
   loc: (a: string, b?: IJsonTranslatesType) => string
 
   phConfig: Types.Core.GameConfig = {
-    width: 640,
+    width: 800,
     height: 384,
     // canvas: HTMLCanvasElement,
     // parent,
-    // scene: [this.mainScene],
+    scene: [],
     type: WEBGL,
     backgroundColor: '#1b262c',
     pixelArt: true,
@@ -47,14 +52,14 @@ export class MineDarkness {
   phaser?: PhaserGame
   gameApp?: GameApp
 
+  mainSceneName: string = 'MainEngine'
+
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     mineDarknessGame = this
     // get object with methods with translates
     this.state = state
     this.loc = locals.loc.bind(locals)
-
-    this.phConfig.scene = [new MainEngine('main-scene')]
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -71,43 +76,72 @@ export class MineDarkness {
     window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
   }
 
+  startMainEngine() {
+    const map = this.getSelectedMap()
+    if (!this.phaser || !map || !map.name) return
+    this.phaser.scene.start( this.mainSceneName, { nameMap: map.name } as ISelectedMapForInit)
+    this.phaser.pause()
+  }
+
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
     this.gameApp = appElement
     this.phConfig.parent = parentApp
     this.phConfig.canvas = canvas
     this.phaser = new PhaserGame(this.phConfig)
-    this.phaser.pause()
+    this.phaser.scene.add(this.mainSceneName, MainEngine, false)
+    this.startMainEngine()
   }
 
-  getSelectedMap() {
+  getSelectedMap(): IJsonMap | null {
     const mapList = JsonMapList as IJsonMap[]
     const selectedMap = this.state.selectedMap
 
     if (!selectedMap)
-      return ''
+      return null
 
     const findedMapIndex = mapList.findIndex((el) => el.name == selectedMap)
     if (findedMapIndex == -1)
-      return ''
+      return null
 
     return mapList[findedMapIndex]
   }
 
-  private onChangeGameState() {
-    if (!this.phaser) {
-      return
+  private onChangeGameState(data: any) {
+    const eventDetail = data.detail as GameStateChangeData
+    if (!this.phaser) return
+
+    if (eventDetail.property == GameStateSettings.pages) {
+      if (this.state.page == GamePages.game) {
+        if (this.phaser.isPaused) {
+          this.phaser.resume()
+        }
+        window.setTimeout(() => {this.onWindowResize()}, 100)
+      } else if (!this.phaser.isPaused) {
+        this.phaser.pause()
+      }
     }
 
-    if (this.state.page == GamePages.game) {
-      if (this.phaser.isPaused) { this.phaser.resume() }
-    } else if (!this.phaser.isPaused) {
-      this.phaser.pause()
+    if (eventDetail.property == GameStateSettings.selectedMap) {
+      this.restartMainEngine()
     }
   }
 
+  restartMainEngine() {
+    if (!this.phaser) return
+    this.phaser.scene.stop(this.mainSceneName)
+    this.startMainEngine()
+  }
+
   onWindowResize() {
+    const headerElement = this.gameApp?.shadowRoot?.querySelector('div.topElements')
+    let topMargin = 0
+    if (headerElement) {
+      topMargin = Number(headerElement.clientHeight)
+    }
+
     const winSizes: IResolution = {
-      width: window.innerWidth, height: window.innerHeight,
+      width: window.innerWidth,
+      height: window.innerHeight - topMargin,
     }
 
     const newSize: IResolution = {

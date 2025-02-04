@@ -32,12 +32,12 @@
     "eng": "Back to main menu"
   },
   "menuSelectMap": {
-    "ru": "Выбрать карту",
-    "eng": "Select the map"
+    "ru": "Выбрать уровень",
+    "eng": "Select the level"
   },
   "menuChangeMap": {
-    "ru": "Сменить карту",
-    "eng": "Change the map"
+    "ru": "Сменить уровень",
+    "eng": "Change the level"
   },
   "easy": {
     "ru": "легкий",
@@ -56,8 +56,8 @@
     "eng": "very hard"
   },
   "menuSelectedMap": {
-    "ru": "Выбранная карта:",
-    "eng": "Selected map:"
+    "ru": "Уровень:",
+    "eng": "Level:"
   },
 
 

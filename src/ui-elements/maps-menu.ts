@@ -1,10 +1,9 @@
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/menu-button'
-import { css, html, unsafeCSS } from 'lit'
+import { css, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
-import { GamePages } from '@/types/enums'
 import { MainButtonRenderInfo, IJsonMap } from '@/types/main-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
@@ -13,8 +12,6 @@ interface IMapButton extends MainButtonRenderInfo {
   selected: boolean
   difficult: string
 }
-
-const topIndent = 70
 
 @customElement('maps-menu')
 export class MapsMenu extends GameStateElement {
@@ -43,9 +40,6 @@ export class MapsMenu extends GameStateElement {
 
     if (type !== this._state.selectedMap) {
       this._state.selectedMap = type
-      if (this._game) {
-        this._game.state.page = GamePages.mainMenu
-      }
     }
   }
 
@@ -55,7 +49,9 @@ export class MapsMenu extends GameStateElement {
           <menu-button
             @click="${(e: Event) => { this.OnClickButton(buttonData.type, e) }}"
             placeClass="mapsMenu" ?isSpecial="${buttonData.selected}">
-          ${buttonData.name} <br> <hr> ${buttonData.difficult}
+              <span class="mapTitle">${buttonData.name}</span>
+              <br/> <hr> 
+              <span>${buttonData.difficult}</span>
         </menu-button>
       `
     }
@@ -76,6 +72,10 @@ export class MapsMenu extends GameStateElement {
     align-self: stretch;
     margin-top: 20px;
     width: 400px;
+  }
+
+  span.mapTitle {
+    font-size: 18px;
   }
   `
 }

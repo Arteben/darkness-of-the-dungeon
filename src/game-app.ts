@@ -28,7 +28,7 @@ export class GameApp extends GameStateElement {
   @queryAsync('canvas')
   phaserCanvas!: Promise<HTMLCanvasElement | null>
 
-  @queryAsync('div')
+  @queryAsync('div.mainElements')
   canvasParent!: Promise<HTMLElement | null>
 
   render() {
@@ -56,6 +56,7 @@ export class GameApp extends GameStateElement {
         break
       case GamePages.game:
         convasDisplay = { 'display': 'block' }
+        leftColumnElement = rightColumnElement = html``
         break
       case GamePages.maps:
         mapsMenu = html`<maps-menu></maps-menu>`
@@ -96,7 +97,7 @@ export class GameApp extends GameStateElement {
     width: 100%;
     position: fixed;
     top: 0;
-    height: 70px;
+    height: 90px;
   }
   
   .topElementForMainMenu {
@@ -133,7 +134,7 @@ export class GameApp extends GameStateElement {
     align-items: start;
     justify-content: center;
     flex-grow: 1;
-    margin-top: 70px;
+    margin-top: 90px;
   }
 
   .mainElementsForMainMenu {
