@@ -2,7 +2,7 @@ import { GamePages } from '@/types/enums'
 
 import { IJsonTranslatesType, IJsonMap, IResolution } from '@/types/main-types'
 
-import { WEBGL, Types, Game as PhaserGame } from 'phaser'
+import { WEBGL, Types, Game as PhaserGame, Scene } from 'phaser'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
@@ -31,7 +31,7 @@ export class MineDarkness {
     height: 384,
     // canvas: HTMLCanvasElement,
     // parent,
-    // scene: [this.mainScene],
+    scene: [],
     type: WEBGL,
     backgroundColor: '#1b262c',
     pixelArt: true,
@@ -47,7 +47,7 @@ export class MineDarkness {
   phaser?: PhaserGame
   gameApp?: GameApp
 
-  topMargin: number = 90
+  mainSceneName: string = 'MainEngine'
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -55,8 +55,6 @@ export class MineDarkness {
     // get object with methods with translates
     this.state = state
     this.loc = locals.loc.bind(locals)
-
-    this.phConfig.scene = [new MainEngine('main-scene')]
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -73,12 +71,19 @@ export class MineDarkness {
     window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
   }
 
+  startMainEngine() {
+    if (!this.phaser) return
+    this.phaser.scene.start(this.mainSceneName, { selectedMap: this.getSelectedMap() })
+    this.phaser.pause()
+  }
+
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
     this.gameApp = appElement
     this.phConfig.parent = parentApp
     this.phConfig.canvas = canvas
     this.phaser = new PhaserGame(this.phConfig)
-    this.phaser.pause()
+    this.phaser.scene.add(this.mainSceneName, MainEngine, false)
+    this.startMainEngine()
   }
 
   getSelectedMap(): IJsonMap | null {
@@ -101,11 +106,19 @@ export class MineDarkness {
     }
 
     if (this.state.page == GamePages.game) {
-      if (this.phaser.isPaused) { this.phaser.resume() }
+      if (this.phaser.isPaused) {
+        this.phaser.resume()
+      }
       window.setTimeout(() => {this.onWindowResize()}, 100)
     } else if (!this.phaser.isPaused) {
       this.phaser.pause()
     }
+  }
+
+  restartMainEngine() {
+    if (!this.phaser) return
+    this.phaser.scene.stop(this.mainSceneName)
+    this.startMainEngine()
   }
 
   onWindowResize() {

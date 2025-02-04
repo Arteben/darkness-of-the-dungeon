@@ -28,12 +28,17 @@ export class MainEngine extends Scene {
   _keys!: mainKeys
   _tips: IconTips = {}
 
-  constructor(name: string) {
-    super(name)
+  constructor() {
+    super()
+  }
+
+  init(varible: any) {
+    console.log('init with', varible)
   }
 
   create() {
     // console.log(this.textures.list)
+    console.log('create scene ++++++++')
 
     this.setMainKyes()
 
