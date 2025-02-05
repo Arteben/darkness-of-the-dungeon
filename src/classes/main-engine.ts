@@ -12,6 +12,7 @@ import {
 // assets
 import dudeSet from '@assets/dude.png'
 import tilesRaw from '@assets/castle-tiles.png'
+import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
@@ -47,7 +48,7 @@ export class MainEngine extends Scene {
 
     this.setMainKyes()
 
-    this._mapLevels = new MapSceneLevels(this, this._selectedMap, 'tileSet')
+    this._mapLevels = new MapSceneLevels(this, this._selectedMap, 'tileSet', 'wallTileSet')
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
 
@@ -86,6 +87,7 @@ export class MainEngine extends Scene {
     //
 
     this.load.image('tileSet', tilesRaw)
+    this.load.image('wallTileSet', tilesWallsRaw)
     // load for maps
     // '/src/assets/maps/map3.txt'
     mapList.forEach((el: IJsonMap)=> {

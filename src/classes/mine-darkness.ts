@@ -38,7 +38,8 @@ export class MineDarkness {
     // parent,
     scene: [],
     type: WEBGL,
-    backgroundColor: 'black',
+    // backgroundColor: '06050d',
+    backgroundColor: '#1b262c',
     pixelArt: true,
     physics: {
       default: 'arcade',

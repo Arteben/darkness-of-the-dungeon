@@ -6,11 +6,15 @@ import { TileSetModificators } from '@/types/enums'
 // import DudeSet from '@assets/dude.png'
 
 export class MapSceneLevels {
-  _tileIndexes: IMapTilesIndexes = {
+  _tileWallInxs: IMapTilesIndexes = {
     '#0': 9, '#15': 4, '#8': 17, '#4': 1,
-    '#12': 12, '#1': 10, '#2': 8,
+    '#12': 28, '#1': 10, '#2': 8,
     '#10': 16, '#6': 0, '#5': 2, '#9': 18,
-    '#3': 3, '#14': 42, '#16': 40, '#17': 24, '#13': 26, '#7': 11, '#11': 19,
+    '#3': 3, '#14': 27, '#48': 40, '#13': 29, '#7': 11, '#11': 19,
+    '#192': 24, '#64': 26, '#16': 40, '#32': 19, '#128': 42,
+    '#176': 4, '#144': 4, '#112': 4, '#196': 4, '#80': 4, '#96': 4,
+  }
+  _tileIndexes: IMapTilesIndexes = {
     'D': 55, 't': 52, 'tt': 53, 'k': 54, 'B': 13, 'A': 50, 'l': 48, 'p': 47
   }
 
@@ -25,7 +29,7 @@ export class MapSceneLevels {
   mapWidth = 0
   mapHeight = 0
 
-  constructor(engine: MainEngine, nameSymbolMap: string, groundTileSetName: string) {
+  constructor(engine: MainEngine, nameSymbolMap: string, envTls: string, wallsTls: string) {
 
     const symbolMap: Array<string> = engine.cache.text.get(nameSymbolMap).split('\n')
     this._symbolMap = symbolMap
@@ -46,20 +50,24 @@ export class MapSceneLevels {
       tileWidth: this._tileWidth, tileHeight: this._tileWidth
     })
 
-    map.addTilesetImage(groundTileSetName)
-    this.groundLayer = this.createLayer(['#'], 'groundLayer', TileSetModificators.ground, groundTileSetName, map)
+    map.addTilesetImage(envTls)
+    map.addTilesetImage(wallsTls)
+    this.groundLayer = this.createLayer(
+      ['#'], 'groundLayer', TileSetModificators.ground, wallsTls, this._tileWallInxs, map)
     this.groundLayer?.setCollisionByExclusion([-1])
 
-    this.stairsLayer = this.createLayer(['t'], 'stairsLayer', TileSetModificators.ladders, groundTileSetName, map)
-    // this.stairsLayer?.setCollisionByExclusion([18, 33])
+    this.stairsLayer = this.createLayer(
+      ['t'], 'stairsLayer', TileSetModificators.ladders, envTls, this._tileIndexes, map)
 
-    this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A', 'l', 'p'], 'envLayer', TileSetModificators.none, groundTileSetName, map)
+    this.envLayer = this.createLayer(
+      ['D', 'k', 'B', 'w', 'A', 'l', 'p'], 'envLayer', TileSetModificators.none, envTls, this._tileIndexes, map)
   }
 
   createLayer(
-    symbols: string[], nameKey: string, mod: TileSetModificators, tileset: string, map: Phaser.Tilemaps.Tilemap) {
+    symbols: string[], nameKey: string,
+    mod: TileSetModificators, tileset: string, tileNums: IMapTilesIndexes, map: Phaser.Tilemaps.Tilemap) {
 
-    const indexes = this.getIndexesForTiles(symbols, mod)
+    const indexes = this.getIndexesForTiles(symbols, mod, tileNums)
 
     const layer = map.createBlankLayer(nameKey, tileset)
     return layer && layer.putTilesAt(indexes, 0, 0) || null
@@ -69,7 +77,7 @@ export class MapSceneLevels {
     return strings[i] && !(strings[i][j] == undefined || strings[i][j] == null)
   }
 
-  getIndexesForTiles(symbols: string[], modificator: TileSetModificators) {
+  getIndexesForTiles(symbols: string[], modificator: TileSetModificators, nums: IMapTilesIndexes) {
     const symMap = this._symbolMap
     const width = symMap[0].length
     const height = symMap.length
@@ -85,13 +93,13 @@ export class MapSceneLevels {
 
           if (symMap[i][j] == element) {
             if (modificator == TileSetModificators.ground) {
-              this.setElementForGroundMod(i, j, element, indexesMap)
+              this.setElementForGroundMod(i, j, element, indexesMap, nums)
             }
             // for stairs, draw begin for ladders
             else if (modificator == TileSetModificators.ladders) {
-              this.setElementForLadderMod(i, j, element, indexesMap)
+              this.setElementForLadderMod(i, j, element, indexesMap, nums)
             } else {
-              indexesMap[i][j] = this._tileIndexes[element]
+              indexesMap[i][j] = nums[element]
             }
 
             // stop search for these symbols
@@ -108,16 +116,16 @@ export class MapSceneLevels {
     return indexesMap
   }
 
-  setElementForLadderMod(i: number, j: number, element: string, map: Array<Array<number>>) {
+  setElementForLadderMod(i: number, j: number, element: string, map: Array<Array<number>>, tileNums: IMapTilesIndexes) {
     const symMap = this._symbolMap
-    if (this.notNullsMapElement(symMap, i - 1, j) && symMap[i - 1][j] == element && this._tileIndexes[element + element]) {
-      map[i][j] = this._tileIndexes[element + element]
+    if (this.notNullsMapElement(symMap, i - 1, j) && symMap[i - 1][j] == element && tileNums[element + element]) {
+      map[i][j] = tileNums[element + element]
     } else {
-      map[i][j] = this._tileIndexes[element]
+      map[i][j] = tileNums[element]
     }
   }
 
-  setElementForGroundMod(i: number, j: number, element: string, map: Array<Array<number>>) {
+  setElementForGroundMod(i: number, j: number, element: string, map: Array<Array<number>>, tileNums: IMapTilesIndexes) {
     const symMap = this._symbolMap
 
     const notNull = (ip: number, jp: number) => {
@@ -139,17 +147,20 @@ export class MapSceneLevels {
 
     if (spaceCounter == 0) {
       if (notNull(i - 1, j - 1) && symMap[i - 1][j - 1] != element) {
-        spaceCounter = 14
-      } else if (notNull(i - 1, j + 1) && symMap[i - 1][j + 1] != element) {
-        spaceCounter = 16
-      } else if (notNull(i + 1, j + 1) && symMap[i + 1][j + 1] != element) {
-        spaceCounter = 17
-      } else if (notNull(i + 1, j - 1) && symMap[i + 1][j - 1] != element) {
-        spaceCounter = 13
+        spaceCounter += 128
+      }
+      if (notNull(i - 1, j + 1) && symMap[i - 1][j + 1] != element) {
+        spaceCounter += 16
+      }
+      if (notNull(i + 1, j + 1) && symMap[i + 1][j + 1] != element) {
+        spaceCounter += 32
+      }
+      if (notNull(i + 1, j - 1) && symMap[i + 1][j - 1] != element) {
+        spaceCounter += 64
       }
     }
 
-    map[i][j] = this._tileIndexes['#' + spaceCounter]
+    map[i][j] = tileNums['#' + spaceCounter]
   }
 
   getCoordsForFirstSymbol(symb: string) {
