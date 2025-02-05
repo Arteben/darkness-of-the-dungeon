@@ -38,7 +38,7 @@ export class MineDarkness {
     // parent,
     scene: [],
     type: WEBGL,
-    backgroundColor: '#1b262c',
+    backgroundColor: 'black',
     pixelArt: true,
     physics: {
       default: 'arcade',
@@ -141,7 +141,7 @@ export class MineDarkness {
 
     const winSizes: IResolution = {
       width: window.innerWidth,
-      height: window.innerHeight - topMargin,
+      height: window.innerHeight - topMargin - 20,
     }
 
     const newSize: IResolution = {

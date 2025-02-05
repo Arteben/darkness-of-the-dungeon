@@ -11,7 +11,7 @@ export class MapSceneLevels {
     '#12': 12, '#1': 10, '#2': 8,
     '#10': 16, '#6': 0, '#5': 2, '#9': 18,
     '#3': 3, '#14': 42, '#16': 40, '#17': 24, '#13': 26, '#7': 11, '#11': 19,
-    'D': 55, 't': 52, 'tt': 53, 'k': 54, 'B': 13, 'A': 50
+    'D': 55, 't': 52, 'tt': 53, 'k': 54, 'B': 13, 'A': 50, 'l': 48, 'p': 47
   }
 
   _symbolMap: Array<string>
@@ -53,7 +53,7 @@ export class MapSceneLevels {
     this.stairsLayer = this.createLayer(['t'], 'stairsLayer', TileSetModificators.ladders, groundTileSetName, map)
     // this.stairsLayer?.setCollisionByExclusion([18, 33])
 
-    this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A'], 'envLayer', TileSetModificators.none, groundTileSetName, map)
+    this.envLayer = this.createLayer(['D', 'k', 'B', 'w', 'A', 'l', 'p'], 'envLayer', TileSetModificators.none, groundTileSetName, map)
   }
 
   createLayer(

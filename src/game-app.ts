@@ -160,7 +160,8 @@ export class GameApp extends GameStateElement {
   canvas {
     width: 1200px;
     height: 900px;
-    background-color: darkslateblue;
+    border: #304147 ridge 0;
+    border-width: 10px;
   }
 `
 }
