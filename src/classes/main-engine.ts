@@ -6,7 +6,8 @@ import {
   overlapCallbackParams,
   IconTips,
   IJsonMap,
-  ISelectedMapForInit
+  ISelectedMapForInit,
+  ILoadedTileSets,
 } from '@/types/main-types'
 
 // assets
@@ -48,7 +49,13 @@ export class MainEngine extends Scene {
 
     this.setMainKyes()
 
-    this._mapLevels = new MapSceneLevels(this, this._selectedMap, 'tileSet', 'wallTileSet')
+    const tls: ILoadedTileSets = {
+      walls: 'wallTileSet',
+      env: 'tileSet',
+      fon: 'backgroundTileSet'
+    }
+
+    this._mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
 

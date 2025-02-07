@@ -112,3 +112,9 @@ export type GameStateChangeData = {
 export interface ISelectedMapForInit {
   nameMap: string
 }
+
+export interface ILoadedTileSets {
+  walls: string
+  env: string
+  fon: string
+}

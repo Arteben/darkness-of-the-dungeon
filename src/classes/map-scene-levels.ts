@@ -1,6 +1,11 @@
 import { MainEngine } from '@/classes/main-engine'
 
-import { IMapTilesIndexes, INumberCoords, ITilesCoords } from '@/types/main-types'
+import {
+  IMapTilesIndexes,
+  INumberCoords,
+  ITilesCoords,
+  ILoadedTileSets
+} from '@/types/main-types'
 import { TileSetModificators } from '@/types/enums'
 
 // import DudeSet from '@assets/dude.png'
@@ -16,17 +21,17 @@ export class MapSceneLevels {
     '#48': 6, '#49': 10, '#51': 4,
     '#53': 4, '#60': 28, '#64': 26, '#65': 4, '#66': 8, '#67': 4, '#68': 4,
     '#70': 4, '#72': 17, '#73': 4, '#74': 4, '#75': 4, '#76': 4, '#77': 4, '#78': 4,
-    '#80': 4, '#81': 4, '#82': 4, '#83': 4, '#84': 4, '#86': 4,
+    '#80': 58, '#81': 4, '#82': 4, '#83': 4, '#84': 4, '#86': 4,
     '#88': 4, '#89': 4, '#90': 4, '#91': 4, '#92': 28, '#93': 4, '#94': 4,
     '#96': 15, '#98': 4, '#99': 3, '#104': 17, '#106': 4, '#108': 4,
-    '#100': 4, '#112': 4, '#113': 23, '#114': 4, '#115': 3, '#116': 4, '#118': 4,
+    '#100': 4, '#112': 57, '#113': 23, '#114': 4, '#115': 3, '#116': 4, '#118': 4,
     '#120': 38, '#121': 18, '#122': 4, '#123': 4, '#124': 28, '#125': 4, '#126': 4,
     '#128': 42, '#129': 4, '#130': 8, '#131': 4, '#132': 1, '#134': 4, '#133': 4,
     '#136': 28, '#137': 4, '#138': 4, '#139': 4, '#140': 4, '#141': 4, '#142': 4, '#144': 14,
-    '#147': 3, '#148': 1, '#160': 4, '#172': 28,
-    '#176': 4, '#177': 31, '#179': 3, '#180': 46, '#181': 2, '#188': 28, '#192': 7, '#194': 8,
-    '#196': 4, '#204': 28, '#208': 4, '#210': 39, '#211': 3, '#212': 22, '#214': 0,'#220': 28,
-    '#224': 4, '#226': 47, '#227': 3,
+    '#147': 3, '#148': 1, '#160': 50, '#172': 28,
+    '#176': 49, '#177': 31, '#179': 3, '#180': 46, '#181': 2, '#188': 28, '#192': 7, '#194': 8,
+    '#196': 4, '#204': 28, '#208': 48, '#210': 39, '#211': 3, '#212': 22, '#214': 0, '#220': 28,
+    '#224': 56, '#226': 47, '#227': 3,
     '#232': 30, '#234': 16, '#236': 28,
     '#240': 37, '#241': 52, '#242': 51, '#243': 3, '#244': 60, '#245': 36, '#246': 35, '#247': 11,
     '#248': 59, '#249': 44, '#250': 43, '#251': 19, '#252': 28, '#253': 29, '#254': 27,
@@ -46,7 +51,7 @@ export class MapSceneLevels {
   mapWidth = 0
   mapHeight = 0
 
-  constructor(engine: MainEngine, nameSymbolMap: string, envTls: string, wallsTls: string) {
+  constructor(engine: MainEngine, nameSymbolMap: string, tls: ILoadedTileSets) {
 
     const symbolMap: Array<string> = engine.cache.text.get(nameSymbolMap).split('\n')
     this._symbolMap = symbolMap
@@ -62,22 +67,27 @@ export class MapSceneLevels {
     this.mapWidth = symbolMap[0].length * this._tileWidth
     this.mapHeight = symbolMap.length * this._tileWidth
 
+    const backgroundMap = engine.make.tilemap({
+      width: symbolMap[0].length, height: symbolMap.length,
+      tileWidth: this._tileWidth, tileHeight: this._tileWidth
+    })
+
     const map = engine.make.tilemap({
       width: symbolMap[0].length, height: symbolMap.length,
       tileWidth: this._tileWidth, tileHeight: this._tileWidth
     })
 
-    map.addTilesetImage(envTls)
-    map.addTilesetImage(wallsTls)
+    map.addTilesetImage(tls.env)
+    map.addTilesetImage(tls.walls)
     this.groundLayer = this.createLayer(
-      ['#'], 'groundLayer', TileSetModificators.ground, wallsTls, this._tileWallInxs, map)
+      ['#'], 'groundLayer', TileSetModificators.ground, tls.walls, this._tileWallInxs, map)
     this.groundLayer?.setCollisionByExclusion([-1])
 
     this.stairsLayer = this.createLayer(
-      ['t'], 'stairsLayer', TileSetModificators.ladders, envTls, this._tileIndexes, map)
+      ['t'], 'stairsLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
 
     this.envLayer = this.createLayer(
-      ['D', 'k', 'B', 'w', 'A', 'l', 'p'], 'envLayer', TileSetModificators.none, envTls, this._tileIndexes, map)
+      ['D', 'k', 'B', 'w', 'A', 'l', 'p'], 'envLayer', TileSetModificators.none, tls.env, this._tileIndexes, map)
   }
 
   createLayer(
