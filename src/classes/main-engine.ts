@@ -15,6 +15,7 @@ import dudeSet from '@assets/dude.png'
 import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
+import bricksRaw from '@assets/bricks.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -95,6 +96,7 @@ export class MainEngine extends Scene {
 
     this.load.image('tileSet', tilesRaw)
     this.load.image('wallTileSet', tilesWallsRaw)
+    this.load.image('backgroundTileSet', bricksRaw)
     // load for maps
     // '/src/assets/maps/map3.txt'
     mapList.forEach((el: IJsonMap)=> {

@@ -10,8 +10,6 @@ import { TileSetModificators } from '@/types/enums'
 
 // import DudeSet from '@assets/dude.png'
 
-const nums: number[] = []
-
 export class MapSceneLevels {
   _tileWallInxs: IMapTilesIndexes = {
     '#0': 9, '#16': 40,
@@ -39,9 +37,13 @@ export class MapSceneLevels {
   _tileIndexes: IMapTilesIndexes = {
     'D': 55, 't': 52, 'tt': 53, 'k': 54, 'B': 13, 'A': 50, 'l': 48, 'p': 47
   }
+  _tileBackInds: IMapTilesIndexes = {
+    '0': 0
+  }
 
   _symbolMap: Array<string>
 
+  backLayer!: Phaser.Tilemaps.TilemapLayer | null
   groundLayer!: Phaser.Tilemaps.TilemapLayer | null
   stairsLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
@@ -67,10 +69,17 @@ export class MapSceneLevels {
     this.mapWidth = symbolMap[0].length * this._tileWidth
     this.mapHeight = symbolMap.length * this._tileWidth
 
+    // create layer for background
     const backgroundMap = engine.make.tilemap({
       width: symbolMap[0].length, height: symbolMap.length,
       tileWidth: this._tileWidth, tileHeight: this._tileWidth
     })
+    backgroundMap.addTilesetImage(tls.fon)
+    const backgroundSymMap: Array<string> = this.getBackgroundSymMap(
+      symbolMap[0].length, symbolMap.length)
+    this.backLayer = this.createLayer(
+      ['0'], backgroundSymMap, 'backgroundLayer', TileSetModificators.none, tls.fon, this._tileBackInds, backgroundMap)
+    //
 
     const map = engine.make.tilemap({
       width: symbolMap[0].length, height: symbolMap.length,
@@ -80,21 +89,27 @@ export class MapSceneLevels {
     map.addTilesetImage(tls.env)
     map.addTilesetImage(tls.walls)
     this.groundLayer = this.createLayer(
-      ['#'], 'groundLayer', TileSetModificators.ground, tls.walls, this._tileWallInxs, map)
+      ['#'], symbolMap, 'groundLayer', TileSetModificators.ground, tls.walls, this._tileWallInxs, map)
     this.groundLayer?.setCollisionByExclusion([-1])
 
     this.stairsLayer = this.createLayer(
-      ['t'], 'stairsLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
+      ['t'], symbolMap, 'stairsLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
 
     this.envLayer = this.createLayer(
-      ['D', 'k', 'B', 'w', 'A', 'l', 'p'], 'envLayer', TileSetModificators.none, tls.env, this._tileIndexes, map)
+      ['D', 'k', 'B', 'w', 'A', 'l', 'p'],
+      symbolMap, 'envLayer', TileSetModificators.none, tls.env, this._tileIndexes, map)
   }
 
   createLayer(
-    symbols: string[], nameKey: string,
-    mod: TileSetModificators, tileset: string, tileNums: IMapTilesIndexes, map: Phaser.Tilemaps.Tilemap) {
-
-    const indexes = this.getIndexesForTiles(symbols, mod, tileNums)
+    symbols: string[],
+    symMap: Array<string>,
+    nameKey: string,
+    mod: TileSetModificators,
+    tileset: string,
+    tileNums: IMapTilesIndexes,
+    map: Phaser.Tilemaps.Tilemap
+  ) {
+    const indexes = this.getIndexesForTiles(symbols, mod, tileNums, symMap)
 
     const layer = map.createBlankLayer(nameKey, tileset)
     return layer && layer.putTilesAt(indexes, 0, 0) || null
@@ -104,8 +119,7 @@ export class MapSceneLevels {
     return strings[i] && !(strings[i][j] == undefined || strings[i][j] == null)
   }
 
-  getIndexesForTiles(symbols: string[], modificator: TileSetModificators, nums: IMapTilesIndexes) {
-    const symMap = this._symbolMap
+  getIndexesForTiles(symbols: string[], modificator: TileSetModificators, nums: IMapTilesIndexes, symMap: Array<string>,) {
     const width = symMap[0].length
     const height = symMap.length
 
@@ -120,11 +134,11 @@ export class MapSceneLevels {
 
           if (symMap[i][j] == element) {
             if (modificator == TileSetModificators.ground) {
-              this.setElementForGroundMod(i, j, element, indexesMap, nums)
+              this.setElementForGroundMod(i, j, element, symMap, indexesMap, nums)
             }
             // for stairs, draw begin for ladders
             else if (modificator == TileSetModificators.ladders) {
-              this.setElementForLadderMod(i, j, element, indexesMap, nums)
+              this.setElementForLadderMod(i, j, element, symMap, indexesMap, nums)
             } else {
               indexesMap[i][j] = nums[element]
             }
@@ -143,8 +157,14 @@ export class MapSceneLevels {
     return indexesMap
   }
 
-  setElementForLadderMod(i: number, j: number, element: string, map: Array<Array<number>>, tileNums: IMapTilesIndexes) {
-    const symMap = this._symbolMap
+  setElementForLadderMod(
+    i: number,
+    j: number,
+    element: string,
+    symMap: Array<string>,
+    map: Array<Array<number>>,
+    tileNums: IMapTilesIndexes
+  ) {
     if (this.notNullsMapElement(symMap, i - 1, j) && symMap[i - 1][j] == element && tileNums[element + element]) {
       map[i][j] = tileNums[element + element]
     } else {
@@ -152,8 +172,14 @@ export class MapSceneLevels {
     }
   }
 
-  setElementForGroundMod(i: number, j: number, element: string, map: Array<Array<number>>, tileNums: IMapTilesIndexes) {
-    const symMap = this._symbolMap
+  setElementForGroundMod(
+    i: number,
+    j: number,
+    element: string,
+    symMap: Array<string>,
+    map: Array<Array<number>>,
+    tileNums: IMapTilesIndexes
+  ) {
 
     const notNull = (ip: number, jp: number) => {
       return this.notNullsMapElement(symMap, ip, jp)
@@ -184,17 +210,6 @@ export class MapSceneLevels {
     if (notNull(i + 1, j - 1) && symMap[i + 1][j - 1] != element) {
       spaceCounter += 64
     }
-
-    // if (spaceCounter > 15) {
-    //   const findedIndex = nums.findIndex(element => element == spaceCounter)
-    //   if (findedIndex == -1 && typeof this._tileWallInxs['#' + spaceCounter] == 'undefined') {
-    //     nums.push(spaceCounter)
-    //   }
-    // }
-
-    // nums.sort()
-
-    // console.log('nums', nums)
 
     map[i][j] = tileNums['#' + spaceCounter]
   }
@@ -234,5 +249,13 @@ export class MapSceneLevels {
 
   getTileNum(sym: string) {
     return this._tileIndexes[sym]
+  }
+
+  getBackgroundSymMap(maxW: number, maxH: number) {
+    const syms = new Array(maxH)
+    const str: string = ''
+    // @ts-ignore
+    syms.fill(str.padStart(maxW, '0'))
+    return syms
   }
 }
