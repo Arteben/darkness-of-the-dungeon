@@ -3,7 +3,6 @@ import { IconTip } from '@/classes/icon-tip'
 
 import {
   Languages,
-  LocSettingsList,
   GamePages,
   GameStateSettings,
 } from '@/types/enums'
@@ -43,13 +42,6 @@ export interface IJsonTranslatesType {
 export interface ILocSettings {
   isSound: boolean
   selectedMap?: string
-}
-
-export type locSettingsValue = string | boolean
-
-export interface ILocSettingsEventLoad {
-  type: LocSettingsList
-  value: locSettingsValue
 }
 
 export interface IJsonMap {

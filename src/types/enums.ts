@@ -27,11 +27,6 @@ export enum GameStateSettings {
   isGameStarted
 }
 
-export enum LocSettingsList  {
-  isSound,
-  selectedMap
-}
-
 export enum GamePages {
   mainMenu,
   rules,

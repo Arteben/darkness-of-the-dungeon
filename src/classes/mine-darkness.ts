@@ -107,7 +107,7 @@ export class MineDarkness {
     return mapList[findedMapIndex]
   }
 
-  private onChangeGameState(data: any) {
+  private onChangeGameState(data: CustomEventInit) {
     const eventDetail = data.detail as GameStateChangeData
     if (!this.phaser) return
 

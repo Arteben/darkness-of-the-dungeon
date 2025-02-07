@@ -91,7 +91,7 @@ export class GameHashes {
     }
   }
 
-  onChangeGameState(eventData: unknown) {
+  onChangeGameState(eventData: CustomEventInit) {
     const game = getMineDarknessGame()
     if (!game)
       return
