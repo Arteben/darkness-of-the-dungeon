@@ -13,7 +13,7 @@ import {
 import { DudeClimbingTypes, DudeStates } from '@/types/enums'
 
 export class Dude {
-  image: Types.Physics.Arcade.SpriteWithDynamicBody
+  player: Types.Physics.Arcade.SpriteWithDynamicBody
   _dudeStay: boolean = true
   _frame: IResolution
   _levels: MapSceneLevels
@@ -26,11 +26,11 @@ export class Dude {
     if (flag == this._isNearStairs) return
 
     if (flag) {
-      this.image.body.setGravityY(0)
+      this.player.body.setGravityY(0)
     } else {
-      this.image.body.setGravityY(1000)
+      this.player.body.setGravityY(1000)
     }
-    this.image.body.setAllowGravity(!flag)
+    this.player.body.setAllowGravity(!flag)
     this._isNearStairs = flag
   }
   public get isNearStairs(): boolean {
@@ -145,10 +145,18 @@ export class Dude {
   constructor(
     engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, tips: IconTips, frameResolution: IResolution) {
 
-    this._frame = frameResolution
     this._levels = mapLevels
     this._camera = camera
     this._tips = tips
+
+    // set animation frame size for our levels
+    const dudeScale = 1.6
+    const animFrameSize = 56
+
+    this._frame = {
+      width: frameResolution.width / dudeScale,
+      height: frameResolution.height / dudeScale,
+    }
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
@@ -158,30 +166,37 @@ export class Dude {
       startCoords.h = startMapCoords.h
     }
 
-    this.image = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
-    this.image.setBounce(0)
-    this.image.setCollideWorldBounds(true)
+    this.player = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
+    this.player.setBounce(0)
+    this.player.setCollideWorldBounds(true)
+    this.player.setScale(dudeScale)
+
+    this.player.body.setSize(this._frame.width, this._frame.height)
+    this.player.setOffset((animFrameSize - this._frame.width) / 2,
+      animFrameSize - this._frame.height)
+
     this.isNearStairs = false
     this.dudeMoveState = DudeStates.walk
 
     if (this._levels.groundLayer) {
-      engine.physics.add.collider(this.image, this._levels.groundLayer)
+      engine.physics.add.collider(this.player, this._levels.groundLayer)
     }
 
-    this.image.anims.create({
+    this.player.anims.create({
       key: 'leftDude',
       frames: engine.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1
     })
 
-    this.image.anims.create({
+    this.player.anims.create({
       key: 'turnDude',
-      frames: [{ key: 'dude', frame: 4 }],
-      frameRate: 20
+      frames: engine.anims.generateFrameNumbers('dude', { start: 0, end: 1 }),
+      frameRate: 1,
+      repeat: -1
     })
 
-    this.image.anims.create({
+    this.player.anims.create({
       key: 'rightDude',
       frames: engine.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
       frameRate: 10,
@@ -228,7 +243,7 @@ export class Dude {
       case DudeStates.climbing:
         this._tips.stairsTip?.setIcon(false, null)
         this.isNearStairs = true
-        const dude = this.image
+        const dude = this.player
         const coords = this._levels.getTilesForCoords(dude.x, dude.y)
         dude.x = (coords.x + 0.5) * this._levels._tileWidth
         break
@@ -267,8 +282,10 @@ export class Dude {
     const levels = this._levels
     const coords = levels.getTilesForCoords(dude.x, dude.y)
     const stairsTip = this._tips.stairsTip || null
+    // dude is very tall and his center is upper
+    // to do set in function
+    if (!(tile.x == coords.x && tile.y == coords.y + 1)) return
 
-    if (!(tile.x == coords.x && tile.y == coords.y)) return
 
     this.isNearStairs = tile.index != -1
 
@@ -289,30 +306,30 @@ export class Dude {
   // (left, right or climbing) set sizes for movements
   setDudeLeftRightMoveSizes(isLeft: boolean) {
     if (isLeft) {
-      this.image.setVelocityX(-160)
-      this.image.anims.play('leftDude', true)
+      this.player.setVelocityX(-160)
+      this.player.anims.play('leftDude', true)
     } else {
-      this.image.setVelocityX(160)
-      this.image.anims.play('rightDude', true)
+      this.player.setVelocityX(160)
+      this.player.anims.play('rightDude', true)
     }
   }
   // up, down
   setDudeUpDownMoveSizes(isUp: boolean) {
     if (isUp) {
-      this.image.setVelocityY(-100)
+      this.player.setVelocityY(-100)
     } else {
-      this.image.setVelocityY(110)
+      this.player.setVelocityY(110)
     }
   }
   // stop for dude
   setDydeStaySizes() {
     switch (this.dudeMoveState) {
       case DudeStates.walk:
-        this.image.anims.play('turnDude', true)
+        this.player.anims.play('turnDude', true)
         break
       case DudeStates.climbing:
     }
-    this.image.setVelocityX(0)
-    this.image.setVelocityY(0)
+    this.player.setVelocityX(0)
+    this.player.setVelocityY(0)
   }
 }

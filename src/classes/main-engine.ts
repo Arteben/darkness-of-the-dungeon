@@ -16,6 +16,7 @@ import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
 import bricksRaw from '@assets/bricks.png'
+import charRaw from '@assets/char.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -65,12 +66,12 @@ export class MainEngine extends Scene {
     this._dude = new Dude(
       this, this._mapLevels, this._camera, this._tips, { width: 32, height: 48 } as IResolution)
 
-    this._camera.startFollow(this._dude.image)
+    this._camera.startFollow(this._dude.player)
 
 
     // create overlap dude with stairs for vertical movements
     if (this._mapLevels.stairsLayer) {
-      this.physics.add.overlap(this._dude.image, this._mapLevels.stairsLayer,
+      this.physics.add.overlap(this._dude.player, this._mapLevels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
           this._dude.overlapCallbackUpdating(
             prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
@@ -103,7 +104,7 @@ export class MainEngine extends Scene {
       this.load.text(el.name, `/src/assets/${el.file}`)
     })
 
-    this.load.spritesheet('dude', dudeSet, { frameWidth: 32, frameHeight: 48 })
+    this.load.spritesheet('dude', charRaw, { frameWidth: 56, frameHeight: 56 })
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
   }
 
