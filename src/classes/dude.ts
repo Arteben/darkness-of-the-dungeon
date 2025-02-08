@@ -10,6 +10,7 @@ import {
   mainKeys,
   IconTips,
   IAnimDudePlayParams,
+  ITilesCoords,
 } from '@/types/main-types'
 
 import {
@@ -103,7 +104,7 @@ export class Dude {
     if (value == this._isUpMove) return
 
     switch (this.dudeMoveState) {
-      case DudeStates.walk:
+      case DudeStates.idle:
         if (value && this.isNearStairs) {
           this.climbingType = DudeClimbingTypes.up
           this.dudeMoveState = DudeStates.climbing
@@ -129,7 +130,7 @@ export class Dude {
     if (value == this._isDownMove) return
 
     switch (this.dudeMoveState) {
-      case DudeStates.walk:
+      case DudeStates.idle:
         if (value && this.isNearStairs) {
           this.climbingType = DudeClimbingTypes.down
           this.dudeMoveState = DudeStates.climbing
@@ -263,9 +264,8 @@ export class Dude {
       case DudeStates.climbing:
         this._tips.stairsTip?.setIcon(false, null)
         this.isNearStairs = true
-        const dude = this.player
-        const coords = this._levels.getTilesForCoords(dude.x, dude.y)
-        dude.x = (coords.x + 0.5) * this._levels._tileWidth
+        const coords = this.getTilesForCoords()
+        this.player.x = (coords.x + 0.5) * this._levels._tileWidth
         break
       case DudeStates.fighting:
         this.isNearStairs = false
@@ -276,17 +276,19 @@ export class Dude {
 
   // function for updating left\right bottons keys
   leftRightKyesUpdating(newValue: boolean, oldValue: boolean, isLeft: boolean) {
+    if (newValue) {
+      this.isFlipXAnimations = isLeft
+    }
+
     switch (this.dudeMoveState) {
       case DudeStates.idle:
         if (newValue) {
-          this.isFlipXAnimations = isLeft
           this.dudeMoveState = DudeStates.walk
           this.setDudeLeftRightMoveSizes(isLeft)
         }
         break
       case DudeStates.walk:
         if (newValue) {
-          this.isFlipXAnimations = isLeft
           this.setDudeLeftRightMoveSizes(isLeft)
         } else if (oldValue) {
           this.dudeMoveState = DudeStates.idle
@@ -307,12 +309,11 @@ export class Dude {
   // if yes, set turn off gravity for dude and show tip
   overlapCallbackUpdating(
     dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
-    const levels = this._levels
-    const coords = levels.getTilesForCoords(dude.x, dude.y)
+    const coords = this.getTilesForCoords()
     const stairsTip = this._tips.stairsTip || null
     // dude is very tall and his center is upper
     // to do set in function
-    if (!(tile.x == coords.x && tile.y == coords.y + 1)) return
+    if (!(tile.x == coords.x && tile.y == coords.y)) return
 
 
     this.isNearStairs = tile.index != -1
@@ -323,7 +324,7 @@ export class Dude {
         && this.climbingType != DudeClimbingTypes.stand) {
         this.climbingType = DudeClimbingTypes.stand
       }
-    } else if (this.dudeMoveState == DudeStates.walk) {
+    } else if (this.dudeMoveState == DudeStates.idle) {
       const iconCoords: INumberCoords = { w: dude.x, h: dude.y }
       stairsTip?.setIcon(true, iconCoords)
     }
@@ -380,5 +381,12 @@ export class Dude {
     //   frameRate: 10,
     //   repeat: -1
     // })
+  }
+
+
+  // get Coords with correction from texture scale
+  getTilesForCoords(): ITilesCoords {
+    const coords = this._levels.getTilesForCoords(this.player.x, this.player.y)
+    return { x: coords.x, y: coords.y + 1 }
   }
 }
