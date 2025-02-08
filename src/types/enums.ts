@@ -35,6 +35,7 @@ export enum GamePages {
 }
 
 export enum DudeStates {
+  idle,
   walk,
   climbing,
   fighting,
@@ -50,4 +51,9 @@ export enum TileSetModificators {
   none,
   ladders,
   ground
+}
+
+export enum DudeAnimations {
+  idle,
+  walking,
 }

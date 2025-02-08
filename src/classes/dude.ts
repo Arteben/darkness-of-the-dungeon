@@ -9,8 +9,14 @@ import {
   INumberCoords,
   mainKeys,
   IconTips,
+  IAnimDudePlayParams,
 } from '@/types/main-types'
-import { DudeClimbingTypes, DudeStates } from '@/types/enums'
+
+import {
+  DudeClimbingTypes,
+  DudeStates,
+  DudeAnimations,
+} from '@/types/enums'
 
 export class Dude {
   player: Types.Physics.Arcade.SpriteWithDynamicBody
@@ -38,7 +44,7 @@ export class Dude {
   }
   //
 
-  //@ts-ignore // isDudeState
+  // @ts-ignore // isDudeState
   private _dudeMoveState: DudeStates
   public set dudeMoveState(newState: DudeStates) {
     this.dudeMoveStateUpdating(newState)
@@ -46,6 +52,7 @@ export class Dude {
   public get dudeMoveState(): DudeStates {
     return this._dudeMoveState
   }
+
   // climbing up OR down here?
   private _climbingType: DudeClimbingTypes = DudeClimbingTypes.stand
   public set climbingType(newValue: DudeClimbingTypes) {
@@ -68,7 +75,7 @@ export class Dude {
     return this._climbingType
   }
 
-  // isLeft
+  // isLeftKeys
   private _isLeftMove: boolean = false
   public set isLeftMove(value: boolean) {
     this.leftRightKyesUpdating(value, this._isLeftMove, true)
@@ -79,7 +86,7 @@ export class Dude {
   }
   //
 
-  // isRightMove
+  // isRightKeys
   private _isRightMove: boolean = false
   public set isRightMove(value: boolean) {
     this.leftRightKyesUpdating(value, this._isRightMove, false)
@@ -142,8 +149,29 @@ export class Dude {
   }
   //
 
+  // animation key for dude
+  private _dudeAnimationKey: DudeAnimations = DudeAnimations.idle
+  public set dudeAnimationKey({ key, isIgnoreIf }: IAnimDudePlayParams) {
+    switch (key) {
+      case DudeAnimations.idle:
+      case DudeAnimations.walking:
+        this.player.setFlipX(this.isFlipXAnimations)
+    }
+    this.player.anims.play(Dude.getAnimKey(key), isIgnoreIf)
+    this._dudeAnimationKey = key
+  }
+  public get dudeAnimationKey(): DudeAnimations {
+    return this._dudeAnimationKey
+  }
+  //
+
+  // flip animation for left | right animations
+  isFlipXAnimations: boolean = false
+
+  // CONSTRUCTOR ~180
   constructor(
-    engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera, tips: IconTips, frameResolution: IResolution) {
+    engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera,
+    tips: IconTips, keyAnimFrameSet: string, frameResolution: IResolution) {
 
     this._levels = mapLevels
     this._camera = camera
@@ -175,33 +203,16 @@ export class Dude {
     this.player.setOffset((animFrameSize - this._frame.width) / 2,
       animFrameSize - this._frame.height)
 
-    this.isNearStairs = false
-    this.dudeMoveState = DudeStates.walk
-
     if (this._levels.groundLayer) {
       engine.physics.add.collider(this.player, this._levels.groundLayer)
     }
 
-    this.player.anims.create({
-      key: 'leftDude',
-      frames: engine.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    })
+    // all animations for dude
+    this.createAnimations(engine, keyAnimFrameSet)
 
-    this.player.anims.create({
-      key: 'turnDude',
-      frames: engine.anims.generateFrameNumbers('dude', { start: 0, end: 1 }),
-      frameRate: 1,
-      repeat: -1
-    })
-
-    this.player.anims.create({
-      key: 'rightDude',
-      frames: engine.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1
-    })
+    // set start parameters for start game
+    this.isNearStairs = false
+    this.dudeMoveState = DudeStates.idle
   }
 
   update(keys: mainKeys): void {
@@ -237,8 +248,17 @@ export class Dude {
     if (newState == this._dudeMoveState) return
 
     switch (newState) {
-      case DudeStates.walk:
+      case DudeStates.idle:
         this.isNearStairs = false
+        this.dudeAnimationKey = {
+          key: DudeAnimations.idle, isIgnoreIf: true
+        }
+        this.setDydeStaySizes()
+        break
+      case DudeStates.walk:
+        this.dudeAnimationKey = {
+          key: DudeAnimations.walking, isIgnoreIf: true
+        }
         break
       case DudeStates.climbing:
         this._tips.stairsTip?.setIcon(false, null)
@@ -257,11 +277,19 @@ export class Dude {
   // function for updating left\right bottons keys
   leftRightKyesUpdating(newValue: boolean, oldValue: boolean, isLeft: boolean) {
     switch (this.dudeMoveState) {
+      case DudeStates.idle:
+        if (newValue) {
+          this.isFlipXAnimations = isLeft
+          this.dudeMoveState = DudeStates.walk
+          this.setDudeLeftRightMoveSizes(isLeft)
+        }
+        break
       case DudeStates.walk:
         if (newValue) {
+          this.isFlipXAnimations = isLeft
           this.setDudeLeftRightMoveSizes(isLeft)
         } else if (oldValue) {
-          this.setDydeStaySizes()
+          this.dudeMoveState = DudeStates.idle
         }
         break
       case DudeStates.climbing:
@@ -306,11 +334,9 @@ export class Dude {
   // (left, right or climbing) set sizes for movements
   setDudeLeftRightMoveSizes(isLeft: boolean) {
     if (isLeft) {
-      this.player.setVelocityX(-160)
-      this.player.anims.play('leftDude', true)
+      this.player.setVelocityX(-90)
     } else {
-      this.player.setVelocityX(160)
-      this.player.anims.play('rightDude', true)
+      this.player.setVelocityX(90)
     }
   }
   // up, down
@@ -323,13 +349,36 @@ export class Dude {
   }
   // stop for dude
   setDydeStaySizes() {
-    switch (this.dudeMoveState) {
-      case DudeStates.walk:
-        this.player.anims.play('turnDude', true)
-        break
-      case DudeStates.climbing:
-    }
     this.player.setVelocityX(0)
     this.player.setVelocityY(0)
+  }
+
+  // get animation key for index from enums
+  static getAnimKey(index: DudeAnimations) {
+    return 'dude-animations-' + index
+  }
+
+  // create all availible animations for this player
+  createAnimations(scene: MainEngine, animsKey: string) {
+    this.player.anims.create({
+      key: Dude.getAnimKey(DudeAnimations.idle),
+      frames: scene.anims.generateFrameNumbers(animsKey, { start: 0, end: 2 }),
+      frameRate: 2,
+      repeat: -1
+    })
+
+    this.player.anims.create({
+      key: Dude.getAnimKey(DudeAnimations.walking),
+      frames: scene.anims.generateFrameNumbers(animsKey, { start: 88, end: 97 }),
+      frameRate: 14,
+      repeat: -1
+    })
+
+    // this.player.anims.create({
+    //   key: 'rightDude',
+    //   frames: scene.anims.generateFrameNumbers(animsKey, { start: 5, end: 8 }),
+    //   frameRate: 10,
+    //   repeat: -1
+    // })
   }
 }

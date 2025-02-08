@@ -8,7 +8,7 @@ export class SceneCamera {
   _main: Phaser.Cameras.Scene2D.Camera
   _defaultZoom = 1
   _zoomLevel: number = this._defaultZoom
-  _maxZoomLevel = 0.2
+  _maxZoomLevel = 0.5
 
   // isZooming
   private _isZooming: boolean = false

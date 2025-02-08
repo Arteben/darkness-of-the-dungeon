@@ -64,7 +64,8 @@ export class MainEngine extends Scene {
     this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
 
     this._dude = new Dude(
-      this, this._mapLevels, this._camera, this._tips, { width: 32, height: 48 } as IResolution)
+      this, this._mapLevels, this._camera, this._tips, 'dudeFrameSet',
+      { width: 32, height: 48 } as IResolution)
 
     this._camera.startFollow(this._dude.player)
 
@@ -104,7 +105,7 @@ export class MainEngine extends Scene {
       this.load.text(el.name, `/src/assets/${el.file}`)
     })
 
-    this.load.spritesheet('dude', charRaw, { frameWidth: 56, frameHeight: 56 })
+    this.load.spritesheet('dudeFrameSet', charRaw, { frameWidth: 56, frameHeight: 56 })
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
   }
 

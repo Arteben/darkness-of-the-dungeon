@@ -5,6 +5,7 @@ import {
   Languages,
   GamePages,
   GameStateSettings,
+  DudeAnimations
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -117,4 +118,9 @@ export interface ILoadedTileSets {
   walls: string
   env: string
   fon: string
+}
+
+export interface IAnimDudePlayParams {
+  key: DudeAnimations
+  isIgnoreIf: boolean
 }
