@@ -38,7 +38,8 @@ export class MineDarkness {
     // parent,
     scene: [],
     type: WEBGL,
-    backgroundColor: '#1b262c',
+    backgroundColor: '06050d',
+    // backgroundColor: '#1b262c',
     pixelArt: true,
     physics: {
       default: 'arcade',
@@ -106,7 +107,7 @@ export class MineDarkness {
     return mapList[findedMapIndex]
   }
 
-  private onChangeGameState(data: any) {
+  private onChangeGameState(data: CustomEventInit) {
     const eventDetail = data.detail as GameStateChangeData
     if (!this.phaser) return
 
@@ -141,7 +142,7 @@ export class MineDarkness {
 
     const winSizes: IResolution = {
       width: window.innerWidth,
-      height: window.innerHeight - topMargin,
+      height: window.innerHeight - topMargin - 20,
     }
 
     const newSize: IResolution = {

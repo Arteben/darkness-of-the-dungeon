@@ -25,20 +25,17 @@ const config = {
 
 const createLabyrinth = (degree) => {
   const maze = new MineMazeBuilder(degree);
-  if (!maze.correctPlaceDoors()) {
-    console.error('fail with place doors!');
-    return false;
-  }
   maze.placeKey();
-  if (!maze.correctPlaceKey()) {
-    console.error('fail with place key!');
-    return false;
-  }
   maze.setLaddersAndWalls();
-  maze.setTorches();
+  maze.setOtherMazeElements();  
   maze.getExpandedMaze();
 
+  if (!maze.correctPlaceDoors()) return false;
+  if (!maze.correctPlaceKey()) return false
+
   if (!maze.expanded) return false;
+  
+  console.log('the maze is created!', maze.expanded.width, maze.expanded.height)
 
   return {
     strings: MineMazeBuilder.getMapArrStrings(maze.expanded.maze, ''),

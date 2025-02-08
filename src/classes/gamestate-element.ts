@@ -24,7 +24,7 @@ export class GameStateElement extends LitElement {
     EventBus.offStateChangesSubscribe(this.changeStateCallback)
   }
 
-  private onChangeGameState(eventData: unknown) {
+  private onChangeGameState(eventData: CustomEventInit) {
     if (!this._game) {
       return
     }

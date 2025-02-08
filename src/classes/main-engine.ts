@@ -6,13 +6,16 @@ import {
   overlapCallbackParams,
   IconTips,
   IJsonMap,
-  ISelectedMapForInit
+  ISelectedMapForInit,
+  ILoadedTileSets,
 } from '@/types/main-types'
 
 // assets
 import dudeSet from '@assets/dude.png'
 import tilesRaw from '@assets/castle-tiles.png'
+import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
+import bricksRaw from '@assets/bricks.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -47,7 +50,13 @@ export class MainEngine extends Scene {
 
     this.setMainKyes()
 
-    this._mapLevels = new MapSceneLevels(this, this._selectedMap, 'tileSet')
+    const tls: ILoadedTileSets = {
+      walls: 'wallTileSet',
+      env: 'tileSet',
+      fon: 'backgroundTileSet'
+    }
+
+    this._mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
 
@@ -86,6 +95,8 @@ export class MainEngine extends Scene {
     //
 
     this.load.image('tileSet', tilesRaw)
+    this.load.image('wallTileSet', tilesWallsRaw)
+    this.load.image('backgroundTileSet', bricksRaw)
     // load for maps
     // '/src/assets/maps/map3.txt'
     mapList.forEach((el: IJsonMap)=> {

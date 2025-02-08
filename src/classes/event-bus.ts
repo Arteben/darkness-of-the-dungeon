@@ -39,7 +39,7 @@ export class EventBus {
     eventBus.removeEventListener(name, callback)
   }
 
-  static subscribeStateChanges(callbackWihBindThis: (e: unknown) => void, that: any): (eventData: CustomEventInit) => void {
+  static subscribeStateChanges(callbackWihBindThis: (e: CustomEventInit) => void, that: any): (eventData: CustomEventInit) => void {
     const eventBusCallback = (eventData: CustomEventInit) => {
       callbackWihBindThis.call(that, eventData)
     }
@@ -47,7 +47,7 @@ export class EventBus {
     return eventBusCallback
   }
 
-  static subscribeAndUpdateStateChanges(callbackWihBindThis: (e: unknown) => void, that: any) {
+  static subscribeAndUpdateStateChanges(callbackWihBindThis: (e: CustomEventInit) => void, that: any) {
     const eventBusCallback = EventBus.subscribeStateChanges(callbackWihBindThis, that)
     const data: CustomEventInit = { detail: null }
     callbackWihBindThis.call(that, data)

@@ -1,6 +1,13 @@
-import { LocSettingsList, BusEventsList } from '@/types/enums'
-import { ILocSettings, locSettingsValue, ILocSettingsEventLoad } from '@/types/main-types'
+import {
+  BusEventsList,
+  GameStateSettings
+} from '@/types/enums'
+import {
+  ILocSettings,
+  GameStateChangeData
+} from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
+import { GameState } from './game-state'
 
 export class GameLocSettings {
   locStorage: Storage
@@ -12,52 +19,54 @@ export class GameLocSettings {
 
   constructor() {
     this.locStorage = window.localStorage
-    EventBus.On(BusEventsList[BusEventsList.changeLocSettings], (event: CustomEventInit) => {
-      if (!event.detail)
-        return
+    EventBus.On(BusEventsList[BusEventsList.changeGameState], (event: CustomEventInit) => {
+      if (!event.detail) return
+      const data: GameStateChangeData = event.detail
+      if (data.property != GameStateSettings.selectedMap
+                        && data.property != GameStateSettings.isSound) {
+          return
+        }
+    this.setLocSettings(data.property, data.state)
+  })
+}
 
-      const data: ILocSettingsEventLoad = event.detail
-      this.setLocSettings(data.type, data.value)
-    })
+getStorageData() {
+  let data: ILocSettings | null = null
+  const rawData = this.locStorage.getItem(this.storageKey)
+
+  if (!rawData) {
+    return data
   }
 
-  getStorageData() {
-    let data: ILocSettings | null = null
-    const rawData = this.locStorage.getItem(this.storageKey)
+  try {
+    data = JSON.parse(rawData) as ILocSettings
+    return data
+  }
+  catch (e) {
+    console.error('error with parse local storage', e)
+    return data
+  }
+}
 
-    if (!rawData) {
-      return data
-    }
+getLocSettings() {
+  const data = this.getStorageData()
+  return <ILocSettings>Object.assign({}, this.defaultLocSettings, data)
+}
 
-    try {
-      data = JSON.parse(rawData) as ILocSettings
-      return data
-    }
-    catch (e) {
-      console.error('error with parse local storage', e)
-      return data
-    }
+setLocSettings(type: GameStateSettings, state: GameState) {
+  const oldData = this.getLocSettings()
+
+  const setLocalSettings = (obj: object) => {
+    const strData = JSON.stringify(obj)
+    this.locStorage.setItem(this.storageKey, strData)
   }
 
-  getLocSettings () {
-    const data = this.getStorageData()
-    return <ILocSettings>Object.assign({}, this.defaultLocSettings, data)
+  switch (type) {
+    case GameStateSettings.isSound:
+      setLocalSettings(Object.assign(oldData, { isSound: state.isSound }))
+      break
+    case GameStateSettings.selectedMap:
+      setLocalSettings(Object.assign(oldData, { selectedMap: state.selectedMap }))
   }
-
-  setLocSettings (type: LocSettingsList, value: locSettingsValue) {
-    const oldData = this.getLocSettings()
-
-    const setLocalSettings = (obj: object) => {
-      const strData = JSON.stringify(obj)
-      this.locStorage.setItem(this.storageKey, strData)
-    }
-
-    switch(type) {
-      case LocSettingsList.isSound:
-        setLocalSettings(Object.assign(oldData, {isSound: value}))
-        break
-      case LocSettingsList.selectedMap:
-        setLocalSettings(Object.assign(oldData, {selectedMap: value}))
-    }
-  }
+}
 }
