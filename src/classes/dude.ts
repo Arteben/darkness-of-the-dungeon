@@ -17,6 +17,7 @@ import {
   DudeClimbingTypes,
   DudeStates,
   DudeAnimations,
+  CheckSymMapElements,
 } from '@/types/enums'
 
 export class Dude {
@@ -314,7 +315,7 @@ export class Dude {
   // if yes, set turn off gravity for dude and show tip
   overlapCallbackUpdating(
     dude: Types.Physics.Arcade.GameObjectWithBody, tile: Phaser.Tilemaps.Tile) {
-    const playerCoords = this.getTilesForCoords()
+    const plCrds = this.getTilesForCoords()
     const stairsTip = this._tips.stairsTip || null
 
     // is some horizontal movement in here
@@ -323,30 +324,29 @@ export class Dude {
       return this.dudeMoveState == DudeStates.walk
     }
 
-    if (!(tile.x == playerCoords.x && tile.y == playerCoords.y)) return
+    if (!(tile.x == plCrds.x && tile.y == plCrds.y)) return
 
     if (isHorizMove()) {
-
       this.isNearLadder = tile.index != -1
+    }
 
-      // if near ladders and we are idle -> show tip
-      // in another case hide this
-      if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
-        const iconCoords: INumberCoords = { w: dude.body.x, h: dude.body.y }
-        stairsTip?.setIcon(true, iconCoords)
-      } else {
-        stairsTip?.setIcon(false, null)
-      }
+    // if near ladders and we are idle -> show tip
+    // in another case hide this
+    if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
+      const iconCoords: INumberCoords = { w: dude.body.x, h: dude.body.y }
+      stairsTip?.setIcon(true, iconCoords)
+    } else {
+      stairsTip?.setIcon(false, null)
     }
 
     if (this.dudeMoveState == DudeStates.climbing) {
       if (this.climbingType == DudeClimbingTypes.up
-        && this._levels.getTileRawSymMapForXY(playerCoords.x, playerCoords.y) != 't') {
+        && !this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder,plCrds.x, plCrds.y)) {
         this.climbingType = DudeClimbingTypes.stand
       }
 
       if (this.climbingType == DudeClimbingTypes.down
-        && this._levels.getTileRawSymMapForXY(playerCoords.x, playerCoords.y + 1) == '#') {
+        && this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCrds.x, plCrds.y + 1)) {
         this.climbingType = DudeClimbingTypes.stand
       }
     }

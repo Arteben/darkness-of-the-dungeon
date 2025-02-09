@@ -59,3 +59,9 @@ export enum DudeAnimations {
   climbingUp,
   climbingDown,
 }
+
+export enum CheckSymMapElements {
+  empty,
+  ladder,
+  wall,
+}
