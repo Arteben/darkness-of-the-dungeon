@@ -124,3 +124,14 @@ export interface IAnimDudePlayParams {
   key: DudeAnimations
   isIgnoreIf: boolean
 }
+
+export interface ILastUserPushKye {
+  duration: number
+  time: number
+  key: Phaser.Input.Keyboard.Key | null
+}
+
+export interface IPushKeysParams {
+  value: boolean
+  isDouble: boolean
+}

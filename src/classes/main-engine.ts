@@ -83,7 +83,7 @@ export class MainEngine extends Scene {
 
   update(time: number): void {
     if (this._keys) {
-      this._dude.update(this._keys)
+      this._dude.update(time, this._keys)
     }
 
     this._tips['stairsTip']?.update(time)

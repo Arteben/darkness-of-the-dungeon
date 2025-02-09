@@ -11,6 +11,8 @@ import {
   IconTips,
   IAnimDudePlayParams,
   ITilesCoords,
+  ILastUserPushKye,
+  IPushKeysParams,
 } from '@/types/main-types'
 
 import {
@@ -79,8 +81,8 @@ export class Dude {
 
   // isLeftKeys
   private _isLeftMove: boolean = false
-  public set isLeftMove(value: boolean) {
-    this.leftRightKyesUpdating(value, this._isLeftMove, true)
+  public set isLeftMove({ value, isDouble }: IPushKeysParams) {
+    this.leftRightKyesUpdating(value, this._isLeftMove, isDouble, true)
     this._isLeftMove = value
   }
   public get isLeftMove(): boolean {
@@ -90,8 +92,8 @@ export class Dude {
 
   // isRightKeys
   private _isRightMove: boolean = false
-  public set isRightMove(value: boolean) {
-    this.leftRightKyesUpdating(value, this._isRightMove, false)
+  public set isRightMove({ value, isDouble }: IPushKeysParams) {
+    this.leftRightKyesUpdating(value, this._isRightMove, isDouble, false)
     this._isRightMove = value
   }
   public get isRightMove(): boolean {
@@ -101,7 +103,7 @@ export class Dude {
 
   // isUpKye
   private _isUpMove: boolean = false
-  public set isUpMove(value: boolean) {
+  public set isUpMove({ value, isDouble }: IPushKeysParams) {
     if (value == this._isUpMove) return
 
     switch (this.dudeMoveState) {
@@ -135,7 +137,7 @@ export class Dude {
 
   // isDownKye
   private _isDownMove: boolean = false
-  public set isDownMove(value: boolean) {
+  public set isDownMove({ value, isDouble }: IPushKeysParams) {
     if (value == this._isDownMove) return
 
     switch (this.dudeMoveState) {
@@ -173,7 +175,7 @@ export class Dude {
     switch (key) {
       case DudeAnimations.idle:
       case DudeAnimations.walking:
-        this.player.setFlipX(this.isFlipXAnimations)
+        this.player.setFlipX(this._isFlipXAnimations)
     }
     this.player.anims.play(Dude.getAnimKey(key), isIgnoreIf)
     this._dudeAnimationKey = key
@@ -184,7 +186,13 @@ export class Dude {
   //
 
   // flip animation for left | right animations
-  isFlipXAnimations: boolean = false
+  _isFlipXAnimations: boolean = false
+
+  _lastTapKey: ILastUserPushKye = {
+    duration: 0,
+    key: null,
+    time: 0,
+  }
 
   // CONSTRUCTOR ~180
   constructor(
@@ -237,18 +245,30 @@ export class Dude {
     this.dudeMoveState = DudeStates.idle
   }
 
-  update(keys: mainKeys): void {
+  update(time: number, keys: mainKeys): void {
     this._camera.isZooming = keys.space.isDown
     if (keys.space.isDown) {
       return
     }
 
-    this.isLeftMove = keys.left.isDown
-    this.isRightMove = keys.right.isDown
+    const doublePushKey = this.saveAndGetLastPushKey(time, keys)
 
-    this.isUpMove = keys.up.isDown
-    this.isDownMove = keys.down.isDown
-
+    this.isLeftMove = {
+      value: keys.left.isDown,
+      isDouble: (doublePushKey == keys.left),
+    }
+    this.isRightMove = {
+      value: keys.right.isDown,
+      isDouble: (doublePushKey == keys.right),
+    }
+    this.isUpMove = {
+      value: keys.up.isDown,
+      isDouble: (doublePushKey == keys.up),
+    }
+    this.isDownMove = {
+      value: keys.down.isDown,
+      isDouble: (doublePushKey == keys.down),
+    }
 
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
@@ -299,9 +319,9 @@ export class Dude {
   }
 
   // function for updating left\right bottons keys
-  leftRightKyesUpdating(newValue: boolean, oldValue: boolean, isLeft: boolean) {
+  leftRightKyesUpdating(newValue: boolean, oldValue: boolean, isDouble: boolean, isLeft: boolean) {
     if (newValue) {
-      this.isFlipXAnimations = isLeft
+      this._isFlipXAnimations = isLeft
     }
 
     const offset = isLeft ? (-1) : 1
@@ -319,7 +339,8 @@ export class Dude {
         break
       case DudeStates.walk:
         if (newValue && !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)) {
-            this.setDudeLeftRightMoveSizes(isLeft)
+          // this.dudeMoveState
+          this.setDudeLeftRightMoveSizes(isLeft)
         } else if (oldValue) {
           this.dudeMoveState = DudeStates.idle
         }
@@ -371,7 +392,7 @@ export class Dude {
 
       if (this.climbingType == DudeClimbingTypes.down
         && this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCrds.x, plCrds.y + 1)) {
-          this.dudeMoveState = DudeStates.idle
+        this.dudeMoveState = DudeStates.idle
       }
     }
   }
@@ -437,7 +458,7 @@ export class Dude {
 
     this.player.anims.create({
       key: Dude.getAnimKey(DudeAnimations.climbingStand),
-      frames: [ { key: animsKey, frame: 128 } ],
+      frames: [{ key: animsKey, frame: 128 }],
     })
   }
 
@@ -447,5 +468,46 @@ export class Dude {
     const coords =
       this._levels.getTilesForCoords(this.player.x + offsetX, this.player.y + offsetY)
     return { x: coords.x, y: coords.y }
+  }
+
+  // save lust push key
+  // search double pushed keys
+  saveAndGetLastPushKey(
+    time: number, keys: mainKeys): Phaser.Input.Keyboard.Key | null {
+    let pushedKey: Phaser.Input.Keyboard.Key | null = null
+
+    const isDoublePushKey = (k: Phaser.Input.Keyboard.Key): Phaser.Input.Keyboard.Key | null => {
+      if (k != this._lastTapKey.key) {
+        return null
+      }
+
+      if (k.getDuration() >= this._lastTapKey.duration) {
+        return null
+      }
+
+      const lastTapeTime = this._lastTapKey.time
+      const isTime = 500 >= time - lastTapeTime
+      return isTime ? k : null
+    }
+
+    const setTapKey = (k: Phaser.Input.Keyboard.Key) => {
+      this._lastTapKey = { time, key: k, duration: k.getDuration() }
+    }
+
+    if (keys.left.isDown) {
+      pushedKey = isDoublePushKey(keys.left)
+      setTapKey(keys.left)
+    } else if (keys.right.isDown) {
+      pushedKey = isDoublePushKey(keys.right)
+      setTapKey(keys.right)
+    } else if (keys.up.isDown) {
+      pushedKey = isDoublePushKey(keys.up)
+      setTapKey(keys.up)
+    } else if (keys.down.isDown) {
+      pushedKey = isDoublePushKey(keys.down)
+      setTapKey(keys.down)
+    }
+
+    return pushedKey
   }
 }
