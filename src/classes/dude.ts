@@ -106,7 +106,9 @@ export class Dude {
 
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        if (value && this.isNearLadder) {
+        const plCoords = this.getTilePlayerCoords()
+        if (value && this.isNearLadder
+          && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y - 1)) {
           this.climbingType = DudeClimbingTypes.up
           this.dudeMoveState = DudeStates.climbing
         }
@@ -132,7 +134,9 @@ export class Dude {
 
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        if (value && this.isNearLadder) {
+        const plCoords = this.getTilePlayerCoords()
+        if (value && this.isNearLadder
+          && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + 1)) {
           this.climbingType = DudeClimbingTypes.down
           this.dudeMoveState = DudeStates.climbing
         }
@@ -270,7 +274,7 @@ export class Dude {
       case DudeStates.climbing:
         this.isNearLadder = true
         this._tips.stairsTip?.setIcon(false, null)
-        const coords = this.getTilesForCoords()
+        const coords = this.getTilePlayerCoords()
         this.player.x = (coords.x + 0.5) * this._levels._tileWidth
         break
       case DudeStates.fighting:
@@ -286,16 +290,22 @@ export class Dude {
       this.isFlipXAnimations = isLeft
     }
 
+    const offset = isLeft ? (-1) : 1
+    // magic numbers
+    const halfWidth = this._frame.width / 2
+    const xOffset = isLeft ? halfWidth : -halfWidth
+    const plCoords = this.getTilePlayerCoords(xOffset, 0)
+
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        if (newValue) {
+        if (newValue && !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)) {
           this.dudeMoveState = DudeStates.walk
           this.setDudeLeftRightMoveSizes(isLeft)
         }
         break
       case DudeStates.walk:
-        if (newValue) {
-          this.setDudeLeftRightMoveSizes(isLeft)
+        if (newValue && !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)) {
+            this.setDudeLeftRightMoveSizes(isLeft)
         } else if (oldValue) {
           this.dudeMoveState = DudeStates.idle
         }
@@ -315,7 +325,7 @@ export class Dude {
   // if yes, set turn off gravity for dude and show tip
   overlapCallbackUpdating(
     dude: Types.Physics.Arcade.GameObjectWithBody, tile: Phaser.Tilemaps.Tile) {
-    const plCrds = this.getTilesForCoords()
+    const plCrds = this.getTilePlayerCoords()
     const stairsTip = this._tips.stairsTip || null
 
     // is some horizontal movement in here
@@ -341,7 +351,7 @@ export class Dude {
 
     if (this.dudeMoveState == DudeStates.climbing) {
       if (this.climbingType == DudeClimbingTypes.up
-        && !this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder,plCrds.x, plCrds.y)) {
+        && !this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCrds.x, plCrds.y)) {
         this.climbingType = DudeClimbingTypes.stand
       }
 
@@ -414,8 +424,9 @@ export class Dude {
 
 
   // get Coords with correction from texture scale
-  getTilesForCoords(): ITilesCoords {
-    const coords = this._levels.getTilesForCoords(this.player.x, this.player.y)
+  getTilePlayerCoords(offsetX: number = 0, offsetY: number = 0): ITilesCoords {
+    const coords =
+      this._levels.getTilesForCoords(this.player.x + offsetX, this.player.y + offsetY)
     return { x: coords.x, y: coords.y }
   }
 }
