@@ -114,8 +114,14 @@ export class Dude {
         }
         break
       case DudeStates.climbing:
-        if (this.climbingType != DudeClimbingTypes.up) {
-          this.climbingType = DudeClimbingTypes.up
+        if (value) {
+          if (this.climbingType != DudeClimbingTypes.up) {
+            if (this.climbingType == DudeClimbingTypes.down) {
+              this.climbingType = DudeClimbingTypes.stand
+            } else {
+              this.climbingType = DudeClimbingTypes.up
+            }
+          }
         }
         break
       case DudeStates.fighting:
@@ -142,8 +148,14 @@ export class Dude {
         }
         break
       case DudeStates.climbing:
-        if (this.climbingType != DudeClimbingTypes.down) {
-          this.climbingType = DudeClimbingTypes.down
+        if (value) {
+          if (this.climbingType != DudeClimbingTypes.down) {
+            if (this.climbingType == DudeClimbingTypes.up) {
+              this.climbingType = DudeClimbingTypes.stand
+            } else {
+              this.climbingType = DudeClimbingTypes.down
+            }
+          }
         }
         break
       case DudeStates.fighting:
@@ -249,7 +261,8 @@ export class Dude {
           this.setDudeUpDownMoveSizes(false)
           break
         default:
-          this.dudeMoveState = DudeStates.idle
+          this.dudeAnimationKey = { key: DudeAnimations.climbingStand, isIgnoreIf: true }
+          this.setDydeStaySizes()
       }
     }
   }
@@ -261,6 +274,7 @@ export class Dude {
 
     switch (newState) {
       case DudeStates.idle:
+        this.climbingType = DudeClimbingTypes.stand
         this.dudeAnimationKey = {
           key: DudeAnimations.idle, isIgnoreIf: true
         }
@@ -352,12 +366,12 @@ export class Dude {
     if (this.dudeMoveState == DudeStates.climbing) {
       if (this.climbingType == DudeClimbingTypes.up
         && !this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCrds.x, plCrds.y)) {
-        this.climbingType = DudeClimbingTypes.stand
+        this.dudeMoveState = DudeStates.idle
       }
 
       if (this.climbingType == DudeClimbingTypes.down
         && this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCrds.x, plCrds.y + 1)) {
-        this.climbingType = DudeClimbingTypes.stand
+          this.dudeMoveState = DudeStates.idle
       }
     }
   }
@@ -419,6 +433,11 @@ export class Dude {
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 137, end: 128 }),
       frameRate: 15,
       repeat: -1,
+    })
+
+    this.player.anims.create({
+      key: Dude.getAnimKey(DudeAnimations.climbingStand),
+      frames: [ { key: animsKey, frame: 128 } ],
     })
   }
 

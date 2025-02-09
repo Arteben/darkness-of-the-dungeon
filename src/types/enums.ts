@@ -58,6 +58,7 @@ export enum DudeAnimations {
   walking,
   climbingUp,
   climbingDown,
+  climbingStand,
 }
 
 export enum CheckSymMapElements {
