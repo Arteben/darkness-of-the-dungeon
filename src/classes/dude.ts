@@ -305,6 +305,11 @@ export class Dude {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
         break
+      case DudeStates.run:
+        this.dudeAnimationKey = {
+          key: DudeAnimations.run, isIgnoreIf: true
+        }
+        break
       case DudeStates.climbing:
         this.isNearLadder = true
         this._tips.stairsTip?.setIcon(false, null)
@@ -330,23 +335,36 @@ export class Dude {
     const xOffset = isLeft ? halfWidth : -halfWidth
     const plCoords = this.getTilePlayerCoords(xOffset, 0)
 
+    const isHorMoveAvailable = () => {
+      return !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)
+    }
+
     switch (this.dudeMoveState) {
       case DudeStates.idle:
         if (newValue && !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)) {
-          this.dudeMoveState = DudeStates.walk
-          this.setDudeLeftRightMoveSizes(isLeft)
+          if (isDouble) {
+            this.dudeMoveState = DudeStates.run
+          } else {
+            this.dudeMoveState = DudeStates.walk
+          }
         }
         break
       case DudeStates.walk:
-        if (newValue && !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)) {
-          // this.dudeMoveState
+        if (newValue && isHorMoveAvailable()) {
           this.setDudeLeftRightMoveSizes(isLeft)
         } else if (oldValue) {
           this.dudeMoveState = DudeStates.idle
         }
         break
+      case DudeStates.run:
+        if (newValue && isHorMoveAvailable()) {
+          this.setDudeLeftRightMoveSizes(isLeft, true)
+        } else if (oldValue) {
+          this.dudeMoveState = DudeStates.idle
+        }
+        break
       case DudeStates.climbing:
-        if (newValue) {
+        if (newValue && isHorMoveAvailable()) {
           this.climbingType = DudeClimbingTypes.stand
           this.dudeMoveState = DudeStates.walk
         }
@@ -367,6 +385,7 @@ export class Dude {
     // walk, run or something else
     const isHorizMove = () => {
       return this.dudeMoveState == DudeStates.walk
+        || this.dudeMoveState == DudeStates.run
     }
 
     if (!(tile.x == plCrds.x && tile.y == plCrds.y)) return
@@ -400,11 +419,16 @@ export class Dude {
 
   // dude movement's & anims
   // (left, right or climbing) set sizes for movements
-  setDudeLeftRightMoveSizes(isLeft: boolean) {
+  setDudeLeftRightMoveSizes(isLeft: boolean, isDouble: boolean = false) {
+    let offset = 90
+    if (isDouble) {
+      offset = offset * 2
+    }
+
     if (isLeft) {
-      this.player.setVelocityX(-90)
+      this.player.setVelocityX(-offset)
     } else {
-      this.player.setVelocityX(90)
+      this.player.setVelocityX(offset)
     }
   }
   // up, down
@@ -440,6 +464,13 @@ export class Dude {
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 88, end: 97 }),
       frameRate: 14,
       repeat: -1
+    })
+
+    this.player.anims.create({
+      key: Dude.getAnimKey(DudeAnimations.run),
+      frames: scene.anims.generateFrameNumbers(animsKey, { start: 16, end: 23 }),
+      frameRate: 15,
+      repeat: -1,
     })
 
     this.player.anims.create({
@@ -486,7 +517,7 @@ export class Dude {
       }
 
       const lastTapeTime = this._lastTapKey.time
-      const isTime = 500 >= time - lastTapeTime
+      const isTime = 200 >= time - lastTapeTime
       return isTime ? k : null
     }
 

@@ -39,6 +39,7 @@ export enum DudeStates {
   walk,
   climbing,
   fighting,
+  run,
 }
 
 export enum DudeClimbingTypes {
@@ -59,6 +60,7 @@ export enum DudeAnimations {
   climbingUp,
   climbingDown,
   climbingStand,
+  run,
 }
 
 export enum CheckSymMapElements {
