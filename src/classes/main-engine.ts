@@ -65,7 +65,7 @@ export class MainEngine extends Scene {
 
     this._dude = new Dude(
       this, this._mapLevels, this._camera, this._tips, 'dudeFrameSet',
-      { width: 32, height: 48 } as IResolution)
+      { width: 32, height: 32 } as IResolution)
 
     this._camera.startFollow(this._dude.player)
 
@@ -75,7 +75,7 @@ export class MainEngine extends Scene {
       this.physics.add.overlap(this._dude.player, this._mapLevels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
           this._dude.overlapCallbackUpdating(
-            prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
+            prPlayer as Types.Physics.Arcade.GameObjectWithBody, prTile as Phaser.Tilemaps.Tile)
         })
     }
     //

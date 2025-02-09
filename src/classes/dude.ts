@@ -27,10 +27,10 @@ export class Dude {
   _camera: SceneCamera
   _tips: IconTips
 
-  // @ts-ignore // isNearStairs
-  private _isNearStairs: boolean
-  public set isNearStairs(flag: boolean) {
-    if (flag == this._isNearStairs) return
+  // @ts-ignore // isNearLadder
+  private _isNearLadder: boolean
+  public set isNearLadder(flag: boolean) {
+    if (flag == this._isNearLadder) return
 
     if (flag) {
       this.player.body.setGravityY(0)
@@ -38,10 +38,10 @@ export class Dude {
       this.player.body.setGravityY(1000)
     }
     this.player.body.setAllowGravity(!flag)
-    this._isNearStairs = flag
+    this._isNearLadder = flag
   }
-  public get isNearStairs(): boolean {
-    return this._isNearStairs
+  public get isNearLadder(): boolean {
+    return this._isNearLadder
   }
   //
 
@@ -105,7 +105,7 @@ export class Dude {
 
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        if (value && this.isNearStairs) {
+        if (value && this.isNearLadder) {
           this.climbingType = DudeClimbingTypes.up
           this.dudeMoveState = DudeStates.climbing
         }
@@ -131,7 +131,7 @@ export class Dude {
 
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        if (value && this.isNearStairs) {
+        if (value && this.isNearLadder) {
           this.climbingType = DudeClimbingTypes.down
           this.dudeMoveState = DudeStates.climbing
         }
@@ -179,8 +179,10 @@ export class Dude {
     this._tips = tips
 
     // set animation frame size for our levels
+    // magic numbers
     const dudeScale = 1.6
     const animFrameSize = 56
+    const originY = 0.65
 
     this._frame = {
       width: frameResolution.width / dudeScale,
@@ -192,17 +194,18 @@ export class Dude {
 
     if (startMapCoords) {
       startCoords.w = startMapCoords.w + this._frame.width / 2
-      startCoords.h = startMapCoords.h
+      startCoords.h = startMapCoords.h - this._frame.height
     }
 
     this.player = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
     this.player.setBounce(0)
     this.player.setCollideWorldBounds(true)
     this.player.setScale(dudeScale)
+    this.player.setOrigin(0.5, originY)
 
     this.player.body.setSize(this._frame.width, this._frame.height)
-    this.player.setOffset((animFrameSize - this._frame.width) / 2,
-      animFrameSize - this._frame.height)
+
+    this.player.setOffset((animFrameSize - this._frame.width) / 2, animFrameSize - this._frame.height)
 
     if (this._levels.groundLayer) {
       engine.physics.add.collider(this.player, this._levels.groundLayer)
@@ -211,8 +214,9 @@ export class Dude {
     // all animations for dude
     this.createAnimations(engine, keyAnimFrameSet)
 
-    // set start parameters for start game
-    this.isNearStairs = false
+    // set begin parameters for start game
+    // from setters
+    this.isNearLadder = false
     this.dudeMoveState = DudeStates.idle
   }
 
@@ -232,13 +236,15 @@ export class Dude {
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
         case DudeClimbingTypes.up:
+          this.dudeAnimationKey = { key: DudeAnimations.climbingUp, isIgnoreIf: true }
           this.setDudeUpDownMoveSizes(true)
           break
         case DudeClimbingTypes.down:
+          this.dudeAnimationKey = { key: DudeAnimations.climbingDown, isIgnoreIf: true }
           this.setDudeUpDownMoveSizes(false)
           break
         default:
-          this.setDydeStaySizes()
+          this.dudeMoveState = DudeStates.idle
       }
     }
   }
@@ -250,7 +256,6 @@ export class Dude {
 
     switch (newState) {
       case DudeStates.idle:
-        this.isNearStairs = false
         this.dudeAnimationKey = {
           key: DudeAnimations.idle, isIgnoreIf: true
         }
@@ -262,13 +267,13 @@ export class Dude {
         }
         break
       case DudeStates.climbing:
+        this.isNearLadder = true
         this._tips.stairsTip?.setIcon(false, null)
-        this.isNearStairs = true
         const coords = this.getTilesForCoords()
         this.player.x = (coords.x + 0.5) * this._levels._tileWidth
         break
       case DudeStates.fighting:
-        this.isNearStairs = false
+        this.isNearLadder = false
     }
 
     this._dudeMoveState = newState
@@ -308,25 +313,42 @@ export class Dude {
   // see overlap the dude with some stairs
   // if yes, set turn off gravity for dude and show tip
   overlapCallbackUpdating(
-    dude: Phaser.Physics.Arcade.Body, tile: Phaser.Tilemaps.Tile) {
-    const coords = this.getTilesForCoords()
+    dude: Types.Physics.Arcade.GameObjectWithBody, tile: Phaser.Tilemaps.Tile) {
+    const playerCoords = this.getTilesForCoords()
     const stairsTip = this._tips.stairsTip || null
-    // dude is very tall and his center is upper
-    // to do set in function
-    if (!(tile.x == coords.x && tile.y == coords.y)) return
 
+    // is some horizontal movement in here
+    // walk, run or something else
+    const isHorizMove = () => {
+      return this.dudeMoveState == DudeStates.walk
+    }
 
-    this.isNearStairs = tile.index != -1
+    if (!(tile.x == playerCoords.x && tile.y == playerCoords.y)) return
 
-    if (!this.isNearStairs) {
-      stairsTip?.setIcon(false, null)
-      if (this.dudeMoveState == DudeStates.climbing
-        && this.climbingType != DudeClimbingTypes.stand) {
+    if (isHorizMove()) {
+
+      this.isNearLadder = tile.index != -1
+
+      // if near ladders and we are idle -> show tip
+      // in another case hide this
+      if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
+        const iconCoords: INumberCoords = { w: dude.body.x, h: dude.body.y }
+        stairsTip?.setIcon(true, iconCoords)
+      } else {
+        stairsTip?.setIcon(false, null)
+      }
+    }
+
+    if (this.dudeMoveState == DudeStates.climbing) {
+      if (this.climbingType == DudeClimbingTypes.up
+        && this._levels.getTileRawSymMapForXY(playerCoords.x, playerCoords.y) != 't') {
         this.climbingType = DudeClimbingTypes.stand
       }
-    } else if (this.dudeMoveState == DudeStates.idle) {
-      const iconCoords: INumberCoords = { w: dude.x, h: dude.y }
-      stairsTip?.setIcon(true, iconCoords)
+
+      if (this.climbingType == DudeClimbingTypes.down
+        && this._levels.getTileRawSymMapForXY(playerCoords.x, playerCoords.y + 1) == '#') {
+        this.climbingType = DudeClimbingTypes.stand
+      }
     }
   }
 
@@ -375,18 +397,25 @@ export class Dude {
       repeat: -1
     })
 
-    // this.player.anims.create({
-    //   key: 'rightDude',
-    //   frames: scene.anims.generateFrameNumbers(animsKey, { start: 5, end: 8 }),
-    //   frameRate: 10,
-    //   repeat: -1
-    // })
+    this.player.anims.create({
+      key: Dude.getAnimKey(DudeAnimations.climbingUp),
+      frames: scene.anims.generateFrameNumbers(animsKey, { start: 128, end: 137 }),
+      frameRate: 15,
+      repeat: -1,
+    })
+
+    this.player.anims.create({
+      key: Dude.getAnimKey(DudeAnimations.climbingDown),
+      frames: scene.anims.generateFrameNumbers(animsKey, { start: 137, end: 128 }),
+      frameRate: 15,
+      repeat: -1,
+    })
   }
 
 
   // get Coords with correction from texture scale
   getTilesForCoords(): ITilesCoords {
     const coords = this._levels.getTilesForCoords(this.player.x, this.player.y)
-    return { x: coords.x, y: coords.y + 1 }
+    return { x: coords.x, y: coords.y }
   }
 }

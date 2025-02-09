@@ -56,4 +56,6 @@ export enum TileSetModificators {
 export enum DudeAnimations {
   idle,
   walking,
+  climbingUp,
+  climbingDown,
 }

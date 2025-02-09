@@ -247,8 +247,8 @@ export class MapSceneLevels {
     }
   }
 
-  getTileNum(sym: string) {
-    return this._tileIndexes[sym]
+  getTileRawSymMapForXY(x: number, y: number): string | null {
+    return this._symbolMap[y] && this._symbolMap[y][x]
   }
 
   getBackgroundSymMap(maxW: number, maxH: number) {
