@@ -1,3 +1,6 @@
+// fonts
+import '@/styles/index.css'
+
 import { DungeonDarkness } from '@/classes/dungeon-darkness'
 import { GameState } from '@/classes/game-state'
 import { Translates } from '@/classes/translates'
