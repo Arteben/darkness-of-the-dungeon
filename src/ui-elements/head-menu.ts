@@ -3,15 +3,11 @@ import { GameStateElement } from '@/classes/gamestate-element'
 import headBackPng from '@/styles/images/stripHeadMenu.png'
 
 import '@/ui-elements/info-panel'
+import '@/ui-elements/font-icon'
 
 import '@/ui-elements/menu-button'
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
-
-import {
-  MainButtonType,
-  MainButtonRenderInfo,
-} from '@/types/main-types'
 
 import { GamePages } from '@/types/enums'
 
@@ -35,6 +31,7 @@ export class MainMenu extends GameStateElement {
           <menu-button
               @click="${(e: Event) => { this._state.page = GamePages.mainMenu }}"
               placeClass="headMenu">
+            <font-icon icon="th-list"></font-icon>
             ${this.loc('hMenuToMain')}
           </menu-button>
         </div>
