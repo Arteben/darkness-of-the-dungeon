@@ -137,11 +137,10 @@ export class MainMenu extends GameStateElement {
     :host {
       display: flex;
       flex-flow: column;
-      justify-content: space-around;
+      justify-content: center;
       align-self: stretch;
       align-items: center;
       margin-top: 10px;
-      max-height: 550px;
     }
   `
 }
