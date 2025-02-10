@@ -7,7 +7,7 @@ export class EventBus {
   bus: HTMLElement
 
   constructor() {
-    this.bus = document.createElement('darksOfMineBusEvent')
+    this.bus = document.createElement('darksOfTheDungeonBusEvent')
   }
 
   addEventListener(event: string, callback: (e: Event) => void) {

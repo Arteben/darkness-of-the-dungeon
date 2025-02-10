@@ -2,7 +2,7 @@ import { GamePages, Languages } from '@/types/enums'
 import { IHashParams } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 
-import { getMineDarknessGame } from '@/classes/mine-darkness'
+import { getDungeonDarknessGame } from '@/classes/dungeon-darkness'
 
 export class GameHashes {
 
@@ -74,7 +74,7 @@ export class GameHashes {
   }
 
   onHashChange() {
-    const game = getMineDarknessGame()
+    const game = getDungeonDarknessGame()
     if (!game)
       return
 
@@ -92,7 +92,7 @@ export class GameHashes {
   }
 
   onChangeGameState(eventData: CustomEventInit) {
-    const game = getMineDarknessGame()
+    const game = getDungeonDarknessGame()
     if (!game)
       return
 

@@ -20,13 +20,13 @@ import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
 import { MainEngine } from '@/classes/main-engine'
 
-export let mineDarknessGame: MineDarkness | null = null
+export let dungeonDarknessGame: DungeonDarkness | null = null
 
-export function getMineDarknessGame() {
-  return mineDarknessGame
+export function getDungeonDarknessGame() {
+  return dungeonDarknessGame
 }
 
-export class MineDarkness {
+export class DungeonDarkness {
   state: GameState
 
   loc: (a: string, b?: IJsonTranslatesType) => string
@@ -57,7 +57,7 @@ export class MineDarkness {
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    mineDarknessGame = this
+    dungeonDarknessGame = this
     // get object with methods with translates
     this.state = state
     this.loc = locals.loc.bind(locals)

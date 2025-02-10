@@ -5,14 +5,14 @@ import { SelectedJsonMap } from '@/types/main-types'
 import { GameState } from '@/classes/game-state'
 import { EventBus } from '@/classes/event-bus'
 
-import { getMineDarknessGame } from '@/classes/mine-darkness'
+import { getDungeonDarknessGame } from '@/classes/dungeon-darkness'
 
 export class GameStateElement extends LitElement {
 
   private changeStateCallback = (eventData: CustomEventInit) => { }
 
   _state: GameState = new GameState()
-  _game = getMineDarknessGame()
+  _game = getDungeonDarknessGame()
 
   connectedCallback() {
     super.connectedCallback()
