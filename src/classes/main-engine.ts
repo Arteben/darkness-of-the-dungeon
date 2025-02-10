@@ -64,7 +64,8 @@ export class MainEngine extends Scene {
     this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
 
     this._dude = new Dude(
-      this, this._mapLevels, this._camera, this._tips, { width: 32, height: 48 } as IResolution)
+      this, this._mapLevels, this._camera, this._tips, 'dudeFrameSet',
+      { width: 32, height: 32 } as IResolution)
 
     this._camera.startFollow(this._dude.player)
 
@@ -74,7 +75,7 @@ export class MainEngine extends Scene {
       this.physics.add.overlap(this._dude.player, this._mapLevels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
           this._dude.overlapCallbackUpdating(
-            prPlayer as Phaser.Physics.Arcade.Body, prTile as Phaser.Tilemaps.Tile)
+            prPlayer as Types.Physics.Arcade.GameObjectWithBody, prTile as Phaser.Tilemaps.Tile)
         })
     }
     //
@@ -82,7 +83,7 @@ export class MainEngine extends Scene {
 
   update(time: number): void {
     if (this._keys) {
-      this._dude.update(this._keys)
+      this._dude.update(time, this._keys)
     }
 
     this._tips['stairsTip']?.update(time)
@@ -104,7 +105,7 @@ export class MainEngine extends Scene {
       this.load.text(el.name, `/src/assets/${el.file}`)
     })
 
-    this.load.spritesheet('dude', charRaw, { frameWidth: 56, frameHeight: 56 })
+    this.load.spritesheet('dudeFrameSet', charRaw, { frameWidth: 56, frameHeight: 56 })
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
   }
 

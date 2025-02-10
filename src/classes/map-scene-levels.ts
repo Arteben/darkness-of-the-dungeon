@@ -6,7 +6,7 @@ import {
   ITilesCoords,
   ILoadedTileSets
 } from '@/types/main-types'
-import { TileSetModificators } from '@/types/enums'
+import { TileSetModificators, CheckSymMapElements } from '@/types/enums'
 
 // import DudeSet from '@assets/dude.png'
 
@@ -247,8 +247,19 @@ export class MapSceneLevels {
     }
   }
 
-  getTileNum(sym: string) {
-    return this._tileIndexes[sym]
+  isCheckSymbMapElements(el: CheckSymMapElements, x: number, y: number) {
+    let finded = ''
+
+    switch (el) {
+      case CheckSymMapElements.empty:
+        finded = '.'; break
+      case CheckSymMapElements.ladder:
+        finded = 't'; break
+      case CheckSymMapElements.wall:
+        finded = '#'; break
+    }
+
+    return this._symbolMap[y] && this._symbolMap[y][x] == finded
   }
 
   getBackgroundSymMap(maxW: number, maxH: number) {

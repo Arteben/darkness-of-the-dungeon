@@ -5,6 +5,7 @@ import {
   Languages,
   GamePages,
   GameStateSettings,
+  DudeAnimations
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -117,4 +118,20 @@ export interface ILoadedTileSets {
   walls: string
   env: string
   fon: string
+}
+
+export interface IAnimDudePlayParams {
+  key: DudeAnimations
+  isIgnoreIf: boolean
+}
+
+export interface ILastUserPushKye {
+  duration: number
+  time: number
+  key: Phaser.Input.Keyboard.Key | null
+}
+
+export interface IPushKeysParams {
+  value: boolean
+  isDouble: boolean
 }

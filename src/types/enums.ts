@@ -35,9 +35,11 @@ export enum GamePages {
 }
 
 export enum DudeStates {
+  idle,
   walk,
   climbing,
   fighting,
+  run,
 }
 
 export enum DudeClimbingTypes {
@@ -50,4 +52,19 @@ export enum TileSetModificators {
   none,
   ladders,
   ground
+}
+
+export enum DudeAnimations {
+  idle,
+  walking,
+  climbingUp,
+  climbingDown,
+  climbingStand,
+  run,
+}
+
+export enum CheckSymMapElements {
+  empty,
+  ladder,
+  wall,
 }
