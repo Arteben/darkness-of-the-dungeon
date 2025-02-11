@@ -420,7 +420,7 @@ export class Dude {
   // dude movement's & anims
   // (left, right or climbing) set sizes for movements
   setDudeLeftRightMoveSizes(isLeft: boolean, isDouble: boolean = false) {
-    let offset = 90
+    let offset = 110
     if (isDouble) {
       offset = offset * 2
     }
