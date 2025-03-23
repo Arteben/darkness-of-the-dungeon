@@ -74,5 +74,5 @@ export enum PocketItems {
   hand = 0,
   rock = 1,
   key = 3,
-  apple = 5,
+  apple = 224,
 }

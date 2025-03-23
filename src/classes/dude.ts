@@ -498,6 +498,7 @@ export class Dude {
   getTilePlayerCoords(offsetX: number = 0, offsetY: number = 0): ITilesCoords {
     const coords =
       this._levels.getTilesForCoords(this.player.x + offsetX, this.player.y + offsetY)
+    // console.log('player coords', coords.x, coords.y)
     return { x: coords.x, y: coords.y }
   }
 

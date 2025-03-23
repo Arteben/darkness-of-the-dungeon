@@ -10,18 +10,22 @@ import {
   ILoadedTileSets,
 } from '@/types/main-types'
 
+import { PocketItems as PocketItemsEnums } from '@/types/enums'
+
 // assets
-import dudeSet from '@assets/dude.png'
 import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
 import bricksRaw from '@assets/bricks.png'
 import charRaw from '@assets/char.png'
+import itemIcons from '@assets/items-Icons.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTip } from '@/classes/icon-tip'
+import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
+import { PocketItem } from '@/classes/pocket-item'
 //
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
@@ -37,6 +41,7 @@ export class MainEngine extends Scene {
   _camera!: SceneCamera
   _keys!: mainKeys
   _tips: IconTips = {}
+  _droppedItems!: DroppedItems
 
   //@ts-ignore
   _gameState: GameState
@@ -63,6 +68,8 @@ export class MainEngine extends Scene {
     }
 
     this._mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
+    if (!(this._mapLevels && this._mapLevels.groundLayer)) return
+
     this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
     this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
 
@@ -76,6 +83,12 @@ export class MainEngine extends Scene {
 
     // this._itemsSystem = new PocketItemsSystem(this._gameState, pocketMax: number)
 
+    this._droppedItems = new DroppedItems(this, this._mapLevels, 'itemIcons')
+
+    const apple = new PocketItem(PocketItemsEnums.apple, () => {console.log('you used apple!')})
+
+    // 5, 40
+    this._droppedItems.drop({x: 5, y: 40}, apple)
 
     // create overlap dude with stairs for vertical movements
     if (this._mapLevels.stairsLayer) {
@@ -114,6 +127,7 @@ export class MainEngine extends Scene {
 
     this.load.spritesheet('dudeFrameSet', charRaw, { frameWidth: 56, frameHeight: 56 })
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('itemIcons', itemIcons, { frameWidth: 32, frameHeight: 32 })
   }
 
   onDrawProgressBar(value: number) {
