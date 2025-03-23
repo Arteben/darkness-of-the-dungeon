@@ -6,7 +6,7 @@ import {
   overlapCallbackParams,
   IconTips,
   IJsonMap,
-  ISelectedMapForInit,
+  IParamsForInitEngine,
   ILoadedTileSets,
 } from '@/types/main-types'
 
@@ -25,6 +25,7 @@ import { IconTip } from '@/classes/icon-tip'
 //
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
+import { GameState } from '@/classes/game-state'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -36,14 +37,18 @@ export class MainEngine extends Scene {
   _camera!: SceneCamera
   _keys!: mainKeys
   _tips: IconTips = {}
+
+  //@ts-ignore
+  _gameState: GameState
   _selectedMap: string = ''
 
   constructor() {
     super()
   }
 
-  init(map: ISelectedMapForInit) {
-    this._selectedMap = map.nameMap
+  init(initParams: IParamsForInitEngine) {
+    this._selectedMap = initParams.nameMap
+    this._gameState = initParams.state
   }
 
   create() {
@@ -68,6 +73,8 @@ export class MainEngine extends Scene {
       { width: 32, height: 32 } as IResolution)
 
     this._camera.startFollow(this._dude.player)
+
+    // this._itemsSystem = new PocketItemsSystem(this._gameState, pocketMax: number)
 
 
     // create overlap dude with stairs for vertical movements

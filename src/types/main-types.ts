@@ -5,7 +5,8 @@ import {
   Languages,
   GamePages,
   GameStateSettings,
-  DudeAnimations
+  DudeAnimations,
+  PocketItems,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -110,8 +111,9 @@ export type GameStateChangeData = {
   property: GameStateSettings
 }
 
-export interface ISelectedMapForInit {
+export interface IParamsForInitEngine {
   nameMap: string
+  state: GameState
 }
 
 export interface ILoadedTileSets {
@@ -134,4 +136,20 @@ export interface ILastUserPushKye {
 export interface IPushKeysParams {
   value: boolean
   isDouble: boolean
+}
+
+export interface IPacketSlot {
+  isHand: boolean
+  item: PocketItems | null
+  imageOffsets: INumberCoords
+  isDropEnabled: boolean
+  isUseEnabled: boolean
+}
+
+export interface IPocketItem {
+  isHand: boolean
+  type: PocketItems
+  slot: number
+  dropCallback: VoidFunction | null
+  useCallback: VoidFunction | null
 }

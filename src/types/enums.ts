@@ -24,7 +24,8 @@ export enum GameStateSettings {
   selectedMap,
   pages,
   lang,
-  isGameStarted
+  isGameStarted,
+  pocketSlots,
 }
 
 export enum GamePages {
@@ -67,4 +68,11 @@ export enum CheckSymMapElements {
   empty,
   ladder,
   wall,
+}
+
+export enum PocketItems {
+  hand = 0,
+  rock = 1,
+  key = 3,
+  apple = 5,
 }

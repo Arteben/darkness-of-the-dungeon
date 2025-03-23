@@ -1,5 +1,11 @@
 import { Languages, BusEventsList, GamePages, GameStateSettings } from '@/types/enums'
-import { IHashParams, ILocSettings, IStateParams, GameStateChangeData } from '@/types/main-types'
+import {
+  IHashParams,
+  ILocSettings,
+  IStateParams,
+  GameStateChangeData,
+  IPacketSlot,
+} from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
 
@@ -57,6 +63,16 @@ export class GameState implements IStateParams {
   }
   public get selectedMap(): string | undefined {
     return this._selectedMap
+  }
+  //
+  // pocketSlots
+  private _pocketSlots: IPacketSlot[] = []
+  public set pocketSlots(pocketSlots: IPacketSlot[]) {
+    this._pocketSlots = pocketSlots
+    this.triggerChnageState(GameStateSettings.pocketSlots)
+  }
+  public get pocketSlots(): IPacketSlot[] {
+    return this._pocketSlots
   }
   //
 

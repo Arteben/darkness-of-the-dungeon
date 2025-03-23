@@ -1,10 +1,11 @@
 import { GamePages, GameStateSettings } from '@/types/enums'
 
-import { IJsonTranslatesType,
+import {
+  IJsonTranslatesType,
   IJsonMap,
   IResolution,
   GameStateChangeData,
-  ISelectedMapForInit,
+  IParamsForInitEngine,
 } from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame, Scene } from 'phaser'
@@ -19,6 +20,7 @@ import { GameApp } from '@/game-app'
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
 import { MainEngine } from '@/classes/main-engine'
+import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
 export let dungeonDarknessGame: DungeonDarkness | null = null
 
@@ -31,7 +33,7 @@ export class DungeonDarkness {
 
   loc: (a: string, b?: IJsonTranslatesType) => string
 
-  phConfig: Types.Core.GameConfig = {
+  _phConfig: Types.Core.GameConfig = {
     width: 800,
     height: 384,
     // canvas: HTMLCanvasElement,
@@ -53,7 +55,11 @@ export class DungeonDarkness {
   phaser?: PhaserGame
   gameApp?: GameApp
 
-  mainSceneName: string = 'MainEngine'
+  _mainSceneName: string = 'MainEngine'
+
+  _slotsSystem: PocketSlotsSystem
+
+  // _slotSystem:
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -61,6 +67,8 @@ export class DungeonDarkness {
     // get object with methods with translates
     this.state = state
     this.loc = locals.loc.bind(locals)
+
+    this._slotsSystem = new PocketSlotsSystem()
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -80,16 +88,17 @@ export class DungeonDarkness {
   startMainEngine() {
     const map = this.getSelectedMap()
     if (!this.phaser || !map || !map.name) return
-    this.phaser.scene.start( this.mainSceneName, { nameMap: map.name } as ISelectedMapForInit)
+    this.phaser.scene.start(
+      this._mainSceneName, { nameMap: map.name, state: this.state } as IParamsForInitEngine)
     this.phaser.pause()
   }
 
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
     this.gameApp = appElement
-    this.phConfig.parent = parentApp
-    this.phConfig.canvas = canvas
-    this.phaser = new PhaserGame(this.phConfig)
-    this.phaser.scene.add(this.mainSceneName, MainEngine, false)
+    this._phConfig.parent = parentApp
+    this._phConfig.canvas = canvas
+    this.phaser = new PhaserGame(this._phConfig)
+    this.phaser.scene.add(this._mainSceneName, MainEngine, false)
     this.startMainEngine()
   }
 
@@ -116,7 +125,7 @@ export class DungeonDarkness {
         if (this.phaser.isPaused) {
           this.phaser.resume()
         }
-        window.setTimeout(() => {this.onWindowResize()}, 100)
+        window.setTimeout(() => { this.onWindowResize() }, 100)
       } else if (!this.phaser.isPaused) {
         this.phaser.pause()
       }
@@ -129,7 +138,7 @@ export class DungeonDarkness {
 
   restartMainEngine() {
     if (!this.phaser) return
-    this.phaser.scene.stop(this.mainSceneName)
+    this.phaser.scene.stop(this._mainSceneName)
     this.startMainEngine()
   }
 
@@ -149,12 +158,12 @@ export class DungeonDarkness {
       width: 0, height: 0,
     }
 
-    if (!this.phConfig) {
+    if (!this._phConfig) {
       return
     }
 
-    const width = this.phConfig.width as number
-    const height = this.phConfig.height as number
+    const width = this._phConfig.width as number
+    const height = this._phConfig.height as number
     const gameProportion = width / height
 
     if (winSizes.width > winSizes.height) {

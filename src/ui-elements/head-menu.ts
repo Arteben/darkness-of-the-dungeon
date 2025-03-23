@@ -4,16 +4,13 @@ import headBackPng from '@/styles/images/stripHeadMenu.png'
 
 import '@/ui-elements/info-panel'
 import '@/ui-elements/font-icon'
+import '@/ui-elements/pocket-slots-ui'
 
 import '@/ui-elements/menu-button'
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 
 import { GamePages } from '@/types/enums'
-
-// const buttons: Array<MainButtonType> = [
-//   { type: 'mainMenu', names: ['hMenuToMain'] }
-// ]
 
 @customElement('head-menu')
 export class MainMenu extends GameStateElement {
@@ -25,7 +22,9 @@ export class MainMenu extends GameStateElement {
       mapName = this.loc(map.name)
     }
 
-      return html`
+    const pocketSlots = this._game ? html`<pocket-slots-ui></pocket-slots-ui>` : html``
+
+    return html`
         <div class="backgroundColor"></div>
         <div class="headMenuDiveder">
           <menu-button
@@ -40,7 +39,9 @@ export class MainMenu extends GameStateElement {
             <span slot="content">${mapName}</span>
           </info-panel>
         </div>
-        <div class="headMenuDiveder"></div>
+        <div class="headMenuDiveder">
+          ${pocketSlots}
+        </div>
       `
   }
 
