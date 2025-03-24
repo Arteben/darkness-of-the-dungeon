@@ -1,4 +1,4 @@
-import { IPocketItem, VoidFunction } from '@/types/main-types'
+import { VoidFunction } from '@/types/main-types'
 import { PocketItems } from '@/types/enums'
 
 import { PocketItem } from '@/classes/pocket-item'

@@ -314,7 +314,7 @@ export class Dude {
         this.isNearLadder = true
         this._tips.stairsTip?.setIcon(false, null)
         const coords = this.getTilePlayerCoords()
-        this.player.x = (coords.x + 0.5) * this._levels._tileWidth
+        this.player.x = (coords.x + 0.5) * this._levels.tileWidth
         break
       case DudeStates.fighting:
         this.isNearLadder = false

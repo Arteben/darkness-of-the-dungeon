@@ -1,5 +1,6 @@
 import { GameState } from '@/classes/game-state'
 import { IconTip } from '@/classes/icon-tip'
+import { PocketItem } from '@/classes/pocket-item'
 
 import {
   Languages,
@@ -146,10 +147,6 @@ export interface IPacketSlot {
   isUseEnabled: boolean
 }
 
-export interface IPocketItem {
-  isHand: boolean
-  type: PocketItems
-  slot: number
-  dropCallback: VoidFunction | null
-  useCallback: VoidFunction | null
+export interface IPocketDroppedItems {
+  [index: string]: PocketItem[]
 }
