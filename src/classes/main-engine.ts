@@ -88,7 +88,7 @@ export class MainEngine extends Scene {
     const apple = new PocketItem(PocketItemsEnums.apple, () => {console.log('you used apple!')})
 
     // 5, 40
-    this._droppedItems.drop({x: 5, y: 40}, apple)
+    this._droppedItems.drop({x: 3, y: 40}, apple)
 
     // create overlap dude with stairs for vertical movements
     if (this._mapLevels.stairsLayer) {
