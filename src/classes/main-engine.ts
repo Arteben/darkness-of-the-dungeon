@@ -3,7 +3,6 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import {
   IResolution,
   mainKeys,
-  overlapCallbackParams,
   IconTips,
   IJsonMap,
   IParamsForInitEngine,
@@ -90,16 +89,6 @@ export class MainEngine extends Scene {
 
     // 5, 41
     this._droppedItems.drop({x: 5, y: 36}, apple)
-
-    // create overlap dude with stairs for vertical movements
-    if (this._mapLevels.stairsLayer) {
-      this.physics.add.overlap(this._dude.player, this._mapLevels.stairsLayer,
-        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this._dude.overlapCallbackUpdating(
-            prPlayer as Types.Physics.Arcade.GameObjectWithBody, prTile as Phaser.Tilemaps.Tile)
-        })
-    }
-    //
   }
 
   update(time: number): void {

@@ -13,6 +13,7 @@ import {
   ITilesCoords,
   ILastUserPushKye,
   IPushKeysParams,
+  overlapCallbackParams,
 } from '@/types/main-types'
 
 import {
@@ -243,6 +244,16 @@ export class Dude {
     // from setters
     this.isNearLadder = false
     this.dudeMoveState = DudeStates.idle
+
+    // create overlap dude with stairs for vertical movements
+    if (this._levels.stairsLayer) {
+      engine.physics.add.overlap(this.player, this._levels.stairsLayer,
+        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
+          this.overlapCallbackUpdating(
+            prPlayer as Types.Physics.Arcade.GameObjectWithBody, prTile as Phaser.Tilemaps.Tile)
+        })
+    }
+    //
   }
 
   update(time: number, keys: mainKeys): void {
