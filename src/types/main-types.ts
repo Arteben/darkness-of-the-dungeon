@@ -1,3 +1,4 @@
+import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
 import { IconTip } from '@/classes/icon-tip'
 import { PocketItem } from '@/classes/pocket-item'
@@ -93,7 +94,7 @@ export interface mainKeys {
   left: Phaser.Input.Keyboard.Key
   right: Phaser.Input.Keyboard.Key
   space: Phaser.Input.Keyboard.Key
-  shift: Phaser.Input.Keyboard.Key
+  ctrl: Phaser.Input.Keyboard.Key
   a: Phaser.Input.Keyboard.Key
   d: Phaser.Input.Keyboard.Key
 }
@@ -147,6 +148,18 @@ export interface IPacketSlot {
   isUseEnabled: boolean
 }
 
-export interface IPocketDroppedItems {
-  [index: string]: PocketItem[]
+export interface IPocketDroppedItemSprites {
+  [index: string]: Physics.Arcade.Sprite[]
+}
+
+export interface IPocketItemStoreData {
+  type: string
+  coords: ITilesCoords
+  cycled: boolean
+}
+
+export type PocketItemDudeData = IPocketItemStoreData | null
+
+export interface IPocketItemTypes {
+  [index: string]: PocketItem
 }

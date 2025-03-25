@@ -3,6 +3,8 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
+import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/dropped-items-system'
+
 
 import {
   IResolution,
@@ -14,6 +16,7 @@ import {
   ILastUserPushKye,
   IPushKeysParams,
   overlapCallbackParams,
+  PocketItemDudeData,
 } from '@/types/main-types'
 
 import {
@@ -30,6 +33,7 @@ export class Dude {
   _levels: MapSceneLevels
   _camera: SceneCamera
   _tips: IconTips
+  _dropItems: DroppedItemsSystem
 
   // @ts-ignore // isNearLadder
   private _isNearLadder: boolean
@@ -186,6 +190,40 @@ export class Dude {
   }
   //
 
+  //space key for dude
+  private _isSpaceDown: boolean = false
+  public set isSpaceDown(flag: boolean) {
+    if (flag != this._isSpaceDown) {
+      if (flag) {
+        this.usePocketItem()
+      }
+      this._isSpaceDown = flag
+    }
+  }
+  public get isSpaceDown(): boolean {
+    return this._isSpaceDown
+  }
+  //
+
+  // overlapSomeItem
+  private _overlapSomeItem: PocketItemDudeData = null
+  public set overlapSomeItem(droppedItemData: PocketItemDudeData) {
+    const newData = droppedItemData
+    const oldData = this._overlapSomeItem
+
+    if (newData != null && JSON.stringify(newData) !== JSON.stringify(oldData)) {
+      console.log('++ set in props new data ', newData)
+      this._overlapSomeItem = newData
+    } else if (newData == null && oldData !== null) {
+      console.log('unset data ++++++++++')
+      this._overlapSomeItem = null
+    }
+  }
+  public get overlapSomeItem(): PocketItemDudeData {
+    return this._overlapSomeItem
+  }
+  //
+
   // flip animation for left | right animations
   _isFlipXAnimations: boolean = false
 
@@ -195,13 +233,17 @@ export class Dude {
     time: 0,
   }
 
-  // CONSTRUCTOR ~180
   constructor(
-    engine: MainEngine, mapLevels: MapSceneLevels, camera: SceneCamera,
-    tips: IconTips, keyAnimFrameSet: string, frameResolution: IResolution) {
+    engine: MainEngine,
+    mapLevels: MapSceneLevels,
+    camera: SceneCamera,
+    tips: IconTips,
+    dropItems: DropItems,
+    keyAnimFrameSet: string, frameResolution: IResolution) {
 
     this._levels = mapLevels
     this._camera = camera
+    this._dropItems = dropItems
     this._tips = tips
 
     // set animation frame size for our levels
@@ -249,19 +291,23 @@ export class Dude {
     if (this._levels.stairsLayer) {
       engine.physics.add.overlap(this.player, this._levels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this.overlapCallbackUpdating(
-            prPlayer as Types.Physics.Arcade.GameObjectWithBody, prTile as Phaser.Tilemaps.Tile)
+          this.overlapDudeLaddersCallbackUpdating(prTile as Phaser.Tilemaps.Tile)
         })
     }
     //
+
+    //create overlap with droppedItems for pick up them
+    if (this._dropItems._group) {
+      engine.physics.add.overlap(this.player, this._dropItems._group,
+        (prPlayer: overlapCallbackParams, prItem: overlapCallbackParams) => {
+          this.overlapDudeDropItemsCallbackUpdating(
+            prItem as Types.Physics.Arcade.SpriteWithDynamicBody,
+          )
+        })
+    }
   }
 
   update(time: number, keys: mainKeys): void {
-    this._camera.isZooming = keys.space.isDown
-    if (keys.space.isDown) {
-      return
-    }
-
     const doublePushKey = this.saveAndGetLastPushKey(time, keys)
 
     this.isLeftMove = {
@@ -280,6 +326,8 @@ export class Dude {
       value: keys.down.isDown,
       isDouble: (doublePushKey == keys.down),
     }
+
+    this.isSpaceDown = keys.space.isDown
 
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
@@ -387,8 +435,8 @@ export class Dude {
 
   // see overlap the dude with some stairs
   // if yes, set turn off gravity for dude and show tip
-  overlapCallbackUpdating(
-    dude: Types.Physics.Arcade.GameObjectWithBody, tile: Phaser.Tilemaps.Tile) {
+  overlapDudeLaddersCallbackUpdating(
+    tile: Phaser.Tilemaps.Tile) {
     const plCrds = this.getTilePlayerCoords()
     const stairsTip = this._tips.stairsTip || null
 
@@ -408,7 +456,7 @@ export class Dude {
     // if near ladders and we are idle -> show tip
     // in another case hide this
     if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
-      const iconCoords: INumberCoords = { w: dude.body.x, h: dude.body.y }
+      const iconCoords: INumberCoords = { w: this.player.body.x, h: this.player.body.y }
       stairsTip?.setIcon(true, iconCoords)
     } else {
       stairsTip?.setIcon(false, null)
@@ -424,6 +472,22 @@ export class Dude {
         && this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCrds.x, plCrds.y + 1)) {
         this.dudeMoveState = DudeStates.idle
       }
+    }
+  }
+
+  // active when dude has on tile with dropItem
+  // cyclic!
+  overlapDudeDropItemsCallbackUpdating(
+    droppedItem: Types.Physics.Arcade.SpriteWithDynamicBody,
+  ) {
+    const plCrds = this.getTilePlayerCoords()
+    const type = droppedItem.frame.name
+    const inTile = this._dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
+
+    if (!inTile) {
+      this.overlapSomeItem = null
+    } else {
+      this.overlapSomeItem = { coords: plCrds, type, cycled: false }
     }
   }
 
@@ -552,5 +616,13 @@ export class Dude {
     }
 
     return pushedKey
+  }
+
+  usePocketItem() {
+    // tempory
+    console.log('use some item!')
+    if (this.overlapSomeItem != null) {
+      this._dropItems.pickupItem(this.overlapSomeItem)
+    }
   }
 }

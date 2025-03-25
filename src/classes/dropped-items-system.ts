@@ -1,9 +1,10 @@
-import { Physics } from 'phaser'
+import { GameObjects, Physics } from 'phaser'
 import {
-    IPocketDroppedItems,
-    INumberCoords,
-    ITilesCoords
-  } from '@/types/main-types'
+  IPocketDroppedItemSprites,
+  INumberCoords,
+  ITilesCoords,
+  IPocketItemStoreData,
+} from '@/types/main-types'
 import { CheckSymMapElements } from '@/types/enums'
 
 import { PocketItem } from '@/classes/pocket-item'
@@ -12,8 +13,7 @@ import { MapSceneLevels } from '@/classes/map-scene-levels'
 
 export class DroppedItemsSystem {
 
-  // @ts-ignore
-  _items: IPocketDroppedItems = []
+  items: IPocketDroppedItemSprites = {}
 
   _group: Physics.Arcade.Group
   _key: string
@@ -36,21 +36,21 @@ export class DroppedItemsSystem {
     this._key = textureKey
   }
 
-  getCoordsFromTilePos({x, y}: ITilesCoords) : INumberCoords{
+  getCoordsFromTilePos({ x, y }: ITilesCoords): INumberCoords {
     const w = (x + 0.5) * this._levels.tileWidth
     const h = (y - 0.5) * this._levels.tileWidth
-    return {w, h}
+    return { w, h }
   }
 
-  findPlaceForItem({x, y}: ITilesCoords): ITilesCoords | null {
+  findPlaceForItem({ x, y }: ITilesCoords): ITilesCoords | null {
     const checker = this._levels.isCheckSymbMapElements.bind(this._levels)
 
     const simpleCheck = (_x: number, _y: number) => {
       return checker(CheckSymMapElements.empty, _x, _y) &&
-      checker(CheckSymMapElements.wall, _x, _y + 1)
+        checker(CheckSymMapElements.wall, _x, _y + 1)
     }
 
-    if (simpleCheck(x, y)) return {x, y}
+    if (simpleCheck(x, y)) return { x, y }
 
     const getIndent = (num: number): number => {
       let indent
@@ -65,9 +65,9 @@ export class DroppedItemsSystem {
     }
 
     const attemptCout = 6
-    for(let i = 1; i <= attemptCout; i++) {
+    for (let i = 1; i <= attemptCout; i++) {
       const checkedX = x + getIndent(i)
-      if (simpleCheck(checkedX, y)) return {x: checkedX, y}
+      if (simpleCheck(checkedX, y)) return { x: checkedX, y }
     }
 
     return null
@@ -84,13 +84,12 @@ export class DroppedItemsSystem {
     return getStringFromNum(coords.x) + getStringFromNum(coords.y)
   }
 
-  addDroppedItem(coords: ITilesCoords, item: PocketItem) {
+  addDroppedItem(coords: ITilesCoords, item: Physics.Arcade.Sprite) {
     const coordsStr = this.getStringNameForCoords(coords)
-    if (this._items[coordsStr]) {
-      const pocketItems = this._items[coordsStr]
-      pocketItems.push(item)
+    if (this.items[coordsStr]) {
+      this.items[coordsStr].push(item)
     } else {
-      this._items[coordsStr] = [item]
+      this.items[coordsStr] = [item]
     }
   }
 
@@ -104,14 +103,47 @@ export class DroppedItemsSystem {
     }
 
     const pos = this.getCoordsFromTilePos(checkedCoords)
-    const child = this._group.create(pos.w, pos.h, this._key, item.type)
+    const child: Physics.Arcade.Sprite = this._group.create(pos.w, pos.h, this._key, item.type)
 
     // setted visible for this item
     child.setScale(0.7, 0.7)
     child.setSize(item.sizes.x, item.sizes.y)
 
-    this.addDroppedItem(coords, item)
+    this.addDroppedItem(checkedCoords, child)
 
     return true
+  }
+
+  checkItemInTile(coords: ITilesCoords, type: string) {
+    const itemsForTile = this.items[this.getStringNameForCoords(coords)]
+
+    if (!itemsForTile) return false
+
+    const item = itemsForTile.find((_item) => {
+      return _item.frame.name == type
+    })
+
+    return item != undefined
+  }
+
+  pickupItem(itemData: IPocketItemStoreData) {
+    const itemsForTile = this.items[this.getStringNameForCoords(itemData.coords)]
+    if (!itemsForTile) {
+      console.error('dont find coords for pickup item', itemData.coords)
+      return false
+    }
+
+    const findedIndex = itemsForTile.findIndex((_item) => {
+      return _item.frame.name == itemData.type
+    })
+
+    if (findedIndex < 0) {
+      console.error('dont find coords for pickup item type', itemData)
+      return false
+    } else {
+      this._group.remove(itemsForTile[findedIndex])
+      itemsForTile[findedIndex].destroy(true)
+      itemsForTile.splice(findedIndex, 1)
+    }
   }
 }

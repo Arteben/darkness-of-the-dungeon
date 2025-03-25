@@ -24,8 +24,8 @@ import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTip } from '@/classes/icon-tip'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
-import { PocketItem } from '@/classes/pocket-item'
 //
+import { pocketItemTypes } from '@/utils/drop-item-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { GameState } from '@/classes/game-state'
@@ -34,13 +34,9 @@ const mapList: IJsonMap[] = JsonMapList
 
 export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
-  _cameraControls!: Phaser.Cameras.Controls.FixedKeyControl
-  _mapLevels!: MapSceneLevels
   _dude!: Dude
-  _camera!: SceneCamera
   _keys!: mainKeys
   _tips: IconTips = {}
-  _droppedItems!: DroppedItems
 
   //@ts-ignore
   _gameState: GameState
@@ -66,29 +62,30 @@ export class MainEngine extends Scene {
       fon: 'backgroundTileSet'
     }
 
-    this._mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
-    if (!(this._mapLevels && this._mapLevels.groundLayer)) return
+    const mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
+    if (!(mapLevels && mapLevels.groundLayer)) return
 
-    this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
-    this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
+    this.physics.world.setBounds(0, 0, mapLevels.mapWidth, mapLevels.mapHeight)
+    const sceneCamera = new SceneCamera(this, mapLevels.mapWidth, mapLevels.mapHeight)
 
-    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
+    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, sceneCamera)
+
+    // +++++ dropped Items +++++++++
+    const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
+    // 5, 41
+    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
+    droppedItems.drop({x: 5, y: 36}, pocketItemTypes[PocketItemsEnums.apple])
+    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
+    // dropped Items
 
     this._dude = new Dude(
-      this, this._mapLevels, this._camera, this._tips, 'dudeFrameSet',
+      this, mapLevels, sceneCamera, this._tips, droppedItems,
+      'dudeFrameSet',
       { width: 32, height: 32 } as IResolution)
 
-    this._camera.startFollow(this._dude.player)
+    sceneCamera.startFollow(this._dude.player)
 
     // this._itemsSystem = new PocketItemsSystem(this._gameState, pocketMax: number)
-
-    this._droppedItems = new DroppedItems(this, this._mapLevels, 'itemIcons')
-
-    const apple = new PocketItem(PocketItemsEnums.apple, {x: 20, y: 20},
-      () => {console.log('you used apple!')})
-
-    // 5, 41
-    this._droppedItems.drop({x: 5, y: 36}, apple)
   }
 
   update(time: number): void {
@@ -135,6 +132,7 @@ export class MainEngine extends Scene {
       right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       space: Phaser.Input.Keyboard.KeyCodes.SPACE,
       shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+      ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
       a: Phaser.Input.Keyboard.KeyCodes.A,
       d: Phaser.Input.Keyboard.KeyCodes.D,
     }) as mainKeys
