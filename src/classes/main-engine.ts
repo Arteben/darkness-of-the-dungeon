@@ -3,7 +3,6 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import {
   IResolution,
   mainKeys,
-  IconTips,
   IJsonMap,
   IParamsForInitEngine,
   ILoadedTileSets,
@@ -18,11 +17,12 @@ import tipIcons from '@assets/tip-icons.png'
 import bricksRaw from '@assets/bricks.png'
 import charRaw from '@assets/char.png'
 import itemIcons from '@assets/items-Icons.png'
+import additinalIcons from '@assets/add-tip-icons.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
-import { IconTip } from '@/classes/icon-tip'
+import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
 //
 import { pocketItemTypes } from '@/utils/drop-item-types'
@@ -36,7 +36,7 @@ export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
   _dude!: Dude
   _keys!: mainKeys
-  _tips: IconTips = {}
+  _tips!: IconTips
 
   //@ts-ignore
   _gameState: GameState
@@ -68,7 +68,8 @@ export class MainEngine extends Scene {
     this.physics.world.setBounds(0, 0, mapLevels.mapWidth, mapLevels.mapHeight)
     const sceneCamera = new SceneCamera(this, mapLevels.mapWidth, mapLevels.mapHeight)
 
-    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, sceneCamera)
+    // this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, sceneCamera)
+    this._tips = new IconTips('tipIcons', 'additinalTipIcons', this, sceneCamera)
 
     // +++++ dropped Items +++++++++
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
@@ -93,7 +94,7 @@ export class MainEngine extends Scene {
       this._dude.update(time, this._keys)
     }
 
-    this._tips['stairsTip']?.update(time)
+    this._tips?.update(time)
   }
 
   preload() {
@@ -113,8 +114,10 @@ export class MainEngine extends Scene {
     })
 
     this.load.spritesheet('dudeFrameSet', charRaw, { frameWidth: 56, frameHeight: 56 })
+
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('itemIcons', itemIcons, { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('additinalTipIcons', additinalIcons, { frameWidth: 32, frameHeight: 32 })
   }
 
   onDrawProgressBar(value: number) {

@@ -4,13 +4,12 @@ import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
 import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/dropped-items-system'
-
+import { IconTips } from '@/classes/icon-tips'
 
 import {
   IResolution,
   INumberCoords,
   mainKeys,
-  IconTips,
   IAnimDudePlayParams,
   ITilesCoords,
   ILastUserPushKye,
@@ -371,7 +370,7 @@ export class Dude {
         break
       case DudeStates.climbing:
         this.isNearLadder = true
-        this._tips.stairsTip?.setIcon(false, null)
+        this._tips.hideTip()
         const coords = this.getTilePlayerCoords()
         this.player.x = (coords.x + 0.5) * this._levels.tileWidth
         break
@@ -438,7 +437,7 @@ export class Dude {
   overlapDudeLaddersCallbackUpdating(
     tile: Phaser.Tilemaps.Tile) {
     const plCrds = this.getTilePlayerCoords()
-    const stairsTip = this._tips.stairsTip || null
+    const ladderTip = this._tips
 
     // is some horizontal movement in here
     // walk, run or something else
@@ -457,9 +456,11 @@ export class Dude {
     // in another case hide this
     if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
       const iconCoords: INumberCoords = { w: this.player.body.x, h: this.player.body.y }
-      stairsTip?.setIcon(true, iconCoords)
+      // 39 for the icon
+      ladderTip?.showUsualTip(iconCoords, 39)
+      // ladderTip?.showCombinedTip(iconCoords, {main: 39, rightBottom: 30, rightTop: 38})
     } else {
-      stairsTip?.setIcon(false, null)
+      ladderTip?.hideTip()
     }
 
     if (this.dudeMoveState == DudeStates.climbing) {

@@ -1,6 +1,6 @@
 import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
-import { IconTip } from '@/classes/icon-tip'
+import { IconTips } from '@/classes/icon-tips'
 import { PocketItem } from '@/classes/pocket-item'
 
 import {
@@ -102,10 +102,6 @@ export interface mainKeys {
 export type overlapCallbackParams =
   Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.Body | Phaser.Tilemaps.Tile
 
-export interface IconTips {
-  [index: string]: IconTip
-}
-
 export type SelectedJsonMap = null | IJsonMap
 
 export type GameStateChangeData = {
@@ -163,3 +159,11 @@ export type PocketItemDudeData = IPocketItemStoreData | null
 export interface IPocketItemTypes {
   [index: string]: PocketItem
 }
+
+export interface ISpriteNumsForCombinedTip {
+  main: number
+  rightTop: number | undefined
+  rightBottom: number | undefined
+}
+
+export type NumberNull = number | null
