@@ -4,6 +4,7 @@ import {
   INumberCoords,
   ITilesCoords,
   IPocketItemStoreData,
+  PocketItemDudeData,
 } from '@/types/main-types'
 import { CheckSymMapElements } from '@/types/enums'
 
@@ -13,7 +14,7 @@ import { MapSceneLevels } from '@/classes/map-scene-levels'
 
 export class DroppedItemsSystem {
 
-  items: IPocketDroppedItemSprites = {}
+  _items: IPocketDroppedItemSprites = {}
 
   _group: Physics.Arcade.Group
   _key: string
@@ -86,10 +87,10 @@ export class DroppedItemsSystem {
 
   addDroppedItem(coords: ITilesCoords, item: Physics.Arcade.Sprite) {
     const coordsStr = this.getStringNameForCoords(coords)
-    if (this.items[coordsStr]) {
-      this.items[coordsStr].push(item)
+    if (this._items[coordsStr]) {
+      this._items[coordsStr].push(item)
     } else {
-      this.items[coordsStr] = [item]
+      this._items[coordsStr] = [item]
     }
   }
 
@@ -115,7 +116,7 @@ export class DroppedItemsSystem {
   }
 
   checkItemInTile(coords: ITilesCoords, type: string) {
-    const itemsForTile = this.items[this.getStringNameForCoords(coords)]
+    const itemsForTile = this._items[this.getStringNameForCoords(coords)]
 
     if (!itemsForTile) return false
 
@@ -126,24 +127,31 @@ export class DroppedItemsSystem {
     return item != undefined
   }
 
-  pickupItem(itemData: IPocketItemStoreData) {
-    const itemsForTile = this.items[this.getStringNameForCoords(itemData.coords)]
+  pickupItem(itemData: IPocketItemStoreData): PocketItemDudeData {
+    const itemsForCoordsKey = this.getStringNameForCoords(itemData.coords)
+    const itemsForTile = this._items[itemsForCoordsKey]
     if (!itemsForTile) {
       console.error('dont find coords for pickup item', itemData.coords)
-      return false
+      return itemData
     }
 
     const findedIndex = itemsForTile.findIndex((_item) => {
       return _item.frame.name == itemData.type
     })
 
-    if (findedIndex < 0) {
-      console.error('dont find coords for pickup item type', itemData)
-      return false
-    } else {
-      this._group.remove(itemsForTile[findedIndex])
-      itemsForTile[findedIndex].destroy(true)
-      itemsForTile.splice(findedIndex, 1)
+    if (0 > findedIndex) {
+      console.error('dont find item type for pickup item', itemData)
+      return itemData
     }
+    // delete item from scene
+    this._group.remove(itemsForTile[findedIndex])
+    itemsForTile[findedIndex].destroy(true)
+    //
+    // delete item from this.items arrays
+    itemsForTile.splice(findedIndex, 1)
+    if (itemsForTile.length == 0) {
+      delete this._items[itemsForCoordsKey]
+    }
+    return null
   }
 }

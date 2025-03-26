@@ -620,9 +620,9 @@ export class Dude {
 
   usePocketItem() {
     // tempory
-    console.log('use some item!')
     if (this.overlapSomeItem != null) {
-      this._dropItems.pickupItem(this.overlapSomeItem)
+      const afterPickup = this._dropItems.pickupItem(this.overlapSomeItem)
+      this.overlapSomeItem = afterPickup
     }
   }
 }
