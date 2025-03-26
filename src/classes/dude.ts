@@ -16,6 +16,7 @@ import {
   IPushKeysParams,
   overlapCallbackParams,
   PocketItemDudeData,
+  ISpriteNumsForCombinedTip,
 } from '@/types/main-types'
 
 import {
@@ -207,16 +208,8 @@ export class Dude {
   // overlapSomeItem
   private _overlapSomeItem: PocketItemDudeData = null
   public set overlapSomeItem(droppedItemData: PocketItemDudeData) {
-    const newData = droppedItemData
-    const oldData = this._overlapSomeItem
-
-    if (newData != null && JSON.stringify(newData) !== JSON.stringify(oldData)) {
-      console.log('++ set in props new data ', newData)
-      this._overlapSomeItem = newData
-    } else if (newData == null && oldData !== null) {
-      console.log('unset data ++++++++++')
-      this._overlapSomeItem = null
-    }
+    this._overlapSomeItem = droppedItemData
+    this.showPickupItemTip(droppedItemData)
   }
   public get overlapSomeItem(): PocketItemDudeData {
     return this._overlapSomeItem
@@ -306,7 +299,7 @@ export class Dude {
     }
   }
 
-  update(time: number, keys: mainKeys): void {
+  updateKyes(time: number, keys: mainKeys): void {
     const doublePushKey = this.saveAndGetLastPushKey(time, keys)
 
     this.isLeftMove = {
@@ -345,6 +338,10 @@ export class Dude {
     }
   }
 
+  updateTips(time: number) {
+    this._tips.update(time)
+  }
+
   // update dude state
   // change move & climp & fight states
   dudeMoveStateUpdating(newState: DudeStates) {
@@ -359,22 +356,25 @@ export class Dude {
         this.setDydeStaySizes()
         break
       case DudeStates.walk:
+        this._tips.hideTip()
         this.dudeAnimationKey = {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
         break
       case DudeStates.run:
+        this._tips.hideTip()
         this.dudeAnimationKey = {
           key: DudeAnimations.run, isIgnoreIf: true
         }
         break
       case DudeStates.climbing:
-        this.isNearLadder = true
         this._tips.hideTip()
+        this.isNearLadder = true
         const coords = this.getTilePlayerCoords()
         this.player.x = (coords.x + 0.5) * this._levels.tileWidth
         break
       case DudeStates.fighting:
+        this._tips.hideTip()
         this.isNearLadder = false
     }
 
@@ -459,8 +459,6 @@ export class Dude {
       // 39 for the icon
       ladderTip?.showUsualTip(iconCoords, 39)
       // ladderTip?.showCombinedTip(iconCoords, {main: 39, rightBottom: 30, rightTop: 38})
-    } else {
-      ladderTip?.hideTip()
     }
 
     if (this.dudeMoveState == DudeStates.climbing) {
@@ -625,5 +623,18 @@ export class Dude {
       const afterPickup = this._dropItems.pickupItem(this.overlapSomeItem)
       this.overlapSomeItem = afterPickup
     }
+  }
+
+  showPickupItemTip(data: PocketItemDudeData) {
+    if (data == null) {
+      this._tips.hideTip()
+      return
+    }
+    // 37 - arrows, hand - 21
+    const combSprites: ISpriteNumsForCombinedTip =
+      { main: (+data.type), rightBottom: 21, rightTop: undefined }
+    if (data.cycled) combSprites.rightTop = 37
+
+    this._tips.showCombinedTip({ w: this.player.x, h: this.player.y }, combSprites)
   }
 }

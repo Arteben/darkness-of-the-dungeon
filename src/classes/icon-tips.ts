@@ -48,7 +48,7 @@ export class IconTips {
 
   update(t: number): void {
     if (this.visibleTip != null) {
-      const offset = 0.004 * (t % 1000) - 2
+      const offset = 0.002 * (t % 1000) - 1
       this._activeTip.y = this._staticTipY - offset
     }
   }

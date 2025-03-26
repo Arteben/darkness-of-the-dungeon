@@ -36,7 +36,6 @@ export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
   _dude!: Dude
   _keys!: mainKeys
-  _tips!: IconTips
 
   //@ts-ignore
   _gameState: GameState
@@ -69,7 +68,7 @@ export class MainEngine extends Scene {
     const sceneCamera = new SceneCamera(this, mapLevels.mapWidth, mapLevels.mapHeight)
 
     // this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, sceneCamera)
-    this._tips = new IconTips('tipIcons', 'additinalTipIcons', this, sceneCamera)
+    const tips = new IconTips('tipIcons', 'additinalTipIcons', this, sceneCamera)
 
     // +++++ dropped Items +++++++++
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
@@ -80,7 +79,7 @@ export class MainEngine extends Scene {
     // dropped Items
 
     this._dude = new Dude(
-      this, mapLevels, sceneCamera, this._tips, droppedItems,
+      this, mapLevels, sceneCamera, tips, droppedItems,
       'dudeFrameSet',
       { width: 32, height: 32 } as IResolution)
 
@@ -91,10 +90,10 @@ export class MainEngine extends Scene {
 
   update(time: number): void {
     if (this._keys) {
-      this._dude.update(time, this._keys)
+      this._dude.updateKyes(time, this._keys)
     }
 
-    this._tips?.update(time)
+    this._dude.updateTips(time)
   }
 
   preload() {
