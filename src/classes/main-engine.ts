@@ -74,8 +74,11 @@ export class MainEngine extends Scene {
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
     // 5, 41
     droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
+    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.key])
+    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
     droppedItems.drop({x: 5, y: 36}, pocketItemTypes[PocketItemsEnums.apple])
-    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
+    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
+    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
     // dropped Items
 
     this._dude = new Dude(

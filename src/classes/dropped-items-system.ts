@@ -14,7 +14,7 @@ import { MapSceneLevels } from '@/classes/map-scene-levels'
 
 export class DroppedItemsSystem {
 
-  _items: IPocketDroppedItemSprites = {}
+  items: IPocketDroppedItemSprites = {}
 
   _group: Physics.Arcade.Group
   _key: string
@@ -85,15 +85,6 @@ export class DroppedItemsSystem {
     return getStringFromNum(coords.x) + getStringFromNum(coords.y)
   }
 
-  addDroppedItem(coords: ITilesCoords, item: Physics.Arcade.Sprite) {
-    const coordsStr = this.getStringNameForCoords(coords)
-    if (this._items[coordsStr]) {
-      this._items[coordsStr].push(item)
-    } else {
-      this._items[coordsStr] = [item]
-    }
-  }
-
   // drop some item on ground
   drop(coords: ITilesCoords, item: PocketItem): boolean {
 
@@ -107,16 +98,39 @@ export class DroppedItemsSystem {
     const child: Physics.Arcade.Sprite = this._group.create(pos.w, pos.h, this._key, item.type)
 
     // setted visible for this item
-    child.setScale(0.7, 0.7)
+    child.setScale(0.6, 0.6)
     child.setSize(item.sizes.x, item.sizes.y)
 
-    this.addDroppedItem(checkedCoords, child)
+    const coordsStr = this.getStringNameForCoords(checkedCoords)
+    if (this.items[coordsStr] == undefined) {
+      this.items[coordsStr] = [child]
+    } else {
+      this.items[coordsStr].forEach((item) => item.setActive(false))
+      this.items[coordsStr].push(child)
+    }
 
     return true
   }
 
+  itaratePileItems(coords:ITilesCoords) {
+    const itemsForCoordsKey = this.getStringNameForCoords(coords)
+    const itemsForTile = this.items[itemsForCoordsKey]
+    if (itemsForTile.length <= 1) {
+      console.error('cant itarate items in ', coords)
+      return false
+    }
+
+    // turn off active for last element
+    itemsForTile[itemsForTile.length - 1].setActive(false)
+    const firstElement = itemsForTile[0]
+    firstElement.setActive(true)
+    itemsForTile.push(firstElement)
+    itemsForTile.splice(0, 1)
+    return true
+  }
+
   checkItemInTile(coords: ITilesCoords, type: string) {
-    const itemsForTile = this._items[this.getStringNameForCoords(coords)]
+    const itemsForTile = this.items[this.getStringNameForCoords(coords)]
 
     if (!itemsForTile) return false
 
@@ -129,7 +143,7 @@ export class DroppedItemsSystem {
 
   pickupItem(itemData: IPocketItemStoreData): PocketItemDudeData {
     const itemsForCoordsKey = this.getStringNameForCoords(itemData.coords)
-    const itemsForTile = this._items[itemsForCoordsKey]
+    const itemsForTile = this.items[itemsForCoordsKey]
     if (!itemsForTile) {
       console.error('dont find coords for pickup item', itemData.coords)
       return itemData
@@ -144,13 +158,14 @@ export class DroppedItemsSystem {
       return itemData
     }
     // delete item from scene
-    this._group.remove(itemsForTile[findedIndex])
     itemsForTile[findedIndex].destroy(true)
     //
     // delete item from this.items arrays
     itemsForTile.splice(findedIndex, 1)
     if (itemsForTile.length == 0) {
-      delete this._items[itemsForCoordsKey]
+      delete this.items[itemsForCoordsKey]
+    } else {
+      itemsForTile[itemsForTile.length - 1].setActive(true)
     }
     return null
   }

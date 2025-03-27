@@ -72,7 +72,7 @@ export enum CheckSymMapElements {
 
 export enum PocketItems {
   hand = 0,
-  rock = 1,
-  key = 3,
+  sword = 82,
+  key = 185,
   apple = 224,
 }

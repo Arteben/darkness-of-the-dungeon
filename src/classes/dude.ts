@@ -194,9 +194,7 @@ export class Dude {
   private _isSpaceDown: boolean = false
   public set isSpaceDown(flag: boolean) {
     if (flag != this._isSpaceDown) {
-      if (flag) {
-        this.usePocketItem()
-      }
+      if (flag) this.usePocketItem()
       this._isSpaceDown = flag
     }
   }
@@ -204,6 +202,19 @@ export class Dude {
     return this._isSpaceDown
   }
   //
+
+    //ctrl key for dude
+    private _isCtrlDow: boolean = false
+    public set isCtrlDow(flag: boolean) {
+      if (flag != this._isCtrlDow) {
+        if (flag) this.itaratePile()
+        this._isCtrlDow = flag
+      }
+    }
+    public get isCtrlDow(): boolean {
+      return this._isCtrlDow
+    }
+    //
 
   // overlapSomeItem
   private _overlapSomeItem: PocketItemDudeData = null
@@ -320,6 +331,7 @@ export class Dude {
     }
 
     this.isSpaceDown = keys.space.isDown
+    this.isCtrlDow = keys.ctrl.isDown
 
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
@@ -485,8 +497,13 @@ export class Dude {
 
     if (!inTile) {
       this.overlapSomeItem = null
-    } else {
-      this.overlapSomeItem = { coords: plCrds, type, cycled: false }
+      return
+    }
+
+    if (droppedItem.active) {
+      const dropItems = this._dropItems
+      const cycled = dropItems.items[dropItems.getStringNameForCoords(plCrds)].length > 1
+      this.overlapSomeItem = { coords: plCrds, type, cycled }
     }
   }
 
@@ -624,6 +641,13 @@ export class Dude {
       this.overlapSomeItem = afterPickup
     }
   }
+
+  itaratePile() {
+    if (this.overlapSomeItem != null && this.overlapSomeItem.cycled) {
+      this._dropItems.itaratePileItems(this.overlapSomeItem.coords)
+    }
+  }
+
 
   showPickupItemTip(data: PocketItemDudeData) {
     if (data == null) {
