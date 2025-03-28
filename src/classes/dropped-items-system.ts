@@ -85,6 +85,17 @@ export class DroppedItemsSystem {
     return getStringFromNum(coords.x) + getStringFromNum(coords.y)
   }
 
+  makeActiveOnlyLastItem(coordsStr: string) {
+    const items = this.items[coordsStr]
+
+    if (!items || items.length == 0) {
+      return
+    }
+
+    items.forEach((item) => item.setActive(false))
+    items[items.length - 1].setActive(true)
+  }
+
   // drop some item on ground
   drop(coords: ITilesCoords, item: PocketItem): boolean {
 
@@ -105,8 +116,8 @@ export class DroppedItemsSystem {
     if (this.items[coordsStr] == undefined) {
       this.items[coordsStr] = [child]
     } else {
-      this.items[coordsStr].forEach((item) => item.setActive(false))
       this.items[coordsStr].push(child)
+      this.makeActiveOnlyLastItem(coordsStr)
     }
 
     return true
@@ -120,12 +131,10 @@ export class DroppedItemsSystem {
       return false
     }
 
-    // turn off active for last element
-    itemsForTile[itemsForTile.length - 1].setActive(false)
     const firstElement = itemsForTile[0]
-    firstElement.setActive(true)
     itemsForTile.push(firstElement)
     itemsForTile.splice(0, 1)
+    this.makeActiveOnlyLastItem(itemsForCoordsKey)
     return true
   }
 
@@ -165,7 +174,7 @@ export class DroppedItemsSystem {
     if (itemsForTile.length == 0) {
       delete this.items[itemsForCoordsKey]
     } else {
-      itemsForTile[itemsForTile.length - 1].setActive(true)
+      this.makeActiveOnlyLastItem(itemsForCoordsKey)
     }
     return null
   }
