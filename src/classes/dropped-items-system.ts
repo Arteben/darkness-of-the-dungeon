@@ -3,7 +3,6 @@ import {
   IPocketDroppedItemSprites,
   INumberCoords,
   ITilesCoords,
-  IPocketItemStoreData,
   PocketItemDudeData,
 } from '@/types/main-types'
 import { CheckSymMapElements } from '@/types/enums'
@@ -14,7 +13,7 @@ import { MapSceneLevels } from '@/classes/map-scene-levels'
 
 export class DroppedItemsSystem {
 
-  items: IPocketDroppedItemSprites = {}
+  _items: IPocketDroppedItemSprites = {}
 
   _group: Physics.Arcade.Group
   _key: string
@@ -86,7 +85,7 @@ export class DroppedItemsSystem {
   }
 
   makeActiveOnlyLastItem(coordsStr: string) {
-    const items = this.items[coordsStr]
+    const items = this._items[coordsStr]
 
     if (!items || items.length == 0) {
       return
@@ -109,14 +108,15 @@ export class DroppedItemsSystem {
     const child: Physics.Arcade.Sprite = this._group.create(pos.w, pos.h, this._key, item.type)
 
     // setted visible for this item
-    child.setScale(0.6, 0.6)
+    const scaleSize = item.isBig ? 0.9 : 0.6
+    child.setScale(scaleSize)
     child.setSize(item.sizes.x, item.sizes.y)
 
     const coordsStr = this.getStringNameForCoords(checkedCoords)
-    if (this.items[coordsStr] == undefined) {
-      this.items[coordsStr] = [child]
+    if (this._items[coordsStr] == undefined) {
+      this._items[coordsStr] = [child]
     } else {
-      this.items[coordsStr].push(child)
+      this._items[coordsStr].push(child)
       this.makeActiveOnlyLastItem(coordsStr)
     }
 
@@ -125,7 +125,7 @@ export class DroppedItemsSystem {
 
   itaratePileItems(coords:ITilesCoords) {
     const itemsForCoordsKey = this.getStringNameForCoords(coords)
-    const itemsForTile = this.items[itemsForCoordsKey]
+    const itemsForTile = this._items[itemsForCoordsKey]
     if (itemsForTile.length <= 1) {
       console.error('cant itarate items in ', coords)
       return false
@@ -139,7 +139,7 @@ export class DroppedItemsSystem {
   }
 
   checkItemInTile(coords: ITilesCoords, type: string) {
-    const itemsForTile = this.items[this.getStringNameForCoords(coords)]
+    const itemsForTile = this._items[this.getStringNameForCoords(coords)]
 
     if (!itemsForTile) return false
 
@@ -150,32 +150,39 @@ export class DroppedItemsSystem {
     return item != undefined
   }
 
-  pickupItem(itemData: IPocketItemStoreData): PocketItemDudeData {
-    const itemsForCoordsKey = this.getStringNameForCoords(itemData.coords)
-    const itemsForTile = this.items[itemsForCoordsKey]
-    if (!itemsForTile) {
-      console.error('dont find coords for pickup item', itemData.coords)
-      return itemData
+  getItemDataForActiveItem(itemsCoord: ITilesCoords): PocketItemDudeData {
+    const itemsForCoordsKey = this.getStringNameForCoords(itemsCoord)
+    const items = this._items[itemsForCoordsKey]
+    if (items == undefined || items.length == 0) {
+      return null
     }
 
-    const findedIndex = itemsForTile.findIndex((_item) => {
-      return _item.frame.name == itemData.type
-    })
+    const type = items[items.length - 1].frame.name
+    const cycled = items.length > 1
+    return {
+      type, coords: itemsCoord, cycled,
+    }
 
-    if (0 > findedIndex) {
-      console.error('dont find item type for pickup item', itemData)
-      return itemData
+  }
+
+  pickupItem(itemsCoord: ITilesCoords): string | null {
+    const itemsForCoordsKey = this.getStringNameForCoords(itemsCoord)
+    const itemsForTile = this._items[itemsForCoordsKey]
+    if (itemsForTile == undefined || itemsForTile.length == 0) {
+      console.error('cant active item in pickupItem!', itemsForTile)
+      return null
     }
     // delete item from scene
-    itemsForTile[findedIndex].destroy(true)
-    //
-    // delete item from this.items arrays
-    itemsForTile.splice(findedIndex, 1)
+    const lastActiveItem = itemsForTile[itemsForTile.length - 1]
+    const pickupItemType = lastActiveItem.frame.name
+    lastActiveItem.destroy(true)
+    itemsForTile.splice(itemsForTile.length - 1, 1)
+
     if (itemsForTile.length == 0) {
-      delete this.items[itemsForCoordsKey]
+      delete this._items[itemsForCoordsKey]
     } else {
       this.makeActiveOnlyLastItem(itemsForCoordsKey)
     }
-    return null
+    return pickupItemType
   }
 }

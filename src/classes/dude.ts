@@ -492,7 +492,6 @@ export class Dude {
     droppedItem: Types.Physics.Arcade.SpriteWithDynamicBody,
   ) {
     const plCrds = this.getTilePlayerCoords()
-    const type = droppedItem.frame.name
     const inTile = this._dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
 
     if (!inTile) {
@@ -501,9 +500,7 @@ export class Dude {
     }
 
     if (droppedItem.active) {
-      const dropItems = this._dropItems
-      const cycled = dropItems.items[dropItems.getStringNameForCoords(plCrds)].length > 1
-      this.overlapSomeItem = { coords: plCrds, type, cycled }
+      this.overlapSomeItem  = this._dropItems.getItemDataForActiveItem(plCrds)
     }
   }
 
@@ -637,8 +634,11 @@ export class Dude {
   usePocketItem() {
     // tempory
     if (this.overlapSomeItem != null) {
-      const afterPickup = this._dropItems.pickupItem(this.overlapSomeItem)
-      this.overlapSomeItem = afterPickup
+      const pickupItemType = this._dropItems.pickupItem(this.overlapSomeItem.coords)
+      if (pickupItemType == null) return
+
+      this.overlapSomeItem = this._dropItems.getItemDataForActiveItem(this.overlapSomeItem.coords)
+      console.log('you pickup item with type ', pickupItemType)
     }
   }
 
@@ -648,17 +648,20 @@ export class Dude {
     }
   }
 
-
   showPickupItemTip(data: PocketItemDudeData) {
     if (data == null) {
       this._tips.hideTip()
       return
     }
-    // 37 - arrows, hand - 21
+    // 38 - arrows, hand - 21
     const combSprites: ISpriteNumsForCombinedTip =
       { main: (+data.type), rightBottom: 21, rightTop: undefined }
-    if (data.cycled) combSprites.rightTop = 37
+    if (data.cycled) combSprites.rightTop = 38
 
-    this._tips.showCombinedTip({ w: this.player.x, h: this.player.y }, combSprites)
+    const pos = {
+      w: (data.coords.x + 0.5) * this._levels.tileWidth,
+      h: (data.coords.y + 0.5) * this._levels.tileWidth,
+    }
+    this._tips.showCombinedTip(pos, combSprites)
   }
 }
