@@ -28,7 +28,7 @@ import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-syst
 import { pocketItemTypes } from '@/utils/drop-item-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
-import { GameState } from '@/classes/game-state'
+import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -38,7 +38,7 @@ export class MainEngine extends Scene {
   _keys!: mainKeys
 
   //@ts-ignore
-  _gameState: GameState
+  _slotSystem: PocketSlotsSystem
   _selectedMap: string = ''
 
   constructor() {
@@ -47,7 +47,7 @@ export class MainEngine extends Scene {
 
   init(initParams: IParamsForInitEngine) {
     this._selectedMap = initParams.nameMap
-    this._gameState = initParams.state
+    this._slotSystem = initParams.slotsSystem
   }
 
   create() {
@@ -80,6 +80,9 @@ export class MainEngine extends Scene {
     droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
     droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
     // dropped Items
+
+    this._slotSystem.addHandItem()
+    //
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,

@@ -25,7 +25,7 @@ export enum GameStateSettings {
   pages,
   lang,
   isGameStarted,
-  pocketSlots,
+  pocketItems,
 }
 
 export enum GamePages {
@@ -71,7 +71,7 @@ export enum CheckSymMapElements {
 }
 
 export enum PocketItems {
-  hand = 0,
+  hand = 21,
   sword = 82,
   key = 185,
   apple = 224,

@@ -112,6 +112,10 @@ export class IconTips {
     const scaleAddIcon: number = 0.8
     const horIndent: number = 2.1
 
+    this._activeTip.each((child: GameObjects.Sprite) => {
+      child.destroy(true)
+    })
+
     if (sprites.rightBottom != undefined) {
       const rbSprite = this._engineFac.sprite(iconOffset * horIndent, iconOffset, this._addIconsSet, sprites.rightBottom)
       rbSprite.setScale(scaleAddIcon, scaleAddIcon)

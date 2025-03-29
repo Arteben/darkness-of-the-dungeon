@@ -203,18 +203,18 @@ export class Dude {
   }
   //
 
-    //ctrl key for dude
-    private _isCtrlDow: boolean = false
-    public set isCtrlDow(flag: boolean) {
-      if (flag != this._isCtrlDow) {
-        if (flag) this.itaratePile()
-        this._isCtrlDow = flag
-      }
+  //ctrl key for dude
+  private _isCtrlDow: boolean = false
+  public set isCtrlDow(flag: boolean) {
+    if (flag != this._isCtrlDow) {
+      if (flag) this.itaratePile()
+      this._isCtrlDow = flag
     }
-    public get isCtrlDow(): boolean {
-      return this._isCtrlDow
-    }
-    //
+  }
+  public get isCtrlDow(): boolean {
+    return this._isCtrlDow
+  }
+  //
 
   // overlapSomeItem
   private _overlapSomeItem: PocketItemDudeData = null
@@ -500,7 +500,7 @@ export class Dude {
     }
 
     if (droppedItem.active) {
-      this.overlapSomeItem  = this._dropItems.getItemDataForActiveItem(plCrds)
+      this.overlapSomeItem = this._dropItems.getItemDataForActiveItem(plCrds)
     }
   }
 

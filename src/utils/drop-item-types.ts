@@ -17,4 +17,11 @@ export const pocketItemTypes: IPocketItemTypes = {
     () => { console.log('you used the key!') },
     true,
   ),
+  [PocketItemsEnums.hand]: new PocketItem(
+    PocketItemsEnums.hand,
+    () => { console.log('you used the key!') },
+    false,
+    { x: 20, y: 20 },
+    true
+  ),
 }

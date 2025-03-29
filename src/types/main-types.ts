@@ -1,15 +1,15 @@
 import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
-import { IconTips } from '@/classes/icon-tips'
 import { PocketItem } from '@/classes/pocket-item'
+import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
 import {
   Languages,
   GamePages,
   GameStateSettings,
   DudeAnimations,
-  PocketItems,
 } from '@/types/enums'
+
 
 export type nullNumber = null | number;
 
@@ -111,7 +111,7 @@ export type GameStateChangeData = {
 
 export interface IParamsForInitEngine {
   nameMap: string
-  state: GameState
+  slotsSystem: PocketSlotsSystem
 }
 
 export interface ILoadedTileSets {
@@ -134,14 +134,6 @@ export interface ILastUserPushKye {
 export interface IPushKeysParams {
   value: boolean
   isDouble: boolean
-}
-
-export interface IPacketSlot {
-  isHand: boolean
-  item: PocketItems | null
-  imageOffsets: INumberCoords
-  isDropEnabled: boolean
-  isUseEnabled: boolean
 }
 
 export interface IPocketDroppedItemSprites {

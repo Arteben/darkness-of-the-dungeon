@@ -8,7 +8,7 @@ import {
   IParamsForInitEngine,
 } from '@/types/main-types'
 
-import { WEBGL, Types, Game as PhaserGame, Scene } from 'phaser'
+import { WEBGL, Types, Game as PhaserGame } from 'phaser'
 
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
@@ -58,6 +58,7 @@ export class DungeonDarkness {
   _mainSceneName: string = 'MainEngine'
 
   _slotsSystem: PocketSlotsSystem
+  _maxSlots: number
 
   // _slotSystem:
 
@@ -68,7 +69,8 @@ export class DungeonDarkness {
     this.state = state
     this.loc = locals.loc.bind(locals)
 
-    this._slotsSystem = new PocketSlotsSystem()
+    this._slotsSystem = new PocketSlotsSystem(state)
+    this._maxSlots = this._slotsSystem.maxSlotsNum
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -89,7 +91,7 @@ export class DungeonDarkness {
     const map = this.getSelectedMap()
     if (!this.phaser || !map || !map.name) return
     this.phaser.scene.start(
-      this._mainSceneName, { nameMap: map.name, state: this.state } as IParamsForInitEngine)
+      this._mainSceneName, { nameMap: map.name, slotsSystem: this._slotsSystem } as IParamsForInitEngine)
     this.phaser.pause()
   }
 

@@ -4,10 +4,11 @@ import {
   ILocSettings,
   IStateParams,
   GameStateChangeData,
-  IPacketSlot,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
+
+import { PocketItem } from '@/classes/pocket-item'
 
 export class GameState implements IStateParams {
 
@@ -65,14 +66,14 @@ export class GameState implements IStateParams {
     return this._selectedMap
   }
   //
-  // pocketSlots
-  private _pocketSlots: IPacketSlot[] = []
-  public set pocketSlots(pocketSlots: IPacketSlot[]) {
-    this._pocketSlots = pocketSlots
-    this.triggerChnageState(GameStateSettings.pocketSlots)
+  // pocketItems
+  private _pocketItems: PocketItem[] = []
+  public set pocketItems(pocketItems: PocketItem[]) {
+    this._pocketItems = pocketItems
+    this.triggerChnageState(GameStateSettings.pocketItems)
   }
-  public get pocketSlots(): IPacketSlot[] {
-    return this._pocketSlots
+  public get pocketItems(): PocketItem[] {
+    return this._pocketItems
   }
   //
 
