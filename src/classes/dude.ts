@@ -5,6 +5,7 @@ import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
 import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/dropped-items-system'
 import { IconTips } from '@/classes/icon-tips'
+import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
 import {
   IResolution,
@@ -34,6 +35,7 @@ export class Dude {
   _camera: SceneCamera
   _tips: IconTips
   _dropItems: DroppedItemsSystem
+  _slotSystem: PocketSlotsSystem
 
   // @ts-ignore // isNearLadder
   private _isNearLadder: boolean
@@ -219,6 +221,9 @@ export class Dude {
   // overlapSomeItem
   private _overlapSomeItem: PocketItemDudeData = null
   public set overlapSomeItem(droppedItemData: PocketItemDudeData) {
+    if (droppedItemData != null && this._slotSystem.isFullSlots()) {
+      droppedItemData = null
+    }
     this._overlapSomeItem = droppedItemData
     this.showPickupItemTip(droppedItemData)
   }
@@ -242,12 +247,14 @@ export class Dude {
     camera: SceneCamera,
     tips: IconTips,
     dropItems: DropItems,
+    slotSystem: PocketSlotsSystem,
     keyAnimFrameSet: string, frameResolution: IResolution) {
 
     this._levels = mapLevels
     this._camera = camera
     this._dropItems = dropItems
     this._tips = tips
+    this._slotSystem = slotSystem
 
     // set animation frame size for our levels
     // magic numbers
@@ -637,8 +644,9 @@ export class Dude {
       const pickupItemType = this._dropItems.pickupItem(this.overlapSomeItem.coords)
       if (pickupItemType == null) return
 
+      this._slotSystem.addItem(this.overlapSomeItem.type)
+
       this.overlapSomeItem = this._dropItems.getItemDataForActiveItem(this.overlapSomeItem.coords)
-      console.log('you pickup item with type ', pickupItemType)
     }
   }
 

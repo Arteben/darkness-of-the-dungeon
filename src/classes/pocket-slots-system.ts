@@ -16,8 +16,12 @@ export class PocketSlotsSystem {
     this._state = state
   }
 
+  isFullSlots() {
+    return this._state.pocketItems.length >= this.maxSlotsNum
+  }
+
   addHandItem() {
-    this.addItem(PocketItemsEnums[PocketItemsEnums.hand])
+    this.addItem(String(PocketItemsEnums.hand))
   }
 
   addItem(typeItem: string) {

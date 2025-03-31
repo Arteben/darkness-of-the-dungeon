@@ -1,23 +1,26 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
-import { GamePages } from '@/types/enums'
-
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/font-icon'
 import '@/ui-elements/menu-button'
 
+import '@/ui-elements/pocket-slots-item-ui'
+
 @customElement('pocket-slots-ui')
 export class PocketSlotsUi extends GameStateElement {
 
-  connectedCallback() {
-    super.connectedCallback()
-  }
-
-
   render() {
-    // if (!this._game || !this._slots.length) { return }
+    if (!this._game) return
+
+    const slots = new Array(this._game.maxSlots)
+    const items = this._state.pocketItems
+    items.forEach((item, idx) => {
+      slots[idx] = item
+    })
+
+    console.log('slots for view', slots)
 
     return html`POCKET SLOTS`
   }

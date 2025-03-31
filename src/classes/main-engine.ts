@@ -85,13 +85,11 @@ export class MainEngine extends Scene {
     //
 
     this._dude = new Dude(
-      this, mapLevels, sceneCamera, tips, droppedItems,
+      this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
       'dudeFrameSet',
       { width: 32, height: 32 } as IResolution)
 
     sceneCamera.startFollow(this._dude.player)
-
-    // this._itemsSystem = new PocketItemsSystem(this._gameState, pocketMax: number)
   }
 
   update(time: number): void {

@@ -58,7 +58,7 @@ export class DungeonDarkness {
   _mainSceneName: string = 'MainEngine'
 
   _slotsSystem: PocketSlotsSystem
-  _maxSlots: number
+  maxSlots: number
 
   // _slotSystem:
 
@@ -70,7 +70,7 @@ export class DungeonDarkness {
     this.loc = locals.loc.bind(locals)
 
     this._slotsSystem = new PocketSlotsSystem(state)
-    this._maxSlots = this._slotsSystem.maxSlotsNum
+    this.maxSlots = this._slotsSystem.maxSlotsNum
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
