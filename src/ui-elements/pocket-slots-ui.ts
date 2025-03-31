@@ -1,6 +1,8 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
+import { PocketItem } from '@/classes/pocket-item'
+
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import '@/ui-elements/font-icon'
@@ -14,20 +16,41 @@ export class PocketSlotsUi extends GameStateElement {
   render() {
     if (!this._game) return
 
-    const slots = new Array(this._game.maxSlots)
+    const pocketSlots = new Array(this._game.maxSlots)
     const items = this._state.pocketItems
-    items.forEach((item, idx) => {
-      slots[idx] = item
-    })
+    for(let idx = 0; idx < pocketSlots.length; idx++) {
+      if (items[idx]) {
+        pocketSlots[idx] = items[idx]
+      } else {
+        pocketSlots[idx] = null
+      }
+    }
 
-    console.log('slots for view', slots)
+    const getPocketSlot = (item: PocketItem | undefined) => {
+      let type = -1
+      let isDropped: boolean = true
 
-    return html`POCKET SLOTS`
+      if (item) {
+        type = +(item.type)
+        isDropped = item.isDropped
+      }
+
+      return html`<pocket-slots-item-ui
+                    ?isDontDropped="${!isDropped}"
+                    type=${type}></pocket-slots-item-ui>`
+    }
+
+    return html`${pocketSlots.map(_item => getPocketSlot(_item))}`
   }
 
   static styles = css`
-    :host {
-      background: gray
-    }
-  `
+  :host {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+      justify-content: space-evenly;
+      max-width: 340px;
+      border: 1px solid #000000;
+      background: #303030;
+  }`
 }
