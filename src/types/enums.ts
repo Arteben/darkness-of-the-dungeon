@@ -17,6 +17,9 @@ export enum ImportantDomElementIds {
 export enum BusEventsList {
   changeGameState,
   changeLocSettings,
+  selectPocketItem,
+  usePocketItem,
+  trushPocketItem,
 }
 
 export enum GameStateSettings {
@@ -26,6 +29,7 @@ export enum GameStateSettings {
   lang,
   isGameStarted,
   pocketItems,
+  selectedPocketItem,
 }
 
 export enum GamePages {

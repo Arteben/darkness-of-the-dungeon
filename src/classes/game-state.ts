@@ -4,11 +4,10 @@ import {
   ILocSettings,
   IStateParams,
   GameStateChangeData,
+  PocketItemNull,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
-
-import { PocketItem } from '@/classes/pocket-item'
 
 export class GameState implements IStateParams {
 
@@ -67,13 +66,23 @@ export class GameState implements IStateParams {
   }
   //
   // pocketItems
-  private _pocketItems: PocketItem[] = []
-  public set pocketItems(pocketItems: PocketItem[]) {
+  private _pocketItems: PocketItemNull[] = []
+  public set pocketItems(pocketItems: PocketItemNull[]) {
     this._pocketItems = pocketItems
     this.triggerChnageState(GameStateSettings.pocketItems)
   }
-  public get pocketItems(): PocketItem[] {
+  public get pocketItems(): PocketItemNull[] {
     return this._pocketItems
+  }
+  //
+  // selectedPocketItem
+  private _selectedPocketItem: number = -1
+  public set selectedPocketItem(idx: number) {
+    this._selectedPocketItem = idx
+    this.triggerChnageState(GameStateSettings.selectedPocketItem)
+  }
+  public get selectedPocketItem(): number {
+    return this._selectedPocketItem
   }
   //
 

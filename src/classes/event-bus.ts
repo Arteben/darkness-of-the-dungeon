@@ -31,7 +31,8 @@ export class EventBus {
   }
 
   // 'this' here NOT WORK!!!!!!! use call for save it
-  static On(name: string, callbackWihBindThis: (e: Event) => void) {
+  // use arrow functions here (event: CustomEventInit) => {    }
+  static On(name: string, callbackWihBindThis: (e: CustomEventInit) => void) {
     eventBus.addEventListener(name, callbackWihBindThis)
   }
 

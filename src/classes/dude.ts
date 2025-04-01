@@ -6,6 +6,7 @@ import { SceneCamera } from '@/classes/scene-camera'
 import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/dropped-items-system'
 import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
+import { PocketItem } from '@/classes/pocket-item'
 
 import {
   IResolution,
@@ -255,6 +256,11 @@ export class Dude {
     this._dropItems = dropItems
     this._tips = tips
     this._slotSystem = slotSystem
+    // set function for drop elements
+    this._slotSystem.dropFunc = (item: PocketItem) => {
+      const plCrds = this.getTilePlayerCoords()
+      this._dropItems.drop(plCrds, item)
+    }
 
     // set animation frame size for our levels
     // magic numbers

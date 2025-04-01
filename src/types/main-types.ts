@@ -159,3 +159,5 @@ export interface ISpriteNumsForCombinedTip {
 }
 
 export type NumberNull = number | null
+
+export type PocketItemNull = PocketItem | null
