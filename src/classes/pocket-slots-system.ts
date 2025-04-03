@@ -105,4 +105,28 @@ export class PocketSlotsSystem {
     this.dropFunc(item)
     this.selectHand()
   }
+
+  nextPocketItem() {
+    const idx = this._state.selectedPocketItem
+    let inc = 1
+    const items = this._state.pocketItems
+    let newIdx = 0
+
+    const getNextSelectable = () => {
+      if (idx + inc < items.length) {
+        if (items[idx + inc] == null) {
+          inc++
+          getNextSelectable()
+        } else {
+          newIdx = idx + inc
+        }
+      }
+    }
+
+    getNextSelectable()
+
+    if (newIdx < items.length && items[newIdx] != null) {
+      this._state.selectedPocketItem = newIdx
+    }
+  }
 }

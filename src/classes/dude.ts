@@ -213,7 +213,7 @@ export class Dude {
   private _isCtrlDow: boolean = false
   public set isCtrlDow(flag: boolean) {
     if (flag != this._isCtrlDow) {
-      if (flag) this.itaratePile()
+      if (flag) this.itarateThings()
       this._isCtrlDow = flag
     }
   }
@@ -658,9 +658,11 @@ export class Dude {
     }
   }
 
-  itaratePile() {
+  itarateThings() {
     if (this.overlapSomeItem != null && this.overlapSomeItem.cycled) {
       this._dropItems.itaratePileItems(this.overlapSomeItem.coords)
+    } else {
+      this._slotSystem.nextPocketItem()
     }
   }
 
