@@ -132,8 +132,21 @@ export class DroppedItemsSystem {
     }
 
     const firstElement = itemsForTile[0]
-    itemsForTile.push(firstElement)
-    itemsForTile.splice(0, 1)
+    const typeForFirst = firstElement.frame.name
+    let counter = 1
+
+    const itarateElementsWithSameType = (pushItem: Physics.Arcade.Sprite) => {
+      itemsForTile.push(pushItem)
+      itemsForTile.splice(0, 1)
+      if (itemsForTile[0].frame.name == typeForFirst) {
+        if(counter < itemsForTile.length) {
+          counter++
+          itarateElementsWithSameType(itemsForTile[0])
+        }
+      }
+    }
+
+    itarateElementsWithSameType(firstElement)
     this.makeActiveOnlyLastItem(itemsForCoordsKey)
     return true
   }
@@ -157,8 +170,18 @@ export class DroppedItemsSystem {
       return null
     }
 
+    const isOtherTypes = (checkedItems: Physics.Arcade.Sprite[]) => {
+      const firstType = checkedItems[0].frame.name
+      for (let i = 1; i < checkedItems.length; i++) {
+        if (firstType != checkedItems[i].frame.name) {
+          return true
+        }
+      }
+      return false
+    }
+
     const type = items[items.length - 1].frame.name
-    const cycled = items.length > 1
+    const cycled = items.length > 1 && isOtherTypes(items)
     return {
       type, coords: itemsCoord, cycled,
     }
