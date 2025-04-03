@@ -23,9 +23,20 @@ export class PocketSlotsUi extends LitElement {
 
   render() {
     const backImgClasses = {
-      slotDiv: true,
+      backImg: true,
       dontDropped: this.isDontDropped,
       selectedBackImg: this.isSelected,
+      maybeSelectedBackImg: this.type > -1,
+    }
+
+    const actionIconClass = {
+      slotActionIcon: true,
+      slotActionIconSelected: this.isSelected,
+    }
+
+    const actionIconTrashClass = {
+      slotActionIcon: true,
+      slotActionIconSelected: this.isSelected && !this.isDontDropped,
     }
 
     const getItemIcon = (_type: number) => {
@@ -40,26 +51,32 @@ export class PocketSlotsUi extends LitElement {
       return html`<div class="itemDiv" style="${styleMap(imgStyle)}"></div>`
     }
 
-    const fontIcon = html`
-      <font-icon
-        icon="trash"
-        class="trashIcon"
-        size="20"
-        @click="${(e: Event) => { this.onClickItemTrash(e) }}"
-      ></font-icon>
-    `
-
     return html`
-    <div
-      @click="${(e: Event) => { this.onClickBack(e) }}"
-      class="${classMap(backImgClasses)}"
-    >
-      ${this.type != -1 ? getItemIcon(this.type) : ''}
-      ${this.isSelected && !this.isDontDropped ? fontIcon : ''}
-    </div>`
+      <div
+        @click="${(e: Event) => { this.onClickItem(e, 'clickSlotItem') }}"
+        class="${classMap(backImgClasses)}"
+      >
+        ${this.type != -1 ? getItemIcon(this.type) : ''}
+      </div>
+      <div
+        class="slotIcons"
+      >
+        <font-icon
+          icon="question-circle-o"
+          class="${classMap(actionIconClass)}"
+          size="20"
+          @click="${(e: Event) => { this.onClickItem(e, 'clickQuestionIcon') }}"
+        ></font-icon>
+        <font-icon
+          icon="trash"
+          class="${classMap(actionIconTrashClass)}"
+          size="20"
+          @click="${(e: Event) => { this.onClickItem(e, 'clickTrashIcon') }}"
+        ></font-icon>
+      </div>`
   }
 
-  private onClickBack(e: Event) {
+  private onClickItem(e: Event, type: string) {
     e.stopPropagation()
     const options = {
       detail: null,
@@ -67,36 +84,32 @@ export class PocketSlotsUi extends LitElement {
       composed: true
     }
 
-    this.dispatchEvent(new CustomEvent('clickSlotItem', options))
-  }
-
-  private onClickItemTrash(e: Event) {
-    e.stopPropagation()
-    const options = {
-      detail: null,
-      bubbles: false,
-      composed: true
-    }
-
-    this.dispatchEvent(new CustomEvent('clickTrushItem', options))
+    this.dispatchEvent(new CustomEvent(type, options))
   }
 
   static styles = css`
     :host {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       justify-content: center;
       align-items: center;
+      padding: 0 3px;
     }
 
-    .slotDiv {
+    .backImg {
       width: 48px;
       height: 48px;
-      display: block;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       background-repeat: no-repeat;
       background-origin: border-box;
       background-image: url(${unsafeCSS(itemBackImg)});
       background-position: -16px -48px;
+    }
+
+    .maybeSelectedBackImg {
+      cursor: pointer;
     }
 
     .dontDropped {
@@ -110,26 +123,33 @@ export class PocketSlotsUi extends LitElement {
     .itemDiv {
       width: 32px;
       height: 32px;
-      display: inline-block;
-      position: relative;
-      top: 9px;
-      left: 8px;
+      display: block;
       background-repeat: no-repeat;
       background-origin: border-box;
       background-image: url(${unsafeCSS(itemIcons)});
     }
 
-    .trashIcon {
+    .slotIcons {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: start;
+      height: 100%;
+      margin: 0 15px 0 5px;
+    }
+
+    .slotIcons:last-child {
+      margin: 0 5px;
+    }
+
+    .slotActionIcon {
       display: flex;
       justify-content: center;
+      align-items: center;
+    }
+
+    .slotActionIconSelected {
       color: rgb(255 255 255);
-      background: rgb(33 26 26);
-      border-radius: 40px;
-      width: 25px;
-      padding: 5px;
-      position: relative;
-      top: -10px;
-      left: 30px;
       cursor: pointer;
     }
   `

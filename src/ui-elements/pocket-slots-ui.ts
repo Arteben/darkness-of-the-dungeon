@@ -33,7 +33,7 @@ export class PocketSlotsUi extends GameStateElement {
                   ?isSelected="${isSelected}"
                   type=${type}
                   @clickSlotItem="${(e: Event) => { this.onClickPocketItem(e, idx, isSelected) }}"
-                  @clickTrushItem="${(e: Event) => { this.onClickTrushItem(e, idx) }}"
+                  @clickTrashIcon="${(e: Event) => { this.onClickTrushItem(e, idx, isDropped) }}"
                 ></pocket-slots-item-ui>`
       } else {
         return html`<pocket-slots-item-ui></pocket-slots-item-ui>`
@@ -51,18 +51,19 @@ export class PocketSlotsUi extends GameStateElement {
     }
   }
 
-  private onClickTrushItem(e: Event, idx: number) {
-    EventBus.Dispatch(BusEventsList[BusEventsList.trushPocketItem], idx)
+  private onClickTrushItem(e: Event, idx: number, isDropped: boolean) {
+    if (isDropped) {
+      EventBus.Dispatch(BusEventsList[BusEventsList.trushPocketItem], idx)
+    }
   }
 
   static styles = css`
   :host {
-      display: flex;
-      flex-direction: row;
-      flex-grow: 1;
-      justify-content: space-evenly;
-      max-width: 340px;
-      border: 1px solid #000000;
-      background: #303030;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    border: 2px solid #000000;
+    background: #303030;
+    margin: 0 3px;
   }`
 }
