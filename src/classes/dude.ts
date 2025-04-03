@@ -197,7 +197,10 @@ export class Dude {
   private _isSpaceDown: boolean = false
   public set isSpaceDown(flag: boolean) {
     if (flag != this._isSpaceDown) {
-      if (flag) this.usePocketItem()
+      const selectedItem = this._slotSystem.selectedItem
+      if (flag && selectedItem != null) {
+        this.usePocketItem(selectedItem)
+      }
       this._isSpaceDown = flag
     }
   }
@@ -260,6 +263,9 @@ export class Dude {
     this._slotSystem.dropFunc = (item: PocketItem) => {
       const plCrds = this.getTilePlayerCoords()
       this._dropItems.drop(plCrds, item)
+    }
+    this._slotSystem.useFunc = (item: PocketItem) => {
+      this.usePocketItem(item)
     }
 
     // set animation frame size for our levels
@@ -644,15 +650,11 @@ export class Dude {
     return pushedKey
   }
 
-  usePocketItem() {
-    // tempory
-    if (this.overlapSomeItem != null) {
-      const pickupItemType = this._dropItems.pickupItem(this.overlapSomeItem.coords)
-      if (pickupItemType == null) return
-
-      this._slotSystem.addItem(this.overlapSomeItem.type)
-
-      this.overlapSomeItem = this._dropItems.getItemDataForActiveItem(this.overlapSomeItem.coords)
+  usePocketItem(item: PocketItem) {
+    if (item == null) {
+      console.error('dont find item for selected item(for call use function)!')
+    } else {
+      item.use(this)
     }
   }
 

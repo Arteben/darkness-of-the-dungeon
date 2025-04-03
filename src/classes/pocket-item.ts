@@ -4,6 +4,8 @@ import {
 } from '@/types/main-types'
 import { PocketItems } from '@/types/enums'
 
+import { Dude } from './dude'
+
 export class PocketItem {
 
   type: PocketItems
@@ -26,7 +28,7 @@ export class PocketItem {
     this.isDropped = isDropped
   }
 
-  use() {
-    this._useCallback()
+  use(dude: Dude) {
+    this._useCallback.call(dude)
   }
 }

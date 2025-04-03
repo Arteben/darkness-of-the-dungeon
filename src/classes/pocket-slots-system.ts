@@ -13,6 +13,17 @@ export class PocketSlotsSystem {
   _state: GameState
   maxSlotsNum: number = 5
   dropFunc?: (i: PocketItem) => void
+  useFunc?: (i: PocketItem) => void
+
+  public get selectedItem() {
+    const idx = this._state.selectedPocketItem
+    const item = this._state.pocketItems[idx]
+    if (item) {
+      return item
+    } else {
+      return null
+    }
+  }
 
   constructor(state: GameState) {
     this._state = state
@@ -20,6 +31,9 @@ export class PocketSlotsSystem {
     for (let i = 0; i < this.maxSlotsNum; i++) {
       this._state.pocketItems[i] = null
     }
+
+    this.addHandItem()
+    this.selectHand()
 
     EventBus.On(BusEventsList[BusEventsList.selectPocketItem], (event: CustomEventInit) => {
       this.onSelectItem(event)
@@ -59,6 +73,13 @@ export class PocketSlotsSystem {
     }
   }
 
+  selectHand() {
+    const defaultIdx = 0
+    if (this._state.pocketItems[defaultIdx]) {
+      this.onSelectItem({ detail: defaultIdx } as CustomEventInit)
+    }
+  }
+
   onSelectItem(e: CustomEventInit) {
     const idx = e.detail
     if (idx > -1 && idx < this.maxSlotsNum) {
@@ -67,22 +88,21 @@ export class PocketSlotsSystem {
   }
 
   onUseItem(e: CustomEventInit) {
-    const idx = e.detail
-    if (this._state.selectedPocketItem == idx) {
-      this._state.selectedPocketItem = -1
+    const item = this.selectedItem
+    if (item != null && this.useFunc) {
+      this.useFunc(item)
     }
   }
 
   onTrushItem(e: CustomEventInit) {
     const idx = e.detail
-    if (this._state.selectedPocketItem == idx) {
-      this._state.selectedPocketItem = -1
-    }
-
     const item = this._state.pocketItems[idx]
-    if (item != null && this.dropFunc) {
-      this._state.pocketItems[idx] = null
-      this.dropFunc(item)
-    }
+
+    if (!(item != null && item == this.selectedItem
+      && item.isDropped && this.dropFunc)) return
+
+    this._state.pocketItems[idx] = null
+    this.dropFunc(item)
+    this.selectHand()
   }
 }

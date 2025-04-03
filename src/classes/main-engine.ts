@@ -79,10 +79,6 @@ export class MainEngine extends Scene {
     droppedItems.drop({x: 5, y: 36}, pocketItemTypes[PocketItemsEnums.apple])
     droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
     droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
-    // dropped Items
-
-    this._slotSystem.addHandItem()
-    //
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
