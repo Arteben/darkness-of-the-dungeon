@@ -19,6 +19,8 @@ export class DroppedItemsSystem {
   _key: string
   _levels: MapSceneLevels
 
+  _depthLayer: number = 1
+
   constructor(
     engine: MainEngine, groundLevels: MapSceneLevels, textureKey: string) {
     this._group = engine.physics.add.group({
@@ -84,15 +86,19 @@ export class DroppedItemsSystem {
     return getStringFromNum(coords.x) + getStringFromNum(coords.y)
   }
 
-  makeActiveOnlyLastItem(coordsStr: string) {
+  makeActiveAndUpShowOnlyLastItem(coordsStr: string) {
     const items = this._items[coordsStr]
 
     if (!items || items.length == 0) {
       return
     }
 
-    items.forEach((item) => item.setActive(false))
+    items.forEach((item) => {
+      item.setActive(false)
+      item.setDepth(this._depthLayer)
+    })
     items[items.length - 1].setActive(true)
+    items[items.length - 1].setDepth(this._depthLayer + 1)
   }
 
   // drop some item on ground
@@ -111,13 +117,14 @@ export class DroppedItemsSystem {
     const scaleSize = item.isBig ? 0.9 : 0.6
     child.setScale(scaleSize)
     child.setSize(item.sizes.x, item.sizes.y)
+    child.setDepth(this._depthLayer)
 
     const coordsStr = this.getStringNameForCoords(checkedCoords)
     if (this._items[coordsStr] == undefined) {
       this._items[coordsStr] = [child]
     } else {
       this._items[coordsStr].push(child)
-      this.makeActiveOnlyLastItem(coordsStr)
+      this.makeActiveAndUpShowOnlyLastItem(coordsStr)
     }
 
     return true
@@ -147,7 +154,7 @@ export class DroppedItemsSystem {
     }
 
     itarateElementsWithSameType(firstElement)
-    this.makeActiveOnlyLastItem(itemsForCoordsKey)
+    this.makeActiveAndUpShowOnlyLastItem(itemsForCoordsKey)
     return true
   }
 
@@ -204,7 +211,7 @@ export class DroppedItemsSystem {
     if (itemsForTile.length == 0) {
       delete this._items[itemsForCoordsKey]
     } else {
-      this.makeActiveOnlyLastItem(itemsForCoordsKey)
+      this.makeActiveAndUpShowOnlyLastItem(itemsForCoordsKey)
     }
     return pickupItemType
   }
