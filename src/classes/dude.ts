@@ -262,10 +262,13 @@ export class Dude {
     // set function for drop elements
     this._slotSystem.dropFunc = (item: PocketItem) => {
       const plCrds = this.getTilePlayerCoords()
-      this._dropItems.drop(plCrds, item)
+      return this._dropItems.drop(plCrds, item)
     }
     this._slotSystem.useFunc = (item: PocketItem) => {
       this.usePocketItem(item)
+    }
+    this._slotSystem.calcAvailableDrop = () => {
+      this.calcsForDropAvailable()
     }
 
     // set animation frame size for our levels
@@ -385,6 +388,7 @@ export class Dude {
           key: DudeAnimations.idle, isIgnoreIf: true
         }
         this.setDydeStaySizes()
+        this.calcsForDropAvailable()
         break
       case DudeStates.walk:
         this._tips.hideTip()
@@ -403,10 +407,12 @@ export class Dude {
         this.isNearLadder = true
         const coords = this.getTilePlayerCoords()
         this.player.x = (coords.x + 0.5) * this._levels.tileWidth
+        this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
         this._tips.hideTip()
         this.isNearLadder = false
+        this._slotSystem.setDudeDropAvailable(false)
     }
 
     this._dudeMoveState = newState
@@ -681,5 +687,14 @@ export class Dude {
       h: (data.coords.y + 0.5) * this._levels.tileWidth,
     }
     this._tips.showCombinedTip(pos, combSprites)
+  }
+
+  calcsForDropAvailable () {
+    const selectedItem = this._slotSystem.selectedItem
+    if (selectedItem && selectedItem.isDropped) {
+      const idleCoords = this.getTilePlayerCoords()
+      const isPlaceble = (this._dropItems.findPlaceForItem(idleCoords) != null)
+      this._slotSystem.setDudeDropAvailable(isPlaceble)
+    }
   }
 }

@@ -30,6 +30,7 @@ export enum GameStateSettings {
   isGameStarted,
   pocketItems,
   selectedPocketItem,
+  isDudeDropAvailable,
 }
 
 export enum GamePages {

@@ -21,6 +21,9 @@ export class PocketSlotsUi extends LitElement {
   @property({ type: Number })
   type = -1
 
+  @property({ type: Boolean })
+  isPlaceble = false
+
   render() {
     const backImgClasses = {
       backImg: true,
@@ -36,7 +39,7 @@ export class PocketSlotsUi extends LitElement {
 
     const actionIconTrashClass = {
       slotActionIcon: true,
-      slotActionIconSelected: this.isSelected && !this.isDontDropped,
+      slotActionIconSelected: this.isPlaceble
     }
 
     const getItemIcon = (_type: number) => {

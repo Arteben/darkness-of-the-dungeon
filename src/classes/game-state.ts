@@ -86,6 +86,17 @@ export class GameState implements IStateParams {
   }
   //
 
+  // isDudeDropAvailable
+  private _isDudeDropAvailable: boolean = true
+  public set isDudeDropAvailable(idx: boolean) {
+    this._isDudeDropAvailable = idx
+    this.triggerChnageState(GameStateSettings.isDudeDropAvailable)
+  }
+  public get isDudeDropAvailable(): boolean {
+    return this._isDudeDropAvailable
+  }
+  //
+
   constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {
       this.lang = newParams.lang

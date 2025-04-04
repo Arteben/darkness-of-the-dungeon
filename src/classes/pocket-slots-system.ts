@@ -12,8 +12,9 @@ import { pocketItemTypes } from '@/utils/drop-item-types'
 export class PocketSlotsSystem {
   _state: GameState
   maxSlotsNum: number = 5
-  dropFunc?: (i: PocketItem) => void
+  dropFunc?: (i: PocketItem) => boolean
   useFunc?: (i: PocketItem) => void
+  calcAvailableDrop?: () => void
 
   public get selectedItem() {
     const idx = this._state.selectedPocketItem
@@ -82,8 +83,12 @@ export class PocketSlotsSystem {
 
   onSelectItem(e: CustomEventInit) {
     const idx = e.detail
-    if (idx > -1 && idx < this.maxSlotsNum) {
+    const items = this._state.pocketItems
+    if (idx > -1 && idx < items.length && items[idx] != null) {
       this._state.selectedPocketItem = idx
+      if (this.calcAvailableDrop) {
+        this.calcAvailableDrop()
+      }
     }
   }
 
@@ -101,9 +106,12 @@ export class PocketSlotsSystem {
     if (!(item != null && item == this.selectedItem
       && item.isDropped && this.dropFunc)) return
 
-    this._state.pocketItems[idx] = null
-    this.dropFunc(item)
-    this.selectHand()
+    if (this.dropFunc(item)) {
+      this._state.pocketItems[idx] = null
+      this.selectHand()
+    } else {
+      console.log('cant trash this item!')
+    }
   }
 
   nextPocketItem() {
@@ -125,8 +133,10 @@ export class PocketSlotsSystem {
 
     getNextSelectable()
 
-    if (newIdx < items.length && items[newIdx] != null) {
-      this._state.selectedPocketItem = newIdx
-    }
+    this.onSelectItem({detail: newIdx} as CustomEventInit)
+  }
+
+  setDudeDropAvailable(flag: boolean) {
+    this._state.isDudeDropAvailable = flag
   }
 }

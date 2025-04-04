@@ -27,13 +27,17 @@ export class PocketSlotsUi extends GameStateElement {
         const type = +(item.type)
         const isDropped = item.isDropped
         const isSelected = (this._state.selectedPocketItem == idx)
+        const isPlaceble = this._state.isDudeDropAvailable && isSelected && isDropped
 
         return html`<pocket-slots-item-ui
                   ?isDontDropped="${!isDropped}"
+                  ?isPlaceble="${isPlaceble}"
                   ?isSelected="${isSelected}"
                   type=${type}
                   @clickSlotItem="${(e: Event) => { this.onClickPocketItem(e, idx, isSelected) }}"
-                  @clickTrashIcon="${(e: Event) => { this.onClickTrushItem(e, idx, isDropped) }}"
+                  @clickTrashIcon="${(e: Event) => {
+                    this.onClickTrushItem(e, idx, isPlaceble)
+                  }}"
                 ></pocket-slots-item-ui>`
       } else {
         return html`<pocket-slots-item-ui></pocket-slots-item-ui>`
