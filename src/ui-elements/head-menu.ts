@@ -19,6 +19,7 @@ export class MainMenu extends GameStateElement {
   _stateSettings: NullOrGameStateSettings = [
     GameStateSettings.selectedMap,
     GameStateSettings.pages,
+    GameStateSettings.lang,
   ]
 
   render() {

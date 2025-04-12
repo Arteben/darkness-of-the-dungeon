@@ -17,12 +17,6 @@ import '@/ui-elements/pocket-slots-item-ui'
 @customElement('pocket-slots-ui')
 export class PocketSlotsUi extends GameStateElement {
 
-  _stateSettings: NullOrGameStateSettings = [
-    GameStateSettings.pocketItems,
-    GameStateSettings.selectedPocketItem,
-    GameStateSettings.isDudeDropAvailable,
-  ]
-
   render() {
     if (!this._game) return
 
