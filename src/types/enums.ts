@@ -17,6 +17,9 @@ export enum ImportantDomElementIds {
 export enum BusEventsList {
   changeGameState,
   changeLocSettings,
+  selectPocketItem,
+  usePocketItem,
+  trushPocketItem,
 }
 
 export enum GameStateSettings {
@@ -24,7 +27,10 @@ export enum GameStateSettings {
   selectedMap,
   pages,
   lang,
-  isGameStarted
+  isGameStarted,
+  pocketItems,
+  selectedPocketItem,
+  isDudeDropAvailable,
 }
 
 export enum GamePages {
@@ -67,4 +73,11 @@ export enum CheckSymMapElements {
   empty,
   ladder,
   wall,
+}
+
+export enum PocketItems {
+  hand = 21,
+  sword = 82,
+  key = 185,
+  apple = 224,
 }

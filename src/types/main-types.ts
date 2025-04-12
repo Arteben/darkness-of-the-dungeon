@@ -1,12 +1,15 @@
+import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
-import { IconTip } from '@/classes/icon-tip'
+import { PocketItem } from '@/classes/pocket-item'
+import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
 import {
   Languages,
   GamePages,
   GameStateSettings,
-  DudeAnimations
+  DudeAnimations,
 } from '@/types/enums'
+
 
 export type nullNumber = null | number;
 
@@ -91,17 +94,13 @@ export interface mainKeys {
   left: Phaser.Input.Keyboard.Key
   right: Phaser.Input.Keyboard.Key
   space: Phaser.Input.Keyboard.Key
-  shift: Phaser.Input.Keyboard.Key
+  ctrl: Phaser.Input.Keyboard.Key
   a: Phaser.Input.Keyboard.Key
   d: Phaser.Input.Keyboard.Key
 }
 
 export type overlapCallbackParams =
   Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.Body | Phaser.Tilemaps.Tile
-
-export interface IconTips {
-  [index: string]: IconTip
-}
 
 export type SelectedJsonMap = null | IJsonMap
 
@@ -110,8 +109,9 @@ export type GameStateChangeData = {
   property: GameStateSettings
 }
 
-export interface ISelectedMapForInit {
+export interface IParamsForInitEngine {
   nameMap: string
+  slotsSystem: PocketSlotsSystem
 }
 
 export interface ILoadedTileSets {
@@ -135,3 +135,29 @@ export interface IPushKeysParams {
   value: boolean
   isDouble: boolean
 }
+
+export interface IPocketDroppedItemSprites {
+  [index: string]: Physics.Arcade.Sprite[]
+}
+
+export interface IPocketItemStoreData {
+  type: string
+  coords: ITilesCoords
+  cycled: boolean
+}
+
+export type PocketItemDudeData = IPocketItemStoreData | null
+
+export interface IPocketItemTypes {
+  [index: string]: PocketItem
+}
+
+export interface ISpriteNumsForCombinedTip {
+  main: number
+  rightTop: number | undefined
+  rightBottom: number | undefined
+}
+
+export type NumberNull = number | null
+
+export type PocketItemNull = PocketItem | null

@@ -48,7 +48,7 @@ export class MapSceneLevels {
   stairsLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
 
-  _tileWidth = 32
+  tileWidth = 32
 
   mapWidth = 0
   mapHeight = 0
@@ -66,13 +66,13 @@ export class MapSceneLevels {
       return
     }
 
-    this.mapWidth = symbolMap[0].length * this._tileWidth
-    this.mapHeight = symbolMap.length * this._tileWidth
+    this.mapWidth = symbolMap[0].length * this.tileWidth
+    this.mapHeight = symbolMap.length * this.tileWidth
 
     // create layer for background
     const backgroundMap = engine.make.tilemap({
       width: symbolMap[0].length, height: symbolMap.length,
-      tileWidth: this._tileWidth, tileHeight: this._tileWidth
+      tileWidth: this.tileWidth, tileHeight: this.tileWidth
     })
     backgroundMap.addTilesetImage(tls.fon)
     const backgroundSymMap: Array<string> = this.getBackgroundSymMap(
@@ -83,7 +83,7 @@ export class MapSceneLevels {
 
     const map = engine.make.tilemap({
       width: symbolMap[0].length, height: symbolMap.length,
-      tileWidth: this._tileWidth, tileHeight: this._tileWidth
+      tileWidth: this.tileWidth, tileHeight: this.tileWidth
     })
 
     map.addTilesetImage(tls.env)
@@ -231,8 +231,8 @@ export class MapSceneLevels {
 
     if (wCoord != undefined && hCoord != undefined) {
       coords = {
-        h: wCoord * this._tileWidth,
-        w: hCoord * this._tileWidth
+        h: wCoord * this.tileWidth,
+        w: hCoord * this.tileWidth
       }
     }
 
@@ -240,7 +240,7 @@ export class MapSceneLevels {
   }
 
   getTilesForCoords(width: number, heigh: number): ITilesCoords {
-    const tileSize = this._tileWidth
+    const tileSize = this.tileWidth
     return {
       x: Math.floor(width / tileSize),
       y: Math.floor(heigh / tileSize)
@@ -258,7 +258,6 @@ export class MapSceneLevels {
       case CheckSymMapElements.wall:
         finded = '#'; break
     }
-
     return this._symbolMap[y] && this._symbolMap[y][x] == finded
   }
 

@@ -3,47 +3,51 @@ import { Scene, GameObjects, Types, Physics } from 'phaser'
 import {
   IResolution,
   mainKeys,
-  overlapCallbackParams,
-  IconTips,
   IJsonMap,
-  ISelectedMapForInit,
+  IParamsForInitEngine,
   ILoadedTileSets,
 } from '@/types/main-types'
 
+import { PocketItems as PocketItemsEnums } from '@/types/enums'
+
 // assets
-import dudeSet from '@assets/dude.png'
 import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
 import bricksRaw from '@assets/bricks.png'
 import charRaw from '@assets/char.png'
+import itemIcons from '@assets/items-Icons.png'
+import additinalIcons from '@assets/add-tip-icons.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
-import { IconTip } from '@/classes/icon-tip'
+import { IconTips } from '@/classes/icon-tips'
+import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
 //
+import { pocketItemTypes } from '@/utils/drop-item-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
+import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
 const mapList: IJsonMap[] = JsonMapList
 
 export class MainEngine extends Scene {
   _progress!: GameObjects.Graphics
-  _cameraControls!: Phaser.Cameras.Controls.FixedKeyControl
-  _mapLevels!: MapSceneLevels
   _dude!: Dude
-  _camera!: SceneCamera
   _keys!: mainKeys
-  _tips: IconTips = {}
+
+  //@ts-ignore
+  _slotSystem: PocketSlotsSystem
   _selectedMap: string = ''
 
   constructor() {
     super()
   }
 
-  init(map: ISelectedMapForInit) {
-    this._selectedMap = map.nameMap
+  init(initParams: IParamsForInitEngine) {
+    this._selectedMap = initParams.nameMap
+    this._slotSystem = initParams.slotsSystem
   }
 
   create() {
@@ -57,36 +61,39 @@ export class MainEngine extends Scene {
       fon: 'backgroundTileSet'
     }
 
-    this._mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
-    this.physics.world.setBounds(0, 0, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
-    this._camera = new SceneCamera(this, this._mapLevels.mapWidth, this._mapLevels.mapHeight)
+    const mapLevels = new MapSceneLevels(this, this._selectedMap, tls)
+    if (!(mapLevels && mapLevels.groundLayer)) return
 
-    this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, this._camera)
+    this.physics.world.setBounds(0, 0, mapLevels.mapWidth, mapLevels.mapHeight)
+    const sceneCamera = new SceneCamera(this, mapLevels.mapWidth, mapLevels.mapHeight)
+
+    // this._tips['stairsTip'] = new IconTip('tipIcons', 39, this, sceneCamera)
+    const tips = new IconTips('tipIcons', 'additinalTipIcons', this, sceneCamera)
+
+    // +++++ dropped Items +++++++++
+    const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
+    // 5, 41
+    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
+    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.key])
+    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
+    droppedItems.drop({x: 5, y: 36}, pocketItemTypes[PocketItemsEnums.apple])
+    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
+    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
 
     this._dude = new Dude(
-      this, this._mapLevels, this._camera, this._tips, 'dudeFrameSet',
+      this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
+      'dudeFrameSet',
       { width: 32, height: 32 } as IResolution)
 
-    this._camera.startFollow(this._dude.player)
-
-
-    // create overlap dude with stairs for vertical movements
-    if (this._mapLevels.stairsLayer) {
-      this.physics.add.overlap(this._dude.player, this._mapLevels.stairsLayer,
-        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this._dude.overlapCallbackUpdating(
-            prPlayer as Types.Physics.Arcade.GameObjectWithBody, prTile as Phaser.Tilemaps.Tile)
-        })
-    }
-    //
+    sceneCamera.startFollow(this._dude.player)
   }
 
   update(time: number): void {
     if (this._keys) {
-      this._dude.update(time, this._keys)
+      this._dude.updateKyes(time, this._keys)
     }
 
-    this._tips['stairsTip']?.update(time)
+    this._dude.updateTips(time)
   }
 
   preload() {
@@ -106,7 +113,10 @@ export class MainEngine extends Scene {
     })
 
     this.load.spritesheet('dudeFrameSet', charRaw, { frameWidth: 56, frameHeight: 56 })
+
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('itemIcons', itemIcons, { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('additinalTipIcons', additinalIcons, { frameWidth: 32, frameHeight: 32 })
   }
 
   onDrawProgressBar(value: number) {
@@ -124,6 +134,7 @@ export class MainEngine extends Scene {
       right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       space: Phaser.Input.Keyboard.KeyCodes.SPACE,
       shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+      ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
       a: Phaser.Input.Keyboard.KeyCodes.A,
       d: Phaser.Input.Keyboard.KeyCodes.D,
     }) as mainKeys
