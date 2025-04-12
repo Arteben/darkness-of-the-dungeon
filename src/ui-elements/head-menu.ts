@@ -7,8 +7,8 @@ import '@/ui-elements/font-icon'
 import '@/ui-elements/pocket-slots-ui'
 
 import '@/ui-elements/menu-button'
-import { LitElement, css, html, unsafeCSS } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { css, html, unsafeCSS } from 'lit'
+import { customElement } from 'lit/decorators.js'
 
 import { GamePages } from '@/types/enums'
 
@@ -22,7 +22,8 @@ export class MainMenu extends GameStateElement {
       mapName = this.loc(map.name)
     }
 
-    const pocketSlots = this._game ? html`<pocket-slots-ui></pocket-slots-ui>` : html``
+    const isGame = this._game && this._state.page == GamePages.game
+    const pocketSlots = isGame ? html`<pocket-slots-ui></pocket-slots-ui>` : html``
 
     return html`
         <div class="backgroundColor"></div>
