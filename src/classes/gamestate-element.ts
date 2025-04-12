@@ -1,6 +1,9 @@
 import { LitElement } from 'lit'
 
-import { SelectedJsonMap } from '@/types/main-types'
+import {
+  SelectedJsonMap,
+  NullOrGameStateSettings,
+} from '@/types/main-types'
 
 import { GameState } from '@/classes/game-state'
 import { EventBus } from '@/classes/event-bus'
@@ -13,6 +16,7 @@ export class GameStateElement extends LitElement {
 
   _state: GameState = new GameState()
   _game = getDungeonDarknessGame()
+  _stateSettings: NullOrGameStateSettings = null
 
   connectedCallback() {
     super.connectedCallback()
@@ -25,12 +29,24 @@ export class GameStateElement extends LitElement {
   }
 
   private onChangeGameState(eventData: CustomEventInit) {
-    if (!this._game) {
+    if (!this._game) { return }
+
+    const stateUpdate = () => {
+      // @ts-ignore
+      this._state = this._game.state
+      this.requestUpdate()
+    }
+
+    const data = eventData.detail
+
+    if (!this._stateSettings || !data) {
+      stateUpdate()
       return
     }
 
-    this._state = this._game.state
-    this.requestUpdate()
+    if (this._stateSettings.includes(data.property)) {
+      stateUpdate()
+    }
   }
 
   loc(someString: string): string {

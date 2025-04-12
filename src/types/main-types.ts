@@ -161,3 +161,5 @@ export interface ISpriteNumsForCombinedTip {
 export type NumberNull = number | null
 
 export type PocketItemNull = PocketItem | null
+
+export type NullOrGameStateSettings = GameStateSettings[] | null
