@@ -12,11 +12,13 @@ export class PocketItem {
   sizes: IScreenSizes
   isBig: boolean
   isDropped: boolean
+  droppedRotete: number
   _useCallback: VoidFunction
 
   constructor(
     type: PocketItems,
     useCallback: VoidFunction,
+    rotates: number = 0,
     isBig: boolean = false,
     sizes: IScreenSizes = { x: 20, y: 20 },
     isDropped: boolean = true
@@ -26,6 +28,7 @@ export class PocketItem {
     this.sizes = sizes
     this.isBig = isBig
     this.isDropped = isDropped
+    this.droppedRotete = rotates
   }
 
   use(dude: Dude) {

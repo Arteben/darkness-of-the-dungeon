@@ -115,9 +115,11 @@ export class DroppedItemsSystem {
 
     // setted visible for this item
     const scaleSize = item.isBig ? 0.9 : 0.6
+    child.setOrigin(0.5, 0.5)
     child.setScale(scaleSize)
     child.setSize(item.sizes.x, item.sizes.y)
     child.setDepth(this._depthLayer)
+    child.rotation = item.droppedRotete
 
     const coordsStr = this.getStringNameForCoords(checkedCoords)
     if (this._items[coordsStr] == undefined) {

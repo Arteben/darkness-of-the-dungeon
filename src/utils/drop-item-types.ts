@@ -12,11 +12,16 @@ export const pocketItemTypes: IPocketItemTypes = {
   [PocketItemsEnums.key]: new PocketItem(
     PocketItemsEnums.key,
     () => { console.log('you used the key!') },
+    0.8,
+    false,
+    { x: 10, y: 10 },
   ),
   [PocketItemsEnums.sword]: new PocketItem(
     PocketItemsEnums.sword,
     () => { console.log('you used sword!') },
+    0.9,
     true,
+    { x: 10, y: 10 },
   ),
   [PocketItemsEnums.hand]: new PocketItem(
     PocketItemsEnums.hand,
@@ -34,6 +39,7 @@ export const pocketItemTypes: IPocketItemTypes = {
         that.overlapSomeItem = that._dropItems.getItemDataForActiveItem(that.overlapSomeItem.coords)
       }
     },
+    0,
     false,
     { x: 20, y: 20 },
     false,
