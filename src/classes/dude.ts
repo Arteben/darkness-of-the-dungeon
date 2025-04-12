@@ -667,8 +667,6 @@ export class Dude {
   itarateThings() {
     if (this.overlapSomeItem != null && this.overlapSomeItem.cycled) {
       this._dropItems.itaratePileItems(this.overlapSomeItem.coords)
-    } else {
-      this._slotSystem.nextPocketItem()
     }
   }
 
