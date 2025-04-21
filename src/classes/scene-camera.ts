@@ -27,7 +27,7 @@ export class SceneCamera {
     this.setDefaultZoom()
   }
 
-  startFollow(sprite: Types.Physics.Arcade.SpriteWithDynamicBody) {
+  startFollow(sprite: Types.Physics.Arcade.GameObjectWithDynamicBody) {
     this._main.startFollow(sprite, true, 1, 0.05)
   }
 

@@ -29,7 +29,9 @@ import {
 } from '@/types/enums'
 
 export class Dude {
-  player: Types.Physics.Arcade.SpriteWithDynamicBody
+  _container: Types.Physics.Arcade.GameObjectWithDynamicBody
+  // _player: Types.Physics.Arcade.SpriteWithDynamicBody
+  _playerSprite: GameObjects.Sprite
   _dudeStay: boolean = true
   _frame: IResolution
   _levels: MapSceneLevels
@@ -44,11 +46,11 @@ export class Dude {
     if (flag == this._isNearLadder) return
 
     if (flag) {
-      this.player.body.setGravityY(0)
+      this._container.body.setGravityY(0)
     } else {
-      this.player.body.setGravityY(1000)
+      this._container.body.setGravityY(1000)
     }
-    this.player.body.setAllowGravity(!flag)
+    this._container.body.setAllowGravity(!flag)
     this._isNearLadder = flag
   }
   public get isNearLadder(): boolean {
@@ -183,9 +185,9 @@ export class Dude {
     switch (key) {
       case DudeAnimations.idle:
       case DudeAnimations.walking:
-        this.player.setFlipX(this._isFlipXAnimations)
+        this._playerSprite.setFlipX(this._isFlipXAnimations)
     }
-    this.player.anims.play(Dude.getAnimKey(key), isIgnoreIf)
+    this._playerSprite.anims.play(Dude.getAnimKey(key), isIgnoreIf)
     this._dudeAnimationKey = key
   }
   public get dudeAnimationKey(): DudeAnimations {
@@ -274,12 +276,11 @@ export class Dude {
     // set animation frame size for our levels
     // magic numbers
     const dudeScale = 1.6
-    const animFrameSize = 56
-    const originY = 0.65
+    const spriteOffsetY = - frameResolution.height / 2.5
 
     this._frame = {
       width: frameResolution.width / dudeScale,
-      height: frameResolution.height / dudeScale,
+      height: frameResolution.height,
     }
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
@@ -290,18 +291,19 @@ export class Dude {
       startCoords.h = startMapCoords.h - this._frame.height
     }
 
-    this.player = engine.physics.add.sprite(startCoords.w, startCoords.h, 'dude')
-    this.player.setBounce(0)
-    this.player.setCollideWorldBounds(true)
-    this.player.setScale(dudeScale)
-    this.player.setOrigin(0.5, originY)
+    this._playerSprite = engine.add.sprite(0, spriteOffsetY, 'dude')
 
-    this.player.body.setSize(this._frame.width, this._frame.height)
+    const container = engine.add.container(startCoords.w, startCoords.h, [ this._playerSprite ])
+    container.scale = dudeScale
+    container.setSize(this._frame.width, this._frame.height)
+    engine.physics.world.enable(container)
+    this._container = container as Types.Physics.Arcade.GameObjectWithDynamicBody
+    this._container.body.setBounce(0)
+    this._container.body.setCollideWorldBounds(true)
 
-    this.player.setOffset((animFrameSize - this._frame.width) / 2, animFrameSize - this._frame.height)
 
     if (this._levels.groundLayer) {
-      engine.physics.add.collider(this.player, this._levels.groundLayer)
+      engine.physics.add.collider(this._container, this._levels.groundLayer)
     }
 
     // all animations for dude
@@ -312,9 +314,11 @@ export class Dude {
     this.isNearLadder = false
     this.dudeMoveState = DudeStates.idle
 
+    this._camera.startFollow(this._container)
+
     // create overlap dude with stairs for vertical movements
     if (this._levels.stairsLayer) {
-      engine.physics.add.overlap(this.player, this._levels.stairsLayer,
+      engine.physics.add.overlap(this._container, this._levels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
           this.overlapDudeLaddersCallbackUpdating(prTile as Phaser.Tilemaps.Tile)
         })
@@ -323,7 +327,7 @@ export class Dude {
 
     //create overlap with droppedItems for pick up them
     if (this._dropItems._group) {
-      engine.physics.add.overlap(this.player, this._dropItems._group,
+      engine.physics.add.overlap(this._container, this._dropItems._group,
         (prPlayer: overlapCallbackParams, prItem: overlapCallbackParams) => {
           this.overlapDudeDropItemsCallbackUpdating(
             prItem as Types.Physics.Arcade.SpriteWithDynamicBody,
@@ -406,7 +410,7 @@ export class Dude {
         this._tips.hideTip()
         this.isNearLadder = true
         const coords = this.getTilePlayerCoords()
-        this.player.x = (coords.x + 0.5) * this._levels.tileWidth
+        this._container.body.x = coords.x * this._levels.tileWidth
         this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
@@ -492,7 +496,7 @@ export class Dude {
     // if near ladders and we are idle -> show tip
     // in another case hide this
     if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
-      const iconCoords: INumberCoords = { w: this.player.body.x, h: this.player.body.y }
+      const iconCoords: INumberCoords = { w: this._container.body.x, h: this._container.body.y }
       // 39 for the icon
       ladderTip?.showUsualTip(iconCoords, 39)
       // ladderTip?.showCombinedTip(iconCoords, {main: 39, rightBottom: 30, rightTop: 38})
@@ -539,23 +543,23 @@ export class Dude {
     }
 
     if (isLeft) {
-      this.player.setVelocityX(-offset)
+      this._container.body.setVelocityX(-offset)
     } else {
-      this.player.setVelocityX(offset)
+      this._container.body.setVelocityX(offset)
     }
   }
   // up, down
   setDudeUpDownMoveSizes(isUp: boolean) {
     if (isUp) {
-      this.player.setVelocityY(-100)
+      this._container.body.setVelocityY(-100)
     } else {
-      this.player.setVelocityY(110)
+      this._container.body.setVelocityY(110)
     }
   }
   // stop for dude
   setDydeStaySizes() {
-    this.player.setVelocityX(0)
-    this.player.setVelocityY(0)
+    this._container.body.setVelocityX(0)
+    this._container.body.setVelocityY(0)
   }
 
   // get animation key for index from enums
@@ -565,42 +569,42 @@ export class Dude {
 
   // create all availible animations for this player
   createAnimations(scene: MainEngine, animsKey: string) {
-    this.player.anims.create({
+    this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.idle),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 0, end: 2 }),
       frameRate: 2,
       repeat: -1
     })
 
-    this.player.anims.create({
+    this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.walking),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 88, end: 97 }),
       frameRate: 14,
       repeat: -1
     })
 
-    this.player.anims.create({
+    this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.run),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 16, end: 23 }),
       frameRate: 15,
       repeat: -1,
     })
 
-    this.player.anims.create({
+    this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.climbingUp),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 128, end: 137 }),
       frameRate: 15,
       repeat: -1,
     })
 
-    this.player.anims.create({
+    this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.climbingDown),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 137, end: 128 }),
       frameRate: 15,
       repeat: -1,
     })
 
-    this.player.anims.create({
+    this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.climbingStand),
       frames: [{ key: animsKey, frame: 128 }],
     })
@@ -610,7 +614,7 @@ export class Dude {
   // get Coords with correction from texture scale
   getTilePlayerCoords(offsetX: number = 0, offsetY: number = 0): ITilesCoords {
     const coords =
-      this._levels.getTilesForCoords(this.player.x + offsetX, this.player.y + offsetY)
+      this._levels.getTilesForCoords(this._container.body.x + offsetX, this._container.body.y + offsetY)
     // console.log('player coords', coords.x, coords.y)
     return { x: coords.x, y: coords.y }
   }
