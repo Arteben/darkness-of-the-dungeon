@@ -482,41 +482,35 @@ export class Dude {
   // if yes, set turn off gravity for dude and show tip
   overlapDudeLaddersCallbackUpdating(
     tile: Phaser.Tilemaps.Tile) {
+
     const plCrds = this.getTilePlayerCoords()
-    const ladderTip = this._tips
-
-    // is some horizontal movement in here
-    // walk, run or something else
-    const isHorizMove = () => {
-      return this.dudeMoveState == DudeStates.walk
-        || this.dudeMoveState == DudeStates.run
-    }
-
     if (!(tile.x == plCrds.x && tile.y == plCrds.y)) return
 
-    if (isHorizMove()) {
-      this.isNearLadder = tile.index != -1
-    }
-
-    // if near ladders and we are idle -> show tip
-    // in another case hide this
-    if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
-      const iconCoords: INumberCoords = { w: this._playerBody.x, h: this._playerBody.y }
-      // 39 for the icon
-      ladderTip?.showUsualTip(iconCoords, 39)
-      // ladderTip?.showCombinedTip(iconCoords, {main: 39, rightBottom: 30, rightTop: 38})
-    }
-
-    if (this.dudeMoveState == DudeStates.climbing) {
-      if (this.climbingType == DudeClimbingTypes.up
-        && !this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCrds.x, plCrds.y)) {
-        this.dudeMoveState = DudeStates.idle
-      }
-
-      if (this.climbingType == DudeClimbingTypes.down
-        && this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCrds.x, plCrds.y + 1)) {
-        this.dudeMoveState = DudeStates.idle
-      }
+    switch (this.dudeMoveState) {
+      case DudeStates.walk:
+      case DudeStates.run:
+        this.isNearLadder = tile.index != -1
+        break
+      case DudeStates.idle:
+        // if near ladders and we are idle -> show tip
+        // in another case hide this
+        if (this.isNearLadder) {
+          const iconCoords: INumberCoords = { w: this._playerBody.x, h: this._playerBody.y }
+          // 39 for the icon
+          const ladderTip = this._tips
+          ladderTip?.showUsualTip(iconCoords, 39)
+          // ladderTip?.showCombinedTip(iconCoords, {main: 39, rightBottom: 30, rightTop: 38})
+        }
+        break
+      case DudeStates.climbing:
+        const isUp = this.climbingType == DudeClimbingTypes.up
+        const halfTileWidch = this._levels.tileWidth * 0.48
+        const yOffsetForSpecCoords = isUp ? halfTileWidch : halfTileWidch * (-1)
+        const tileCorrect = isUp ? (-1) : 1
+        const specCoords = this.getTilePlayerCoords(0, yOffsetForSpecCoords)
+        if (!this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, specCoords.x, specCoords.y + tileCorrect)) {
+          this.dudeMoveState = DudeStates.idle
+        }
     }
   }
 
@@ -622,7 +616,7 @@ export class Dude {
     const xSizeWithCorrects = this._playerBody.x + (this._frameResolution.width * 0.5) + xOffset
     const ySizeWithCorrects = this._playerBody.y + (this._frameResolution.height * 0.725) + yOffset
     const coords =
-    this._levels.getTilesForCoords(xSizeWithCorrects, ySizeWithCorrects)
+      this._levels.getTilesForCoords(xSizeWithCorrects, ySizeWithCorrects)
 
     if (this._tilePointer && xOffset == 0 && yOffset == 0) {
       const getSize = (coord: number) => {
