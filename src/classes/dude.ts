@@ -29,16 +29,17 @@ import {
 } from '@/types/enums'
 
 export class Dude {
-  _container: Types.Physics.Arcade.GameObjectWithDynamicBody
-  // _player: Types.Physics.Arcade.SpriteWithDynamicBody
+  _playerBody: Physics.Arcade.Body
   _playerSprite: GameObjects.Sprite
   _dudeStay: boolean = true
-  _frame: IResolution
+  _frameResolution: IResolution
   _levels: MapSceneLevels
   _camera: SceneCamera
   _tips: IconTips
   _dropItems: DroppedItemsSystem
   _slotSystem: PocketSlotsSystem
+
+  _tilePointer: Phaser.GameObjects.Arc | null = null
 
   // @ts-ignore // isNearLadder
   private _isNearLadder: boolean
@@ -46,11 +47,11 @@ export class Dude {
     if (flag == this._isNearLadder) return
 
     if (flag) {
-      this._container.body.setGravityY(0)
+      this._playerBody.setGravityY(0)
     } else {
-      this._container.body.setGravityY(1000)
+      this._playerBody.setGravityY(1000)
     }
-    this._container.body.setAllowGravity(!flag)
+    this._playerBody.setAllowGravity(!flag)
     this._isNearLadder = flag
   }
   public get isNearLadder(): boolean {
@@ -273,37 +274,38 @@ export class Dude {
       this.calcsForDropAvailable()
     }
 
+    this._frameResolution = frameResolution
+
     // set animation frame size for our levels
     // magic numbers
     const dudeScale = 1.6
-    const spriteOffsetY = - frameResolution.height / 2.5
-
-    this._frame = {
-      width: frameResolution.width / dudeScale,
-      height: frameResolution.height,
-    }
+    const correctSpriteOffsetY = (-0.19)
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
 
     if (startMapCoords) {
-      startCoords.w = startMapCoords.w + this._frame.width / 2
-      startCoords.h = startMapCoords.h - this._frame.height
+      startCoords.w = startMapCoords.w + this._frameResolution.width * 0.5
+      startCoords.h = startMapCoords.h
     }
 
-    this._playerSprite = engine.add.sprite(0, spriteOffsetY, 'dude')
-
-    const container = engine.add.container(startCoords.w, startCoords.h, [ this._playerSprite ])
+    const container = engine.add.container(startCoords.w, startCoords.h)
+    this._playerSprite = engine.add.sprite(0, this._frameResolution.height * correctSpriteOffsetY, 'dude')
     container.scale = dudeScale
-    container.setSize(this._frame.width, this._frame.height)
+    const normalContainerSizes = {
+      width: this._frameResolution.width / dudeScale,
+      height: this._frameResolution.height / dudeScale,
+    }
+    container.setSize(normalContainerSizes.width, normalContainerSizes.height)
+    container.add(this._playerSprite)
     engine.physics.world.enable(container)
-    this._container = container as Types.Physics.Arcade.GameObjectWithDynamicBody
-    this._container.body.setBounce(0)
-    this._container.body.setCollideWorldBounds(true)
+    this._playerBody = container.body as Phaser.Physics.Arcade.Body
+    this._playerBody.setBounce(0)
+    this._playerBody.setCollideWorldBounds(true)
 
 
     if (this._levels.groundLayer) {
-      engine.physics.add.collider(this._container, this._levels.groundLayer)
+      engine.physics.add.collider(this._playerBody, this._levels.groundLayer)
     }
 
     // all animations for dude
@@ -314,11 +316,15 @@ export class Dude {
     this.isNearLadder = false
     this.dudeMoveState = DudeStates.idle
 
-    this._camera.startFollow(this._container)
+    this._camera.startFollow(this._playerBody)
+
+    if (engine.physics.world.drawDebug) {
+      this._tilePointer = engine.add.circle(0, 0, 5, 0xFF0000, 1.0)
+    }
 
     // create overlap dude with stairs for vertical movements
     if (this._levels.stairsLayer) {
-      engine.physics.add.overlap(this._container, this._levels.stairsLayer,
+      engine.physics.add.overlap(this._playerBody, this._levels.stairsLayer,
         (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
           this.overlapDudeLaddersCallbackUpdating(prTile as Phaser.Tilemaps.Tile)
         })
@@ -327,7 +333,7 @@ export class Dude {
 
     //create overlap with droppedItems for pick up them
     if (this._dropItems._group) {
-      engine.physics.add.overlap(this._container, this._dropItems._group,
+      engine.physics.add.overlap(this._playerBody, this._dropItems._group,
         (prPlayer: overlapCallbackParams, prItem: overlapCallbackParams) => {
           this.overlapDudeDropItemsCallbackUpdating(
             prItem as Types.Physics.Arcade.SpriteWithDynamicBody,
@@ -410,7 +416,7 @@ export class Dude {
         this._tips.hideTip()
         this.isNearLadder = true
         const coords = this.getTilePlayerCoords()
-        this._container.body.x = coords.x * this._levels.tileWidth
+        this._playerBody.x = coords.x * this._levels.tileWidth
         this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
@@ -429,10 +435,9 @@ export class Dude {
     }
 
     const offset = isLeft ? (-1) : 1
-    // magic numbers
-    const halfWidth = this._frame.width / 2
-    const xOffset = isLeft ? halfWidth : -halfWidth
-    const plCoords = this.getTilePlayerCoords(xOffset, 0)
+    const halfWidth = this._frameResolution.width / 2
+    const xOffsetForCalcCoords = isLeft ? (halfWidth - 1) : (-halfWidth)
+    const plCoords = this.getTilePlayerCoords(xOffsetForCalcCoords, 0)
 
     const isHorMoveAvailable = () => {
       return !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)
@@ -440,7 +445,7 @@ export class Dude {
 
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        if (newValue && !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)) {
+        if (newValue && isHorMoveAvailable()) {
           if (isDouble) {
             this.dudeMoveState = DudeStates.run
           } else {
@@ -496,7 +501,7 @@ export class Dude {
     // if near ladders and we are idle -> show tip
     // in another case hide this
     if (this.isNearLadder && this.dudeMoveState == DudeStates.idle) {
-      const iconCoords: INumberCoords = { w: this._container.body.x, h: this._container.body.y }
+      const iconCoords: INumberCoords = { w: this._playerBody.x, h: this._playerBody.y }
       // 39 for the icon
       ladderTip?.showUsualTip(iconCoords, 39)
       // ladderTip?.showCombinedTip(iconCoords, {main: 39, rightBottom: 30, rightTop: 38})
@@ -543,23 +548,23 @@ export class Dude {
     }
 
     if (isLeft) {
-      this._container.body.setVelocityX(-offset)
+      this._playerBody.setVelocityX(-offset)
     } else {
-      this._container.body.setVelocityX(offset)
+      this._playerBody.setVelocityX(offset)
     }
   }
   // up, down
   setDudeUpDownMoveSizes(isUp: boolean) {
     if (isUp) {
-      this._container.body.setVelocityY(-100)
+      this._playerBody.setVelocityY(-100)
     } else {
-      this._container.body.setVelocityY(110)
+      this._playerBody.setVelocityY(110)
     }
   }
   // stop for dude
   setDydeStaySizes() {
-    this._container.body.setVelocityX(0)
-    this._container.body.setVelocityY(0)
+    this._playerBody.setVelocityX(0)
+    this._playerBody.setVelocityY(0)
   }
 
   // get animation key for index from enums
@@ -612,10 +617,20 @@ export class Dude {
 
 
   // get Coords with correction from texture scale
-  getTilePlayerCoords(offsetX: number = 0, offsetY: number = 0): ITilesCoords {
+  getTilePlayerCoords(xOffset: number = 0, yOffset: number = 0): ITilesCoords {
+
+    const xSizeWithCorrects = this._playerBody.x + (this._frameResolution.width * 0.5) + xOffset
+    const ySizeWithCorrects = this._playerBody.y + (this._frameResolution.height * 0.725) + yOffset
     const coords =
-      this._levels.getTilesForCoords(this._container.body.x + offsetX, this._container.body.y + offsetY)
-    // console.log('player coords', coords.x, coords.y)
+    this._levels.getTilesForCoords(xSizeWithCorrects, ySizeWithCorrects)
+
+    if (this._tilePointer && xOffset == 0 && yOffset == 0) {
+      const getSize = (coord: number) => {
+        return coord * this._levels.tileWidth + this._levels.tileWidth * 0.5
+      }
+      this._tilePointer.setPosition(getSize(coords.x), getSize(coords.y))
+    }
+
     return { x: coords.x, y: coords.y }
   }
 
@@ -691,7 +706,7 @@ export class Dude {
     this._tips.showCombinedTip(pos, combSprites)
   }
 
-  calcsForDropAvailable () {
+  calcsForDropAvailable() {
     const selectedItem = this._slotSystem.selectedItem
     if (selectedItem && selectedItem.isDropped) {
       const idleCoords = this.getTilePlayerCoords()
