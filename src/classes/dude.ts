@@ -439,8 +439,21 @@ export class Dude {
     const xOffsetForCalcCoords = isLeft ? (halfWidth - 1) : (-halfWidth)
     const plCoords = this.getTilePlayerCoords(xOffsetForCalcCoords, 0)
 
-    const isHorMoveAvailable = () => {
-      return !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, plCoords.y)
+    const isHorMoveAvailable = (yTile: number | null = null) => {
+      const yCord = (yTile == null) ? plCoords.y : yTile
+      return !this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, plCoords.x + offset, yCord)
+    }
+
+    const isMoveFromLadderAvailable = () => {
+      const yTiles = this.getYTilesForPlayerBody()
+      let isAvailable = true
+      for(let i = 0; i < yTiles.length; i++) {
+        if (!isHorMoveAvailable(yTiles[i])) {
+          isAvailable = false
+          break
+        }
+      }
+      return isAvailable
     }
 
     switch (this.dudeMoveState) {
@@ -468,7 +481,7 @@ export class Dude {
         }
         break
       case DudeStates.climbing:
-        if (newValue && isHorMoveAvailable()) {
+        if (newValue && isMoveFromLadderAvailable()) {
           this.climbingType = DudeClimbingTypes.stand
           this.dudeMoveState = DudeStates.walk
         }
@@ -504,7 +517,7 @@ export class Dude {
         break
       case DudeStates.climbing:
         const isUp = this.climbingType == DudeClimbingTypes.up
-        const halfTileWidch = this._levels.tileWidth * 0.48
+        const halfTileWidch = this._levels.tileWidth * 0.5
         const yOffsetForSpecCoords = isUp ? halfTileWidch : halfTileWidch * (-1)
         const tileCorrect = isUp ? (-1) : 1
         const specCoords = this.getTilePlayerCoords(0, yOffsetForSpecCoords)
@@ -626,6 +639,28 @@ export class Dude {
     }
 
     return { x: coords.x, y: coords.y }
+  }
+
+  getYTilesForPlayerBody() {
+    const playerY = this._playerBody.y
+    const tileWidth = this._levels.tileWidth
+    const playerHeight = this._frameResolution.height
+
+    const tileIdUp = Math.floor(playerY/tileWidth)
+
+    const upNumTilesForPlayer = Math.ceil(playerHeight / tileWidth)
+    let tileCountForPlayer = upNumTilesForPlayer
+
+    if (playerY % tileWidth > upNumTilesForPlayer * tileWidth - playerHeight) {
+      tileCountForPlayer++
+    }
+
+    const numsArray: number[] = []
+    for(let i = 0; i < tileCountForPlayer; i++) {
+      numsArray.push(tileIdUp + i)
+    }
+
+    return numsArray
   }
 
   // save lust push key
