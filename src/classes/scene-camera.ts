@@ -28,16 +28,16 @@ export class SceneCamera {
   }
 
   startFollow(sprite: Physics.Arcade.Body) {
-    this._main.startFollow(sprite, true, 1, 0.05)
+    this._main.startFollow(sprite, true, 1, 0.025)
   }
 
   setStandartOffset() {
-    this.setFollowOffser(0, 20)
+    this.setFollowOffser(0, 10)
   }
 
   setUpDownOffset(isUp: boolean) {
     if (isUp) {
-      this.setFollowOffser(0, 140)
+      this.setFollowOffser(0, 100)
     } else {
       this.setFollowOffser(0, -100)
     }

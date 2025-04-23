@@ -83,7 +83,7 @@ export class MainEngine extends Scene {
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
       'dudeFrameSet',
-      { width: 32, height: 56 } as IResolution)
+      { width: 32, height: 50 } as IResolution)
   }
 
   update(time: number): void {
