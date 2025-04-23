@@ -117,28 +117,10 @@ export class Dude {
   public set isUpMove({ value, isDouble }: IPushKeysParams) {
     if (value == this._isUpMove) return
 
-    switch (this.dudeMoveState) {
-      case DudeStates.idle:
-        const plCoords = this.getTilePlayerCoords()
-        if (value && this.isNearLadder
-          && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y - 1)) {
-          this.climbingType = DudeClimbingTypes.up
-          this.dudeMoveState = DudeStates.climbing
-        }
-        break
-      case DudeStates.climbing:
-        if (value) {
-          if (this.climbingType != DudeClimbingTypes.up) {
-            if (this.climbingType == DudeClimbingTypes.down) {
-              this.climbingType = DudeClimbingTypes.stand
-            } else {
-              this.climbingType = DudeClimbingTypes.up
-            }
-          }
-        }
-        break
-      case DudeStates.fighting:
+    if (this.dudeMoveState != DudeStates.fighting) {
+      this.upDownSimpleMoveUpdaiting(value, DudeClimbingTypes.up)
     }
+
     this._isUpMove = value
   }
   public get isUpMove(): boolean {
@@ -151,27 +133,8 @@ export class Dude {
   public set isDownMove({ value, isDouble }: IPushKeysParams) {
     if (value == this._isDownMove) return
 
-    switch (this.dudeMoveState) {
-      case DudeStates.idle:
-        const plCoords = this.getTilePlayerCoords()
-        if (value && this.isNearLadder
-          && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + 1)) {
-          this.climbingType = DudeClimbingTypes.down
-          this.dudeMoveState = DudeStates.climbing
-        }
-        break
-      case DudeStates.climbing:
-        if (value) {
-          if (this.climbingType != DudeClimbingTypes.down) {
-            if (this.climbingType == DudeClimbingTypes.up) {
-              this.climbingType = DudeClimbingTypes.stand
-            } else {
-              this.climbingType = DudeClimbingTypes.down
-            }
-          }
-        }
-        break
-      case DudeStates.fighting:
+    if (this.dudeMoveState != DudeStates.fighting) {
+      this.upDownSimpleMoveUpdaiting(value, DudeClimbingTypes.down)
     }
     this._isDownMove = value
   }
@@ -490,6 +453,42 @@ export class Dude {
     }
   }
 
+  // up down key updaitng for move
+  // don't fighting!
+  upDownSimpleMoveUpdaiting(
+    newValue: boolean, currentClimbingType: DudeClimbingTypes.up | DudeClimbingTypes.down) {
+    let yOffsetForCheckMove
+    let newClimbingType
+
+    if (currentClimbingType == DudeClimbingTypes.up) {
+      yOffsetForCheckMove = -1
+      newClimbingType = DudeClimbingTypes.down
+    } else {
+      yOffsetForCheckMove = 1
+      newClimbingType = DudeClimbingTypes.up
+    }
+
+    switch (this.dudeMoveState) {
+      case DudeStates.idle:
+        const plCoords = this.getTilePlayerCoords()
+        if (newValue && this.isNearLadder
+          && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + yOffsetForCheckMove)) {
+          this.climbingType = currentClimbingType
+          this.dudeMoveState = DudeStates.climbing
+        }
+        break
+      case DudeStates.climbing:
+        if (newValue) {
+          if (this.climbingType != currentClimbingType) {
+            if (this.climbingType == newClimbingType) {
+              this.climbingType = DudeClimbingTypes.stand
+            } else {
+              this.climbingType = currentClimbingType
+            }
+          }
+        }
+    }
+  }
 
   // see overlap the dude with some stairs
   // if yes, set turn off gravity for dude and show tip
