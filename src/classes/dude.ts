@@ -410,7 +410,7 @@ export class Dude {
     const isMoveFromLadderAvailable = () => {
       const yTiles = this.getYTilesForPlayerBody()
       let isAvailable = true
-      for(let i = 0; i < yTiles.length; i++) {
+      for (let i = 0; i < yTiles.length; i++) {
         if (!isHorMoveAvailable(yTiles[i])) {
           isAvailable = false
           break
@@ -456,35 +456,59 @@ export class Dude {
   // up down key updaitng for move
   // don't fighting!
   upDownSimpleMoveUpdaiting(
-    newValue: boolean, currentClimbingType: DudeClimbingTypes.up | DudeClimbingTypes.down) {
+    newValue: boolean, newClimbingType: DudeClimbingTypes.up | DudeClimbingTypes.down) {
     let yOffsetForCheckMove
-    let newClimbingType
 
-    if (currentClimbingType == DudeClimbingTypes.up) {
+    if (newClimbingType == DudeClimbingTypes.up) {
       yOffsetForCheckMove = -1
-      newClimbingType = DudeClimbingTypes.down
     } else {
       yOffsetForCheckMove = 1
-      newClimbingType = DudeClimbingTypes.up
+    }
+
+    const plCoords = this.getTilePlayerCoords()
+
+    const isMoveAvailableFromLadder = () => {
+      let isMoveAvailable = false
+      const xOffsets = [1, -1]
+
+      const checkSideFomMoveAvailable = (xCoord: number) => {
+        const yTiles = this.getYTilesForPlayerBody()
+        let isCheck = true
+        for (let i = 0; i < yTiles.length; i++) {
+          if (this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, xCoord, yTiles[i])) {
+            isCheck = false
+            break
+          }
+        }
+        return isCheck
+      }
+
+      for (let i = 0; i < xOffsets.length; i++) {
+        if (checkSideFomMoveAvailable(plCoords.x + xOffsets[i])) {
+          isMoveAvailable = true
+          break
+        }
+      }
+
+      return isMoveAvailable
     }
 
     switch (this.dudeMoveState) {
       case DudeStates.idle:
-        const plCoords = this.getTilePlayerCoords()
         if (newValue && this.isNearLadder
           && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + yOffsetForCheckMove)) {
-          this.climbingType = currentClimbingType
+          this.climbingType = newClimbingType
           this.dudeMoveState = DudeStates.climbing
         }
         break
       case DudeStates.climbing:
         if (newValue) {
-          if (this.climbingType != currentClimbingType) {
-            if (this.climbingType == newClimbingType) {
+          if (this.climbingType == newClimbingType) {
+            if (isMoveAvailableFromLadder()) {
               this.climbingType = DudeClimbingTypes.stand
-            } else {
-              this.climbingType = currentClimbingType
             }
+          } else {
+            this.climbingType = newClimbingType
           }
         }
     }
@@ -562,9 +586,9 @@ export class Dude {
   // up, down
   setDudeUpDownMoveSizes(isUp: boolean) {
     if (isUp) {
-      this._playerBody.setVelocityY(-100)
+      this._playerBody.setVelocityY(-80)
     } else {
-      this._playerBody.setVelocityY(110)
+      this._playerBody.setVelocityY(100)
     }
   }
   // stop for dude
@@ -645,7 +669,7 @@ export class Dude {
     const tileWidth = this._levels.tileWidth
     const playerHeight = this._frameResolution.height
 
-    const tileIdUp = Math.floor(playerY/tileWidth)
+    const tileIdUp = Math.floor(playerY / tileWidth)
 
     const upNumTilesForPlayer = Math.ceil(playerHeight / tileWidth)
     let tileCountForPlayer = upNumTilesForPlayer
@@ -655,7 +679,7 @@ export class Dude {
     }
 
     const numsArray: number[] = []
-    for(let i = 0; i < tileCountForPlayer; i++) {
+    for (let i = 0; i < tileCountForPlayer; i++) {
       numsArray.push(tileIdUp + i)
     }
 
