@@ -50,6 +50,9 @@ export class DungeonDarkness {
         debug: false,
       }
     },
+    fps: {
+      target: 60,
+    },
   }
 
   phaser?: PhaserGame
