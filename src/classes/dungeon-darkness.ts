@@ -51,7 +51,7 @@ export class DungeonDarkness {
       }
     },
     fps: {
-      target: 60,
+      target: 55,
     },
   }
 

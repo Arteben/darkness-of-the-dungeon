@@ -41,6 +41,8 @@ export class Dude {
 
   _tilePointer: Phaser.GameObjects.Arc | null = null
 
+  _runTimeout: number | undefined
+
   // @ts-ignore // isNearLadder
   private _isNearLadder: boolean
   public set isNearLadder(flag: boolean) {
@@ -231,7 +233,7 @@ export class Dude {
     // set animation frame size for our levels
     // magic numbers
     const dudeScale = 1.6
-    const correctSpriteOffsetY = (-0.19)
+    const correctSpriteOffsetY = (-0.26)
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
@@ -295,6 +297,13 @@ export class Dude {
   }
 
   updateKyes(time: number, keys: mainKeys): void {
+
+    this.isSpaceDown = keys.space.isDown
+    this.isCtrlDow = keys.ctrl.isDown
+
+    // when you run, you don't do anymore!
+    if (this._runTimeout) return
+
     const doublePushKey = this.saveAndGetLastPushKey(time, keys)
 
     this.isLeftMove = {
@@ -313,9 +322,18 @@ export class Dude {
       value: keys.down.isDown,
       isDouble: (doublePushKey == keys.down),
     }
+  }
 
-    this.isSpaceDown = keys.space.isDown
-    this.isCtrlDow = keys.ctrl.isDown
+  updateTips(time: number) {
+    this._tips.update(time)
+  }
+
+  updateClimbings() {
+    // set max gravity speed fall
+    const maxFallSpeed = 600
+    if (this._playerBody.velocity.y > maxFallSpeed) {
+      this._playerBody.velocity.y = maxFallSpeed
+    }
 
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
@@ -332,10 +350,6 @@ export class Dude {
           this.setDydeStaySizes()
       }
     }
-  }
-
-  updateTips(time: number) {
-    this._tips.update(time)
   }
 
   // update dude state
@@ -429,7 +443,14 @@ export class Dude {
         if (newValue && isHorMoveAvailable()) {
           this.setDudeLeftRightMoveSizes(isLeft, true)
         } else if (oldValue) {
-          this.dudeMoveState = DudeStates.idle
+          if (this._runTimeout != undefined) {
+            window.clearTimeout(this._runTimeout)
+          }
+
+          this._runTimeout = window.setTimeout(() => {
+            this._runTimeout = undefined
+            this.dudeMoveState = DudeStates.idle
+          }, 500)
         }
         break
       case DudeStates.climbing:
@@ -454,36 +475,9 @@ export class Dude {
       yOffsetForCheckMove = 1
     }
 
-    const plCoords = this.getTilePlayerCoords()
-
-    const isMoveAvailableFromLadder = () => {
-      let isMoveAvailable = false
-      const xOffsets = [1, -1]
-
-      const checkSideFomMoveAvailable = (xCoord: number) => {
-        const yTiles = this.getYTilesForPlayerBody()
-        let isCheck = true
-        for (let i = 0; i < yTiles.length; i++) {
-          if (this._levels.isCheckSymbMapElements(CheckSymMapElements.wall, xCoord, yTiles[i])) {
-            isCheck = false
-            break
-          }
-        }
-        return isCheck
-      }
-
-      for (let i = 0; i < xOffsets.length; i++) {
-        if (checkSideFomMoveAvailable(plCoords.x + xOffsets[i])) {
-          isMoveAvailable = true
-          break
-        }
-      }
-
-      return isMoveAvailable
-    }
-
     switch (this.dudeMoveState) {
       case DudeStates.idle:
+        const plCoords = this.getTilePlayerCoords()
         if (newValue && this.isNearLadder
           && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + yOffsetForCheckMove)) {
           this.climbingType = newClimbingType
@@ -493,9 +487,7 @@ export class Dude {
       case DudeStates.climbing:
         if (newValue) {
           if (this.climbingType == newClimbingType) {
-            if (isMoveAvailableFromLadder()) {
-              this.climbingType = DudeClimbingTypes.stand
-            }
+            this.climbingType = DudeClimbingTypes.stand
           } else {
             this.climbingType = newClimbingType
           }
@@ -561,9 +553,9 @@ export class Dude {
   // dude movement's & anims
   // (left, right or climbing) set sizes for movements
   setDudeLeftRightMoveSizes(isLeft: boolean, isDouble: boolean = false) {
-    let offset = 110
+    let offset = 90
     if (isDouble) {
-      offset = offset * 2
+      offset = offset * 4
     }
 
     if (isLeft) {
@@ -603,7 +595,7 @@ export class Dude {
     this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.walking),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 88, end: 97 }),
-      frameRate: 14,
+      frameRate: 15,
       repeat: -1
     })
 
