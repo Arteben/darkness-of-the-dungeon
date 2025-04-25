@@ -73,17 +73,6 @@ export class Dude {
   public set climbingType(newValue: DudeClimbingTypes) {
     if (newValue == this._climbingType) return
 
-    switch (newValue) {
-      case DudeClimbingTypes.up:
-        this._camera.setUpDownOffset(true)
-        break
-      case DudeClimbingTypes.down:
-        this._camera.setUpDownOffset(false)
-        break
-      case DudeClimbingTypes.stand:
-        this._camera.setStandartOffset()
-    }
-
     this._climbingType = newValue
   }
   public get climbingType(): DudeClimbingTypes {
@@ -279,7 +268,7 @@ export class Dude {
     this.isNearLadder = false
     this.dudeMoveState = DudeStates.idle
 
-    this._camera.startFollow(this._playerBody)
+    this._camera.startFollow(container)
 
     if (engine.physics.world.drawDebug) {
       this._tilePointer = engine.add.circle(0, 0, 5, 0xFF0000, 1.0)

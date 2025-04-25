@@ -27,20 +27,12 @@ export class SceneCamera {
     this.setDefaultZoom()
   }
 
-  startFollow(sprite: Physics.Arcade.Body) {
-    this._main.startFollow(sprite, true, 1, 0.025)
+  startFollow(container: Phaser.GameObjects.GameObject) {
+    this._main.startFollow(container, false, 1, 1)
   }
 
   setStandartOffset() {
-    this.setFollowOffser(0, 10)
-  }
-
-  setUpDownOffset(isUp: boolean) {
-    if (isUp) {
-      this.setFollowOffser(0, 100)
-    } else {
-      this.setFollowOffser(0, -100)
-    }
+    this.setFollowOffser(0, 5)
   }
 
   setFollowOffser(x: null | number, y: null | number) {
