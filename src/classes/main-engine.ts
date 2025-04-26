@@ -90,9 +90,8 @@ export class MainEngine extends Scene {
     if (this._keys) {
       this._dude.updateKyes(time, this._keys)
     }
-    this._dude.updateTips(time)
-
-    this._dude.updateClimbings()
+    this._dude.updateClimbingMovements()
+    this._dude.update(time)
   }
 
   preload() {

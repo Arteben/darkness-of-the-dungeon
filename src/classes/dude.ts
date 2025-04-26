@@ -43,16 +43,13 @@ export class Dude {
 
   _runTimeout: number | undefined
 
+  _maxFallSpeed: number = 600
+
   // @ts-ignore // isNearLadder
   private _isNearLadder: boolean
   public set isNearLadder(flag: boolean) {
     if (flag == this._isNearLadder) return
 
-    if (flag) {
-      this._playerBody.setGravityY(0)
-    } else {
-      this._playerBody.setGravityY(1000)
-    }
     this._playerBody.setAllowGravity(!flag)
     this._isNearLadder = flag
   }
@@ -256,6 +253,7 @@ export class Dude {
     this._playerBody = container.body as Phaser.Physics.Arcade.Body
     this._playerBody.setBounce(0)
     this._playerBody.setCollideWorldBounds(true)
+    this._playerBody.setGravityY(1000)
 
 
     if (this._levels.groundLayer) {
@@ -276,14 +274,6 @@ export class Dude {
       this._tilePointer = engine.add.circle(0, 0, 5, 0xFF0000, 1.0)
     }
 
-    // create overlap dude with stairs for vertical movements
-    if (this._levels.stairsLayer) {
-      engine.physics.add.overlap(this._playerBody, this._levels.stairsLayer,
-        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this.overlapDudeLaddersCallbackUpdating(prTile as Phaser.Tilemaps.Tile)
-        })
-    }
-    //
 
     //create overlap with droppedItems for pick up them
     if (this._dropItems._group) {
@@ -324,17 +314,27 @@ export class Dude {
     }
   }
 
-  updateTips(time: number) {
+  update(time: number) {
+    // set max gravity speed fall
+    if (this._playerBody.velocity.y > this._maxFallSpeed) {
+      this._playerBody.velocity.y = this._maxFallSpeed
+    }
+
+    const plCords = this.getTilePlayerCoords()
+
+    if (this._tilePointer) {
+      const getSize = (coord: number) => {
+        return coord * this._levels.tileWidth + this._levels.tileWidth * 0.5
+      }
+      this._tilePointer.setPosition(getSize(plCords.x), getSize(plCords.y))
+    }
+
+    this.overlapDudeLaddersUpdating(plCords)
+
     this._tips.update(time)
   }
 
-  updateClimbings() {
-    // set max gravity speed fall
-    const maxFallSpeed = 600
-    if (this._playerBody.velocity.y > maxFallSpeed) {
-      this._playerBody.velocity.y = maxFallSpeed
-    }
-
+  updateClimbingMovements() {
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
         case DudeClimbingTypes.up:
@@ -380,14 +380,12 @@ export class Dude {
         break
       case DudeStates.climbing:
         this._tips.hideTip()
-        this.isNearLadder = true
         const coords = this.getTilePlayerCoords()
         this._playerBody.x = coords.x * this._levels.tileWidth
         this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
         this._tips.hideTip()
-        this.isNearLadder = false
         this._slotSystem.setDudeDropAvailable(false)
     }
 
@@ -497,16 +495,16 @@ export class Dude {
 
   // see overlap the dude with some stairs
   // if yes, set turn off gravity for dude and show tip
-  overlapDudeLaddersCallbackUpdating(
-    tile: Phaser.Tilemaps.Tile) {
-
-    const plCrds = this.getTilePlayerCoords()
-    if (!(tile.x == plCrds.x && tile.y == plCrds.y)) return
+  overlapDudeLaddersUpdating(plCords: ITilesCoords) {
+    if (!this._levels.ladderLayer?.getTileAt(plCords.x, plCords.y)) {
+      this.isNearLadder = false
+      return
+    }
 
     switch (this.dudeMoveState) {
       case DudeStates.walk:
       case DudeStates.run:
-        this.isNearLadder = tile.index != -1
+        this.isNearLadder = true
         break
       case DudeStates.idle:
         // if near ladders and we are idle -> show tip
@@ -634,13 +632,6 @@ export class Dude {
     const ySizeWithCorrects = this._playerBody.y + (this._frameResolution.height * 0.725) + yOffset
     const coords =
       this._levels.getTilesForCoords(xSizeWithCorrects, ySizeWithCorrects)
-
-    if (this._tilePointer && xOffset == 0 && yOffset == 0) {
-      const getSize = (coord: number) => {
-        return coord * this._levels.tileWidth + this._levels.tileWidth * 0.5
-      }
-      this._tilePointer.setPosition(getSize(coords.x), getSize(coords.y))
-    }
 
     return { x: coords.x, y: coords.y }
   }

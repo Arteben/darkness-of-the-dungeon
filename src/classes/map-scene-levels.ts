@@ -45,7 +45,7 @@ export class MapSceneLevels {
 
   backLayer!: Phaser.Tilemaps.TilemapLayer | null
   groundLayer!: Phaser.Tilemaps.TilemapLayer | null
-  stairsLayer!: Phaser.Tilemaps.TilemapLayer | null
+  ladderLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
 
   tileWidth = 32
@@ -92,8 +92,8 @@ export class MapSceneLevels {
       ['#'], symbolMap, 'groundLayer', TileSetModificators.ground, tls.walls, this._tileWallInxs, map)
     this.groundLayer?.setCollisionByExclusion([-1])
 
-    this.stairsLayer = this.createLayer(
-      ['t'], symbolMap, 'stairsLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
+    this.ladderLayer = this.createLayer(
+      ['t'], symbolMap, 'ladderLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
 
     this.envLayer = this.createLayer(
       ['D', 'k', 'B', 'w', 'A', 'l', 'p'],
