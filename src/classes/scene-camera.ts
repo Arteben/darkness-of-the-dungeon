@@ -28,7 +28,7 @@ export class SceneCamera {
   }
 
   startFollow(container: Phaser.GameObjects.GameObject) {
-    this._main.startFollow(container, false, 1, 1)
+    this._main.startFollow(container, true, 1, 1)
   }
 
   setStandartOffset() {
