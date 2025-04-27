@@ -137,7 +137,7 @@ export class Dude {
     switch (key) {
       case DudeAnimations.idle:
       case DudeAnimations.walking:
-        this._playerSprite.setFlipX(this._isFlipXAnimations)
+        this.setPlayerSpriteFlip()
     }
     this._playerSprite.anims.play(Dude.getAnimKey(key), isIgnoreIf)
     this._dudeAnimationKey = key
@@ -230,7 +230,7 @@ export class Dude {
     // set animation frame size for our levels
     // magic numbers
     const dudeScale = 1.6
-    const correctSpriteOffsetY = (-0.26)
+    const correctSpriteOffsetY = (-0.3)
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
@@ -242,6 +242,7 @@ export class Dude {
 
     const container = engine.add.container(startCoords.w, startCoords.h)
     this._playerSprite = engine.add.sprite(0, this._frameResolution.height * correctSpriteOffsetY, 'dude')
+    this.setPlayerSpriteFlip()
     container.scale = dudeScale
     const normalContainerSizes = {
       width: this._frameResolution.width / dudeScale,
@@ -736,6 +737,15 @@ export class Dude {
       const idleCoords = this.getTilePlayerCoords()
       const isPlaceble = (this._dropItems.findPlaceForItem(idleCoords) != null)
       this._slotSystem.setDudeDropAvailable(isPlaceble)
+    }
+  }
+
+  setPlayerSpriteFlip() {
+    this._playerSprite.setFlipX(this._isFlipXAnimations)
+    if (this._isFlipXAnimations) {
+      this._playerSprite.setX(0)
+    } else {
+      this._playerSprite.setX(1)
     }
   }
 }
