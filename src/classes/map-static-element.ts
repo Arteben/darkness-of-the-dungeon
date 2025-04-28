@@ -5,7 +5,7 @@ import {
 
 import { Dude } from './dude'
 
-export class MapStaticBoxes {
+export class MapStaticElement {
 
   constructor(
   ) {

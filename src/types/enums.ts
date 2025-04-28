@@ -81,3 +81,8 @@ export enum PocketItems {
   key = 185,
   apple = 224,
 }
+
+export enum EnvStaticElements {
+  box = 48,
+  torch = 50,
+}
