@@ -85,4 +85,7 @@ export enum PocketItems {
 export enum EnvStaticElements {
   box = 48,
   torch = 50,
+  door = 55,
+  chest = 54,
+  spawn = 13,
 }

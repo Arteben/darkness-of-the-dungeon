@@ -9,6 +9,7 @@ import {
   GamePages,
   GameStateSettings,
   DudeAnimations,
+  PocketItems as PocketItemsEnum
 } from '@/types/enums'
 
 
@@ -168,3 +169,5 @@ export type NumberNull = number | null
 export type PocketItemNull = PocketItem | null
 
 export type NullOrGameStateSettings = GameStateSettings[] | null
+
+export type EnvElementNullData = MapStaticElement | null

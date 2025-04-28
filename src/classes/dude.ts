@@ -7,6 +7,8 @@ import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/d
 import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
+import { MapStaticElement } from '@/classes/map-static-element'
+import { envStaticElementTypes } from '@/utils/env-static-element-types'
 
 import {
   IResolution,
@@ -19,6 +21,7 @@ import {
   overlapCallbackParams,
   PocketItemDudeData,
   ISpriteNumsForCombinedTip,
+  EnvElementNullData,
 } from '@/types/main-types'
 
 import {
@@ -26,6 +29,7 @@ import {
   DudeStates,
   DudeAnimations,
   CheckSymMapElements,
+  PocketItems as PocketItemsEnums
 } from '@/types/enums'
 
 export class Dude {
@@ -177,18 +181,30 @@ export class Dude {
   //
 
   // overlapSomeItem
-  private _overlapSomeItem: PocketItemDudeData = null
-  public set overlapSomeItem(droppedItemData: PocketItemDudeData) {
+  private _pocketItemCollision: PocketItemDudeData = null
+  public set pocketItemCollision(droppedItemData: PocketItemDudeData) {
     if (droppedItemData != null && this._slotSystem.isFullSlots()) {
       droppedItemData = null
     }
-    this._overlapSomeItem = droppedItemData
+    this._pocketItemCollision = droppedItemData
     this.showPickupItemTip(droppedItemData)
   }
-  public get overlapSomeItem(): PocketItemDudeData {
-    return this._overlapSomeItem
+  public get pocketItemCollision(): PocketItemDudeData {
+    return this._pocketItemCollision
   }
   //
+
+  // overlapping with some env element
+  private _envItemCollision: EnvElementNullData = null
+  public set envItemCollision(newElement: EnvElementNullData) {
+    if (this._envItemCollision == newElement) return
+
+    this.showEnvElementTip(newElement)
+    this._envItemCollision = newElement
+  }
+  public get envItemCollision(): EnvElementNullData {
+    return this._envItemCollision
+  }
 
   // flip animation for left | right animations
   _isFlipXAnimations: boolean = false
@@ -315,7 +331,7 @@ export class Dude {
     }
   }
 
-  update(time: number) {
+  mainUpdate(time: number) {
     // set max gravity speed fall
     if (this._playerBody.velocity.y > this._maxFallSpeed) {
       this._playerBody.velocity.y = this._maxFallSpeed
@@ -330,7 +346,9 @@ export class Dude {
       this._tilePointer.setPosition(getSize(plCords.x), getSize(plCords.y))
     }
 
-    this.overlapDudeLaddersUpdating(plCords)
+    this.overlapLadders(plCords)
+
+    this.overlapEnvElements(plCords)
 
     this._tips.update(time)
   }
@@ -496,7 +514,7 @@ export class Dude {
 
   // see overlap the dude with some stairs
   // if yes, set turn off gravity for dude and show tip
-  overlapDudeLaddersUpdating(plCords: ITilesCoords) {
+  overlapLadders(plCords: ITilesCoords) {
     if (!this._levels.ladderLayer?.getTileAt(plCords.x, plCords.y)) {
       this.isNearLadder = false
       return
@@ -530,6 +548,17 @@ export class Dude {
     }
   }
 
+  // updating overlaps with evn elements(torches, doors and other)
+  overlapEnvElements(plCords: ITilesCoords) {
+    const envElementTile = this._levels.envLayer?.getTileAt(plCords.x, plCords.y)
+    if (!envElementTile || !envStaticElementTypes[envElementTile.index]) {
+      this.envItemCollision = null
+      return
+    }
+
+    this.envItemCollision = envStaticElementTypes[envElementTile.index]
+  }
+
   // active when dude has on tile with dropItem
   // cyclic!
   overlapDudeDropItemsCallbackUpdating(
@@ -539,12 +568,12 @@ export class Dude {
     const inTile = this._dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
 
     if (!inTile) {
-      this.overlapSomeItem = null
+      this.pocketItemCollision = null
       return
     }
 
     if (droppedItem.active) {
-      this.overlapSomeItem = this._dropItems.getItemDataForActiveItem(plCrds)
+      this.pocketItemCollision = this._dropItems.getItemDataForActiveItem(plCrds)
     }
   }
 
@@ -709,8 +738,8 @@ export class Dude {
   }
 
   itarateThings() {
-    if (this.overlapSomeItem != null && this.overlapSomeItem.cycled) {
-      this._dropItems.itaratePileItems(this.overlapSomeItem.coords)
+    if (this.pocketItemCollision != null && this.pocketItemCollision.cycled) {
+      this._dropItems.itaratePileItems(this.pocketItemCollision.coords)
     }
   }
 
@@ -720,14 +749,14 @@ export class Dude {
       return
     }
     // 38 - arrows, hand - 21
-    const combSprites: ISpriteNumsForCombinedTip =
-      { main: (+data.type), rightBottom: 21, rightTop: undefined }
+    const combSprites: ISpriteNumsForCombinedTip = {
+      main: (+data.type),
+      rightBottom: PocketItemsEnums.hand,
+      rightTop: undefined
+    }
     if (data.cycled) combSprites.rightTop = 38
 
-    const pos = {
-      w: (data.coords.x + 0.5) * this._levels.tileWidth,
-      h: (data.coords.y + 0.5) * this._levels.tileWidth,
-    }
+    const pos = IconTips.GetTipPos(data.coords, this._levels.tileWidth)
     this._tips.showCombinedTip(pos, combSprites)
   }
 
@@ -745,7 +774,24 @@ export class Dude {
     if (this._isFlipXAnimations) {
       this._playerSprite.setX(0)
     } else {
+      // fuck magic
       this._playerSprite.setX(1)
     }
+  }
+
+  showEnvElementTip(element: EnvElementNullData) {
+    if (element == null) {
+      this._tips.hideTip()
+      return
+    }
+
+    const combSprites: ISpriteNumsForCombinedTip = {
+      main: element.iconTip,
+      rightBottom: element.toolType,
+      rightTop: undefined
+    }
+
+    const pos = IconTips.GetTipPos(this.getTilePlayerCoords(), this._levels.tileWidth)
+    this._tips.showCombinedTip(pos, combSprites)
   }
 }
