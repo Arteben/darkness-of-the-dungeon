@@ -8,14 +8,14 @@ import { MapStaticElement } from '@/classes/map-static-element'
 
 export const envStaticElementTypes: IEnvElementTypes = {
   [EnvStaticElements.box]: new MapStaticElement(
-    168
+    168,
   ),
   [EnvStaticElements.chest]: new MapStaticElement(
-    168
+    168,
   ),
   [EnvStaticElements.door]: new MapStaticElement(
     15,
-    PocketItems.key
+    PocketItems.key,
   ),
   [EnvStaticElements.torch]: new MapStaticElement(
     170,

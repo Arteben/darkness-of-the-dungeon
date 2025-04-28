@@ -28,15 +28,15 @@ export const pocketItemTypes: IPocketItemTypes = {
     function () {
       // @ts-ignore
       const that = this as Dude
-      if (that.overlapSomeItem == null) {
+      if (that.pocketItemCollisionData == null) {
         console.log('there is nothing for pick up!!!!!!!!!!!')
       } else {
-        const pickupItemType = that._dropItems.pickupItem(that.overlapSomeItem.coords)
+        const pickupItemType = that._dropItems.pickupItem(that.pocketItemCollisionData.coords)
         if (pickupItemType == null) return
 
-        that._slotSystem.addItem(that.overlapSomeItem.type)
+        that._slotSystem.addItem(that.pocketItemCollisionData.type)
 
-        that.overlapSomeItem = that._dropItems.getItemDataForActiveItem(that.overlapSomeItem.coords)
+        that.pocketItemCollisionData = that._dropItems.getItemDataForActiveItem(that.pocketItemCollisionData.coords)
       }
     },
     0,

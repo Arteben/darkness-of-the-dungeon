@@ -157,7 +157,7 @@ export class Dude {
     if (flag != this._isSpaceDown) {
       const selectedItem = this._slotSystem.selectedItem
       if (flag && selectedItem != null) {
-        this.usePocketItem(selectedItem)
+        selectedItem.use(this)
       }
       this._isSpaceDown = flag
     }
@@ -181,29 +181,29 @@ export class Dude {
   //
 
   // overlapSomeItem
-  private _pocketItemCollision: PocketItemDudeData = null
-  public set pocketItemCollision(droppedItemData: PocketItemDudeData) {
+  private _pocketItemCollisionData: PocketItemDudeData = null
+  public set pocketItemCollisionData(droppedItemData: PocketItemDudeData) {
     if (droppedItemData != null && this._slotSystem.isFullSlots()) {
       droppedItemData = null
     }
-    this._pocketItemCollision = droppedItemData
+    this._pocketItemCollisionData = droppedItemData
     this.showPickupItemTip(droppedItemData)
   }
-  public get pocketItemCollision(): PocketItemDudeData {
-    return this._pocketItemCollision
+  public get pocketItemCollisionData(): PocketItemDudeData {
+    return this._pocketItemCollisionData
   }
   //
 
   // overlapping with some env element
-  private _envItemCollision: EnvElementNullData = null
-  public set envItemCollision(newElement: EnvElementNullData) {
-    if (this._envItemCollision == newElement) return
+  private _envCollisionElement: EnvElementNullData = null
+  public set envCollisionElement(newElement: EnvElementNullData) {
+    if (this._envCollisionElement == newElement) return
 
     this.showEnvElementTip(newElement)
-    this._envItemCollision = newElement
+    this._envCollisionElement = newElement
   }
-  public get envItemCollision(): EnvElementNullData {
-    return this._envItemCollision
+  public get envCollisionElement(): EnvElementNullData {
+    return this._envCollisionElement
   }
 
   // flip animation for left | right animations
@@ -235,7 +235,7 @@ export class Dude {
       return this._dropItems.drop(plCrds, item)
     }
     this._slotSystem.useFunc = (item: PocketItem) => {
-      this.usePocketItem(item)
+      item.use(this)
     }
     this._slotSystem.calcAvailableDrop = () => {
       this.calcsForDropAvailable()
@@ -551,12 +551,13 @@ export class Dude {
   // updating overlaps with evn elements(torches, doors and other)
   overlapEnvElements(plCords: ITilesCoords) {
     const envElementTile = this._levels.envLayer?.getTileAt(plCords.x, plCords.y)
-    if (!envElementTile || !envStaticElementTypes[envElementTile.index]) {
-      this.envItemCollision = null
+    const element = envElementTile ? envStaticElementTypes[envElementTile.index] : null
+    if (element == null || !element.isInteractive) {
+      this.envCollisionElement = null
       return
     }
 
-    this.envItemCollision = envStaticElementTypes[envElementTile.index]
+    this.envCollisionElement = element
   }
 
   // active when dude has on tile with dropItem
@@ -568,12 +569,12 @@ export class Dude {
     const inTile = this._dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
 
     if (!inTile) {
-      this.pocketItemCollision = null
+      this.pocketItemCollisionData = null
       return
     }
 
     if (droppedItem.active) {
-      this.pocketItemCollision = this._dropItems.getItemDataForActiveItem(plCrds)
+      this.pocketItemCollisionData = this._dropItems.getItemDataForActiveItem(plCrds)
     }
   }
 
@@ -729,17 +730,9 @@ export class Dude {
     return pushedKey
   }
 
-  usePocketItem(item: PocketItem) {
-    if (item == null) {
-      console.error('dont find item for selected item(for call use function)!')
-    } else {
-      item.use(this)
-    }
-  }
-
   itarateThings() {
-    if (this.pocketItemCollision != null && this.pocketItemCollision.cycled) {
-      this._dropItems.itaratePileItems(this.pocketItemCollision.coords)
+    if (this.pocketItemCollisionData != null && this.pocketItemCollisionData.cycled) {
+      this._dropItems.itaratePileItems(this.pocketItemCollisionData.coords)
     }
   }
 
