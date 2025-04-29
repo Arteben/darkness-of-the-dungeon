@@ -197,8 +197,6 @@ export class Dude {
   // overlapping with some env element
   private _envCollisionElement: EnvElementNullData = null
   public set envCollisionElement(newElement: EnvElementNullData) {
-    if (this._envCollisionElement == newElement) return
-
     this.showEnvElementTip(newElement)
     this._envCollisionElement = newElement
   }
@@ -557,7 +555,10 @@ export class Dude {
       return
     }
 
-    this.envCollisionElement = element
+    this.envCollisionElement = {
+      element,
+      coords: plCords,
+    }
   }
 
   // active when dude has on tile with dropItem
@@ -772,15 +773,15 @@ export class Dude {
     }
   }
 
-  showEnvElementTip(element: EnvElementNullData) {
-    if (element == null) {
+  showEnvElementTip(elData: EnvElementNullData) {
+    if (elData == null) {
       this._tips.hideTip()
       return
     }
 
     const combSprites: ISpriteNumsForCombinedTip = {
-      main: element.iconTip,
-      rightBottom: element.toolType,
+      main: elData.element.iconTip,
+      rightBottom: elData.element.toolType,
       rightTop: undefined
     }
 

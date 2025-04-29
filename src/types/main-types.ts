@@ -170,4 +170,9 @@ export type PocketItemNull = PocketItem | null
 
 export type NullOrGameStateSettings = GameStateSettings[] | null
 
-export type EnvElementNullData = MapStaticElement | null
+export interface EnvStaticElementData {
+  coords: ITilesCoords
+  element: MapStaticElement
+}
+
+export type EnvElementNullData = EnvStaticElementData | null
