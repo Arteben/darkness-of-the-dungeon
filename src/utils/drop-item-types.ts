@@ -28,15 +28,19 @@ export const pocketItemTypes: IPocketItemTypes = {
     function () {
       // @ts-ignore
       const that = this as Dude
-      if (that.pocketItemCollisionData == null) {
-        console.log('there is nothing for pick up!!!!!!!!!!!')
-      } else {
-        const pickupItemType = that._dropItems.pickupItem(that.pocketItemCollisionData.coords)
+      const envData = that.envCollisionElementData
+      const pocketItemData = that.pocketItemCollisionData
+      if (envData) {
+        envData.element.use(envData.coords, that)
+      } else if (pocketItemData) {
+        const pickupItemType = that._dropItems.pickupItem(pocketItemData.coords)
         if (pickupItemType == null) return
 
-        that._slotSystem.addItem(that.pocketItemCollisionData.type)
+        that._slotSystem.addItem(pocketItemData.type)
 
-        that.pocketItemCollisionData = that._dropItems.getItemDataForActiveItem(that.pocketItemCollisionData.coords)
+        that.pocketItemCollisionData = that._dropItems.getItemDataForActiveItem(pocketItemData.coords)
+      } else {
+        console.warn('You want to do with you hand, but there is nothing!')
       }
     },
     0,

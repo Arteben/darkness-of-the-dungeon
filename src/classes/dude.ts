@@ -1,4 +1,4 @@
-import { Scene, GameObjects, Types, Physics } from 'phaser'
+import { GameObjects, Types, Physics } from 'phaser'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
@@ -7,8 +7,9 @@ import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/d
 import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
-import { MapStaticElement } from '@/classes/map-static-element'
 import { envStaticElementTypes } from '@/utils/env-static-element-types'
+
+import { isAllNull } from '@/utils/usefull'
 
 import {
   IResolution,
@@ -183,6 +184,10 @@ export class Dude {
   // overlapSomeItem
   private _pocketItemCollisionData: PocketItemDudeData = null
   public set pocketItemCollisionData(droppedItemData: PocketItemDudeData) {
+    if (isAllNull(this._pocketItemCollisionData, droppedItemData)) {
+      return
+    }
+
     if (droppedItemData != null && this._slotSystem.isFullSlots()) {
       droppedItemData = null
     }
@@ -195,13 +200,17 @@ export class Dude {
   //
 
   // overlapping with some env element
-  private _envCollisionElement: EnvElementNullData = null
-  public set envCollisionElement(newElement: EnvElementNullData) {
+  private _envCollisionElementData: EnvElementNullData = null
+  public set envCollisionElementData(newElement: EnvElementNullData) {
+    if (isAllNull(this._envCollisionElementData, newElement)) {
+      return
+    }
+
     this.showEnvElementTip(newElement)
-    this._envCollisionElement = newElement
+    this._envCollisionElementData = newElement
   }
-  public get envCollisionElement(): EnvElementNullData {
-    return this._envCollisionElement
+  public get envCollisionElementData(): EnvElementNullData {
+    return this._envCollisionElementData
   }
 
   // flip animation for left | right animations
@@ -551,11 +560,11 @@ export class Dude {
     const envElementTile = this._levels.envLayer?.getTileAt(plCords.x, plCords.y)
     const element = envElementTile ? envStaticElementTypes[envElementTile.index] : null
     if (element == null || !element.isInteractive) {
-      this.envCollisionElement = null
+      this.envCollisionElementData = null
       return
     }
 
-    this.envCollisionElement = {
+    this.envCollisionElementData = {
       element,
       coords: plCords,
     }
