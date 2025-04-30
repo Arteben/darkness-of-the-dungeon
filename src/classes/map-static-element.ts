@@ -32,4 +32,8 @@ export class MapStaticElement {
   use(coords: ITilesCoords, char: Dude) {
     this._useCallback(coords, char)
   }
+
+  isCorrectToolType(type: PocketItems) {
+    return this.toolType == type
+  }
 }

@@ -25,20 +25,20 @@ export const pocketItemTypes: IPocketItemTypes = {
   ),
   [PocketItemsEnums.hand]: new PocketItem(
     PocketItemsEnums.hand,
-    function () {
+    function (dude: Dude) {
       // @ts-ignore
-      const that = this as Dude
-      const envData = that.envCollisionElementData
-      const pocketItemData = that.pocketItemCollisionData
-      if (envData) {
-        envData.element.use(envData.coords, that)
+      const that = this as PocketItem
+      const envData = dude.envCollisionElementData
+      const pocketItemData = dude.pocketItemCollisionData
+      if (envData && envData.element.isCorrectToolType(that.type)) {
+        envData.element.use(envData.coords, dude)
       } else if (pocketItemData) {
-        const pickupItemType = that._dropItems.pickupItem(pocketItemData.coords)
+        const pickupItemType = dude._dropItems.pickupItem(pocketItemData.coords)
         if (pickupItemType == null) return
 
-        that._slotSystem.addItem(pocketItemData.type)
+        dude._slotSystem.addItem(pocketItemData.type)
 
-        that.pocketItemCollisionData = that._dropItems.getItemDataForActiveItem(pocketItemData.coords)
+        dude.pocketItemCollisionData = dude._dropItems.getItemDataForActiveItem(pocketItemData.coords)
       } else {
         console.warn('You want to do with you hand, but there is nothing!')
       }

@@ -1,10 +1,9 @@
-import {
-  VoidFunction,
-  IScreenSizes,
-} from '@/types/main-types'
+import { IScreenSizes } from '@/types/main-types'
 import { PocketItems } from '@/types/enums'
 
 import { Dude } from './dude'
+
+type callbackType = (a: Dude) => void
 
 export class PocketItem {
 
@@ -13,11 +12,11 @@ export class PocketItem {
   isBig: boolean
   isDropped: boolean
   droppedRotete: number
-  _useCallback: VoidFunction
+  _useCallback: callbackType
 
   constructor(
     type: PocketItems,
-    useCallback: VoidFunction,
+    useCallback: callbackType,
     rotates: number = 0,
     isBig: boolean = false,
     sizes: IScreenSizes = { x: 20, y: 20 },
@@ -32,6 +31,6 @@ export class PocketItem {
   }
 
   use(dude: Dude) {
-    this._useCallback.call(dude)
+    this._useCallback(dude)
   }
 }
