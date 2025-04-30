@@ -43,6 +43,7 @@ export class DungeonDarkness {
     backgroundColor: '06050d',
     // backgroundColor: '#1b262c',
     pixelArt: true,
+    antialias: false,
     physics: {
       default: 'arcade',
       arcade: {
@@ -51,7 +52,8 @@ export class DungeonDarkness {
       }
     },
     fps: {
-      target: 55,
+      target: 60,
+      forceSetTimeOut: true,
     },
   }
 

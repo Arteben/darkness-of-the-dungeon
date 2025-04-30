@@ -1,4 +1,4 @@
-import { Scene, GameObjects, Types, Physics } from 'phaser'
+import { GameObjects, Types, Physics } from 'phaser'
 
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
@@ -7,6 +7,9 @@ import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/d
 import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
+import { envStaticElementTypes } from '@/utils/env-static-element-types'
+
+import { isAllNull } from '@/utils/usefull'
 
 import {
   IResolution,
@@ -19,6 +22,7 @@ import {
   overlapCallbackParams,
   PocketItemDudeData,
   ISpriteNumsForCombinedTip,
+  EnvElementNullData,
 } from '@/types/main-types'
 
 import {
@@ -26,6 +30,7 @@ import {
   DudeStates,
   DudeAnimations,
   CheckSymMapElements,
+  PocketItems as PocketItemsEnums
 } from '@/types/enums'
 
 export class Dude {
@@ -43,16 +48,13 @@ export class Dude {
 
   _runTimeout: number | undefined
 
+  _maxFallSpeed: number = 600
+
   // @ts-ignore // isNearLadder
   private _isNearLadder: boolean
   public set isNearLadder(flag: boolean) {
     if (flag == this._isNearLadder) return
 
-    if (flag) {
-      this._playerBody.setGravityY(0)
-    } else {
-      this._playerBody.setGravityY(1000)
-    }
     this._playerBody.setAllowGravity(!flag)
     this._isNearLadder = flag
   }
@@ -140,7 +142,7 @@ export class Dude {
     switch (key) {
       case DudeAnimations.idle:
       case DudeAnimations.walking:
-        this._playerSprite.setFlipX(this._isFlipXAnimations)
+        this.setPlayerSpriteFlip()
     }
     this._playerSprite.anims.play(Dude.getAnimKey(key), isIgnoreIf)
     this._dudeAnimationKey = key
@@ -156,7 +158,7 @@ export class Dude {
     if (flag != this._isSpaceDown) {
       const selectedItem = this._slotSystem.selectedItem
       if (flag && selectedItem != null) {
-        this.usePocketItem(selectedItem)
+        selectedItem.use(this)
       }
       this._isSpaceDown = flag
     }
@@ -180,18 +182,36 @@ export class Dude {
   //
 
   // overlapSomeItem
-  private _overlapSomeItem: PocketItemDudeData = null
-  public set overlapSomeItem(droppedItemData: PocketItemDudeData) {
+  private _pocketItemCollisionData: PocketItemDudeData = null
+  public set pocketItemCollisionData(droppedItemData: PocketItemDudeData) {
+    if (isAllNull(this._pocketItemCollisionData, droppedItemData)) {
+      return
+    }
+
     if (droppedItemData != null && this._slotSystem.isFullSlots()) {
       droppedItemData = null
     }
-    this._overlapSomeItem = droppedItemData
+    this._pocketItemCollisionData = droppedItemData
     this.showPickupItemTip(droppedItemData)
   }
-  public get overlapSomeItem(): PocketItemDudeData {
-    return this._overlapSomeItem
+  public get pocketItemCollisionData(): PocketItemDudeData {
+    return this._pocketItemCollisionData
   }
   //
+
+  // overlapping with some env element
+  private _envCollisionElementData: EnvElementNullData = null
+  public set envCollisionElementData(newElement: EnvElementNullData) {
+    if (isAllNull(this._envCollisionElementData, newElement)) {
+      return
+    }
+
+    this.showEnvElementTip(newElement)
+    this._envCollisionElementData = newElement
+  }
+  public get envCollisionElementData(): EnvElementNullData {
+    return this._envCollisionElementData
+  }
 
   // flip animation for left | right animations
   _isFlipXAnimations: boolean = false
@@ -222,7 +242,7 @@ export class Dude {
       return this._dropItems.drop(plCrds, item)
     }
     this._slotSystem.useFunc = (item: PocketItem) => {
-      this.usePocketItem(item)
+      item.use(this)
     }
     this._slotSystem.calcAvailableDrop = () => {
       this.calcsForDropAvailable()
@@ -233,7 +253,7 @@ export class Dude {
     // set animation frame size for our levels
     // magic numbers
     const dudeScale = 1.6
-    const correctSpriteOffsetY = (-0.26)
+    const correctSpriteOffsetY = (-0.3)
 
     const startMapCoords = this._levels.getCoordsForFirstSymbol('B')
     const startCoords: INumberCoords = { w: 0, h: 0 }
@@ -245,6 +265,7 @@ export class Dude {
 
     const container = engine.add.container(startCoords.w, startCoords.h)
     this._playerSprite = engine.add.sprite(0, this._frameResolution.height * correctSpriteOffsetY, 'dude')
+    this.setPlayerSpriteFlip()
     container.scale = dudeScale
     const normalContainerSizes = {
       width: this._frameResolution.width / dudeScale,
@@ -256,6 +277,7 @@ export class Dude {
     this._playerBody = container.body as Phaser.Physics.Arcade.Body
     this._playerBody.setBounce(0)
     this._playerBody.setCollideWorldBounds(true)
+    this._playerBody.setGravityY(1000)
 
 
     if (this._levels.groundLayer) {
@@ -276,14 +298,6 @@ export class Dude {
       this._tilePointer = engine.add.circle(0, 0, 5, 0xFF0000, 1.0)
     }
 
-    // create overlap dude with stairs for vertical movements
-    if (this._levels.stairsLayer) {
-      engine.physics.add.overlap(this._playerBody, this._levels.stairsLayer,
-        (prPlayer: overlapCallbackParams, prTile: overlapCallbackParams) => {
-          this.overlapDudeLaddersCallbackUpdating(prTile as Phaser.Tilemaps.Tile)
-        })
-    }
-    //
 
     //create overlap with droppedItems for pick up them
     if (this._dropItems._group) {
@@ -324,17 +338,29 @@ export class Dude {
     }
   }
 
-  updateTips(time: number) {
+  mainUpdate(time: number) {
+    // set max gravity speed fall
+    if (this._playerBody.velocity.y > this._maxFallSpeed) {
+      this._playerBody.velocity.y = this._maxFallSpeed
+    }
+
+    const plCords = this.getTilePlayerCoords()
+
+    if (this._tilePointer) {
+      const getSize = (coord: number) => {
+        return coord * this._levels.tileWidth + this._levels.tileWidth * 0.5
+      }
+      this._tilePointer.setPosition(getSize(plCords.x), getSize(plCords.y))
+    }
+
+    this.overlapLadders(plCords)
+
+    this.overlapEnvElements(plCords)
+
     this._tips.update(time)
   }
 
-  updateClimbings() {
-    // set max gravity speed fall
-    const maxFallSpeed = 600
-    if (this._playerBody.velocity.y > maxFallSpeed) {
-      this._playerBody.velocity.y = maxFallSpeed
-    }
-
+  updateClimbingMovements() {
     if (this.dudeMoveState == DudeStates.climbing) {
       switch (this.climbingType) {
         case DudeClimbingTypes.up:
@@ -380,14 +406,12 @@ export class Dude {
         break
       case DudeStates.climbing:
         this._tips.hideTip()
-        this.isNearLadder = true
         const coords = this.getTilePlayerCoords()
         this._playerBody.x = coords.x * this._levels.tileWidth
         this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
         this._tips.hideTip()
-        this.isNearLadder = false
         this._slotSystem.setDudeDropAvailable(false)
     }
 
@@ -497,16 +521,16 @@ export class Dude {
 
   // see overlap the dude with some stairs
   // if yes, set turn off gravity for dude and show tip
-  overlapDudeLaddersCallbackUpdating(
-    tile: Phaser.Tilemaps.Tile) {
-
-    const plCrds = this.getTilePlayerCoords()
-    if (!(tile.x == plCrds.x && tile.y == plCrds.y)) return
+  overlapLadders(plCords: ITilesCoords) {
+    if (!this._levels.ladderLayer?.getTileAt(plCords.x, plCords.y)) {
+      this.isNearLadder = false
+      return
+    }
 
     switch (this.dudeMoveState) {
       case DudeStates.walk:
       case DudeStates.run:
-        this.isNearLadder = tile.index != -1
+        this.isNearLadder = true
         break
       case DudeStates.idle:
         // if near ladders and we are idle -> show tip
@@ -531,6 +555,21 @@ export class Dude {
     }
   }
 
+  // updating overlaps with evn elements(torches, doors and other)
+  overlapEnvElements(plCords: ITilesCoords) {
+    const envElementTile = this._levels.envLayer?.getTileAt(plCords.x, plCords.y)
+    const element = envElementTile ? envStaticElementTypes[envElementTile.index] : null
+    if (element == null || !element.isInteractive) {
+      this.envCollisionElementData = null
+      return
+    }
+
+    this.envCollisionElementData = {
+      element,
+      coords: plCords,
+    }
+  }
+
   // active when dude has on tile with dropItem
   // cyclic!
   overlapDudeDropItemsCallbackUpdating(
@@ -540,12 +579,12 @@ export class Dude {
     const inTile = this._dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
 
     if (!inTile) {
-      this.overlapSomeItem = null
+      this.pocketItemCollisionData = null
       return
     }
 
     if (droppedItem.active) {
-      this.overlapSomeItem = this._dropItems.getItemDataForActiveItem(plCrds)
+      this.pocketItemCollisionData = this._dropItems.getItemDataForActiveItem(plCrds)
     }
   }
 
@@ -635,13 +674,6 @@ export class Dude {
     const coords =
       this._levels.getTilesForCoords(xSizeWithCorrects, ySizeWithCorrects)
 
-    if (this._tilePointer && xOffset == 0 && yOffset == 0) {
-      const getSize = (coord: number) => {
-        return coord * this._levels.tileWidth + this._levels.tileWidth * 0.5
-      }
-      this._tilePointer.setPosition(getSize(coords.x), getSize(coords.y))
-    }
-
     return { x: coords.x, y: coords.y }
   }
 
@@ -708,17 +740,9 @@ export class Dude {
     return pushedKey
   }
 
-  usePocketItem(item: PocketItem) {
-    if (item == null) {
-      console.error('dont find item for selected item(for call use function)!')
-    } else {
-      item.use(this)
-    }
-  }
-
   itarateThings() {
-    if (this.overlapSomeItem != null && this.overlapSomeItem.cycled) {
-      this._dropItems.itaratePileItems(this.overlapSomeItem.coords)
+    if (this.pocketItemCollisionData != null && this.pocketItemCollisionData.cycled) {
+      this._dropItems.itaratePileItems(this.pocketItemCollisionData.coords)
     }
   }
 
@@ -728,14 +752,14 @@ export class Dude {
       return
     }
     // 38 - arrows, hand - 21
-    const combSprites: ISpriteNumsForCombinedTip =
-      { main: (+data.type), rightBottom: 21, rightTop: undefined }
+    const combSprites: ISpriteNumsForCombinedTip = {
+      main: (+data.type),
+      rightBottom: PocketItemsEnums.hand,
+      rightTop: undefined
+    }
     if (data.cycled) combSprites.rightTop = 38
 
-    const pos = {
-      w: (data.coords.x + 0.5) * this._levels.tileWidth,
-      h: (data.coords.y + 0.5) * this._levels.tileWidth,
-    }
+    const pos = IconTips.GetTipPos(data.coords, this._levels.tileWidth)
     this._tips.showCombinedTip(pos, combSprites)
   }
 
@@ -746,5 +770,31 @@ export class Dude {
       const isPlaceble = (this._dropItems.findPlaceForItem(idleCoords) != null)
       this._slotSystem.setDudeDropAvailable(isPlaceble)
     }
+  }
+
+  setPlayerSpriteFlip() {
+    this._playerSprite.setFlipX(this._isFlipXAnimations)
+    if (this._isFlipXAnimations) {
+      this._playerSprite.setX(0)
+    } else {
+      // fuck magic
+      this._playerSprite.setX(1)
+    }
+  }
+
+  showEnvElementTip(elData: EnvElementNullData) {
+    if (elData == null) {
+      this._tips.hideTip()
+      return
+    }
+
+    const combSprites: ISpriteNumsForCombinedTip = {
+      main: elData.element.iconTip,
+      rightBottom: elData.element.toolType,
+      rightTop: undefined
+    }
+
+    const pos = IconTips.GetTipPos(this.getTilePlayerCoords(), this._levels.tileWidth)
+    this._tips.showCombinedTip(pos, combSprites)
   }
 }

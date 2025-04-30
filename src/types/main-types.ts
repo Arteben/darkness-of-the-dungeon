@@ -2,12 +2,14 @@ import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
 import { PocketItem } from '@/classes/pocket-item'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
+import { MapStaticElement } from '@/classes/map-static-element'
 
 import {
   Languages,
   GamePages,
   GameStateSettings,
   DudeAnimations,
+  PocketItems as PocketItemsEnum
 } from '@/types/enums'
 
 
@@ -152,6 +154,10 @@ export interface IPocketItemTypes {
   [index: string]: PocketItem
 }
 
+export interface IEnvElementTypes {
+  [index: string]: MapStaticElement
+}
+
 export interface ISpriteNumsForCombinedTip {
   main: number
   rightTop: number | undefined
@@ -163,3 +169,10 @@ export type NumberNull = number | null
 export type PocketItemNull = PocketItem | null
 
 export type NullOrGameStateSettings = GameStateSettings[] | null
+
+export interface EnvStaticElementData {
+  coords: ITilesCoords
+  element: MapStaticElement
+}
+
+export type EnvElementNullData = EnvStaticElementData | null

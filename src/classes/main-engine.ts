@@ -83,16 +83,15 @@ export class MainEngine extends Scene {
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
       'dudeFrameSet',
-      { width: 32, height: 46 } as IResolution)
+      { width: 32, height: 45 } as IResolution)
   }
 
   update(time: number): void {
     if (this._keys) {
       this._dude.updateKyes(time, this._keys)
     }
-    this._dude.updateTips(time)
-
-    this._dude.updateClimbings()
+    this._dude.updateClimbingMovements()
+    this._dude.mainUpdate(time)
   }
 
   preload() {
