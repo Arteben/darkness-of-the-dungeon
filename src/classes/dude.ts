@@ -8,6 +8,7 @@ import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
 import { envStaticElementTypes } from '@/utils/env-static-element-types'
+import { DudeProgressBar } from '@/classes/dude-progress-bar'
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -23,6 +24,7 @@ import {
   PocketItemDudeData,
   ISpriteNumsForCombinedTip,
   EnvElementNullData,
+  NumberNull,
 } from '@/types/main-types'
 
 import {
@@ -30,7 +32,9 @@ import {
   DudeStates,
   DudeAnimations,
   CheckSymMapElements,
-  PocketItems as PocketItemsEnums
+  PocketItems as PocketItemsEnums,
+  SceneLevelZIndexes,
+  ProgressBarTypes,
 } from '@/types/enums'
 
 export class Dude {
@@ -43,6 +47,7 @@ export class Dude {
   _tips: IconTips
   _dropItems: DroppedItemsSystem
   _slotSystem: PocketSlotsSystem
+  _progressBar: DudeProgressBar
 
   _tilePointer: Phaser.GameObjects.Arc | null = null
 
@@ -213,6 +218,19 @@ export class Dude {
     return this._envCollisionElementData
   }
 
+  private _progressBarValue: NumberNull = null
+  public set progressBarValue (value: NumberNull) {
+    if (this._progressBarValue == value) {
+      return
+    }
+
+    this._progressBarValue = value
+    this.updateProgressBar(ProgressBarTypes.usual)
+  }
+  public get progressBarValue (): NumberNull{
+    return this._progressBarValue
+  }
+
   // flip animation for left | right animations
   _isFlipXAnimations: boolean = false
 
@@ -264,6 +282,7 @@ export class Dude {
     }
 
     const container = engine.add.container(startCoords.w, startCoords.h)
+    container.setZ(SceneLevelZIndexes.dudeLevel)
     this._playerSprite = engine.add.sprite(0, this._frameResolution.height * correctSpriteOffsetY, 'dude')
     this.setPlayerSpriteFlip()
     container.scale = dudeScale
@@ -298,6 +317,8 @@ export class Dude {
       this._tilePointer = engine.add.circle(0, 0, 5, 0xFF0000, 1.0)
     }
 
+    this._progressBar = new DudeProgressBar(engine)
+    this.progressBarValue = null
 
     //create overlap with droppedItems for pick up them
     if (this._dropItems._group) {
@@ -796,5 +817,30 @@ export class Dude {
 
     const pos = IconTips.GetTipPos(this.getTilePlayerCoords(), this._levels.tileWidth)
     this._tips.showCombinedTip(pos, combSprites)
+  }
+
+  updateProgressBar(type: ProgressBarTypes) {
+    let value
+    switch(type) {
+      case ProgressBarTypes.usual:
+        value = this.progressBarValue
+    }
+
+    if (value == null) {
+      this._progressBar.drawData = null
+      return
+    }
+
+    const coords = this.getTilePlayerCoords()
+    const position: INumberCoords = {
+      w: (coords.x + 0.5) * this._levels.tileWidth,
+      h: (coords.y + 1.7) * this._levels.tileWidth,
+    }
+
+    this._progressBar.drawData = {
+      position,
+      type,
+      progress: value,
+    }
   }
 }

@@ -9,7 +9,7 @@ import {
   GamePages,
   GameStateSettings,
   DudeAnimations,
-  PocketItems as PocketItemsEnum
+  ProgressBarTypes,
 } from '@/types/enums'
 
 
@@ -176,3 +176,11 @@ export interface EnvStaticElementData {
 }
 
 export type EnvElementNullData = EnvStaticElementData | null
+
+export interface ProgressBarData {
+  position: INumberCoords
+  progress: number
+  type: ProgressBarTypes
+}
+
+export type ProgressBarNullData = ProgressBarData | null
