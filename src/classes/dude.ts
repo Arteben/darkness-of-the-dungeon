@@ -25,6 +25,7 @@ import {
   ISpriteNumsForCombinedTip,
   EnvElementNullData,
   NumberNull,
+  DudeProgresBarNullValues,
 } from '@/types/main-types'
 
 import {
@@ -218,17 +219,30 @@ export class Dude {
     return this._envCollisionElementData
   }
 
-  private _progressBarValue: NumberNull = null
-  public set progressBarValue (value: NumberNull) {
-    if (this._progressBarValue == value) {
+  private _progressBarValues: DudeProgresBarNullValues = null
+  public set progressBarValues(values: DudeProgresBarNullValues) {
+    if (isAllNull(this._progressBarValues, values)) {
       return
     }
 
-    this._progressBarValue = value
-    this.updateProgressBar(ProgressBarTypes.usual)
+    const getHash = (objValues: DudeProgresBarNullValues) => {
+      let sum = 0
+      if (objValues == null) {
+        return sum += 300
+      }
+      sum += (objValues.type == ProgressBarTypes.swordSwing) ? 200 : 0
+      return sum += objValues.progress
+    }
+
+    if (getHash(this._progressBarValues) == getHash(values)) {
+      return
+    }
+
+    this._progressBarValues = values
+    this.updateProgressBar()
   }
-  public get progressBarValue (): NumberNull{
-    return this._progressBarValue
+  public get progressBarValues(): DudeProgresBarNullValues {
+    return this._progressBarValues
   }
 
   // flip animation for left | right animations
@@ -282,7 +296,7 @@ export class Dude {
     }
 
     const container = engine.add.container(startCoords.w, startCoords.h)
-    container.setZ(SceneLevelZIndexes.dudeLevel)
+    container.setDepth(SceneLevelZIndexes.dudeLevel)
     this._playerSprite = engine.add.sprite(0, this._frameResolution.height * correctSpriteOffsetY, 'dude')
     this.setPlayerSpriteFlip()
     container.scale = dudeScale
@@ -318,7 +332,7 @@ export class Dude {
     }
 
     this._progressBar = new DudeProgressBar(engine)
-    this.progressBarValue = null
+    this.progressBarValues = null
 
     //create overlap with droppedItems for pick up them
     if (this._dropItems._group) {
@@ -819,14 +833,8 @@ export class Dude {
     this._tips.showCombinedTip(pos, combSprites)
   }
 
-  updateProgressBar(type: ProgressBarTypes) {
-    let value
-    switch(type) {
-      case ProgressBarTypes.usual:
-        value = this.progressBarValue
-    }
-
-    if (value == null) {
+  updateProgressBar() {
+    if (this.progressBarValues == null) {
       this._progressBar.drawData = null
       return
     }
@@ -839,8 +847,8 @@ export class Dude {
 
     this._progressBar.drawData = {
       position,
-      type,
-      progress: value,
+      type: this.progressBarValues.type,
+      progress: this.progressBarValues.progress,
     }
   }
 }

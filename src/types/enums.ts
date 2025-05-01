@@ -91,9 +91,10 @@ export enum EnvStaticElements {
 }
 
 export enum SceneLevelZIndexes {
-  dudeLevel = 4,
-  pocketItemLevel = 2,// need two levels
-  tipLevel = 7,
+  dudeLevel = 2,
+  pocketItemLevel = 3,// need two levels
+  tipLevel = 5,
+  progressBarLevel = 6,
 }
 
 export enum ProgressBarTypes {

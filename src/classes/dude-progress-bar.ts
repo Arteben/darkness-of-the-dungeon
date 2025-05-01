@@ -1,7 +1,13 @@
 import {
   ProgressBarNullData,
   IScreenSizes,
+  DudeProgresBarNullValues,
 } from '@/types/main-types'
+
+import {
+  ProgressBarTypes,
+  SceneLevelZIndexes,
+} from '@/types/enums'
 
 import { MainEngine } from '@/classes/main-engine'
 
@@ -43,6 +49,8 @@ export class DudeProgressBar {
 
     this._el.closePath()
     this._el.strokePath()
+
+    this._el.setDepth(SceneLevelZIndexes.progressBarLevel)
   }
 
   redrawBar() {
@@ -53,7 +61,7 @@ export class DudeProgressBar {
 
     const ss = this._sizes
 
-    const getLineForPercents = (value: number, color: number) => {
+    const getLinesForPercentsUsualBar = (value: number, color: number) => {
       const length = value * ss.x / 100
       this._el.lineStyle(ss.y / 3, color, 1)
       this._el.beginPath()
@@ -65,16 +73,41 @@ export class DudeProgressBar {
 
     this._el.visible = true
 
-    let progress = this._drawData.progress
+    const progress = DudeProgressBar.GetPercentFromNum(this._drawData.progress)
+
+    if (this._drawData.type == ProgressBarTypes.usual) {
+      getLinesForPercentsUsualBar(100, this._outRectFill)
+      getLinesForPercentsUsualBar(progress, this._innerRectFill)
+    } else if (this._drawData.type == ProgressBarTypes.swordSwing) {
+      // there is place for drawing fight bar here
+      getLinesForPercentsUsualBar(100, this._outRectFill)
+      getLinesForPercentsUsualBar(progress, 0xff0000)
+    }
+
+    this._el.setPosition(this._drawData.position.w, this._drawData.position.h)
+  }
+
+  static GetPercentFromNum(num: number) {
+    let progress = num
     if (progress < 0) {
       progress = 0
     } else if (progress > 100) {
       progress = 100
     }
+    return progress
+  }
 
-    getLineForPercents(100, this._outRectFill)
-    getLineForPercents(progress, this._innerRectFill)
+  static GetUsualTypeBar(value: number): DudeProgresBarNullValues {
+    return {
+      progress: DudeProgressBar.GetPercentFromNum(value),
+      type: ProgressBarTypes.usual
+    }
+  }
 
-    this._el.setPosition(this._drawData.position.w, this._drawData.position.h)
+  static GetFightTypeBar(value: number): DudeProgresBarNullValues {
+    return {
+      progress: DudeProgressBar.GetPercentFromNum(value),
+      type: ProgressBarTypes.swordSwing
+    }
   }
 }
