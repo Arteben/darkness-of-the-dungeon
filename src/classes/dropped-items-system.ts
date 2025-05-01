@@ -1,11 +1,14 @@
-import { GameObjects, Physics } from 'phaser'
+import { Physics } from 'phaser'
 import {
   IPocketDroppedItemSprites,
   INumberCoords,
   ITilesCoords,
   PocketItemDudeData,
 } from '@/types/main-types'
-import { CheckSymMapElements } from '@/types/enums'
+import {
+  CheckSymMapElements,
+  SceneLevelZIndexes as zIndexes,
+} from '@/types/enums'
 
 import { PocketItem } from '@/classes/pocket-item'
 import { MainEngine } from '@/classes/main-engine'
@@ -18,8 +21,6 @@ export class DroppedItemsSystem {
   _group: Physics.Arcade.Group
   _key: string
   _levels: MapSceneLevels
-
-  _depthLayer: number = 1
 
   constructor(
     engine: MainEngine, groundLevels: MapSceneLevels, textureKey: string) {
@@ -95,10 +96,10 @@ export class DroppedItemsSystem {
 
     items.forEach((item) => {
       item.setActive(false)
-      item.setDepth(this._depthLayer)
+      item.setDepth(zIndexes.pocketItemLevel)
     })
     items[items.length - 1].setActive(true)
-    items[items.length - 1].setDepth(this._depthLayer + 1)
+    items[items.length - 1].setDepth(zIndexes.pocketItemLevel + 1)
   }
 
   // drop some item on ground
@@ -118,7 +119,7 @@ export class DroppedItemsSystem {
     child.setOrigin(0.5, 0.5)
     child.setScale(scaleSize)
     child.setSize(item.sizes.x, item.sizes.y)
-    child.setDepth(this._depthLayer)
+    child.setDepth(zIndexes.pocketItemLevel)
     child.rotation = item.droppedRotete
 
     const coordsStr = this.getStringNameForCoords(checkedCoords)

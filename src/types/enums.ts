@@ -89,3 +89,15 @@ export enum EnvStaticElements {
   chest = 54,
   spawn = 13,
 }
+
+export enum SceneLevelZIndexes {
+  dudeLevel = 2,
+  pocketItemLevel = 3,// need two levels
+  tipLevel = 5,
+  progressBarLevel = 6,
+}
+
+export enum ProgressBarTypes {
+  usual,
+  swordSwing,
+}

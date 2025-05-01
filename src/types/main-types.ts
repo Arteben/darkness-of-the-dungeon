@@ -9,7 +9,7 @@ import {
   GamePages,
   GameStateSettings,
   DudeAnimations,
-  PocketItems as PocketItemsEnum
+  ProgressBarTypes,
 } from '@/types/enums'
 
 
@@ -170,9 +170,25 @@ export type PocketItemNull = PocketItem | null
 
 export type NullOrGameStateSettings = GameStateSettings[] | null
 
-export interface EnvStaticElementData {
+export interface IEnvStaticElementData {
   coords: ITilesCoords
   element: MapStaticElement
 }
 
-export type EnvElementNullData = EnvStaticElementData | null
+export type EnvElementNullData = IEnvStaticElementData | null
+
+export interface IProgressBarData {
+  position: INumberCoords
+  progress: number
+  type: ProgressBarTypes
+}
+
+export type ProgressBarNullData = IProgressBarData | null
+
+export interface IDudeProgressBarValues {
+  // its persent (0-100)
+  progress: number
+  type: ProgressBarTypes
+}
+
+export type DudeProgresBarNullValues = IDudeProgressBarValues | null
