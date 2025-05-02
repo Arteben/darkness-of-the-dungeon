@@ -35,7 +35,8 @@ export class MapSceneLevels {
     '#248': 59, '#249': 44, '#250': 43, '#251': 19, '#252': 28, '#253': 29, '#254': 27,
   }
   _tileIndexes: IMapTilesIndexes = {
-    'D': 55, 't': 0, 'tt': 1, 'k': 54, 'B': 13, 'A': 50, 'l': 48, 'p': 47
+    'D': 55, 't': 0, 'tt': 1, 'k': 54, 'B': 13, 'A': 50,
+    'l': 49, 'l1': 48, 'l2': 49, 'l3': 20, 'l4': 28, 'p': 47
   }
   _tileBackInds: IMapTilesIndexes = {
     '0': 0
@@ -47,6 +48,7 @@ export class MapSceneLevels {
   groundLayer!: Phaser.Tilemaps.TilemapLayer | null
   ladderLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
+  boxLayer!: Phaser.Tilemaps.TilemapLayer | null
 
   tileWidth = 32
 
@@ -96,8 +98,11 @@ export class MapSceneLevels {
       ['t'], symbolMap, 'ladderLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
 
     this.envLayer = this.createLayer(
-      ['D', 'k', 'B', 'w', 'A', 'l', 'p'],
+      ['D', 'k', 'B', 'A', 'p'],
       symbolMap, 'envLayer', TileSetModificators.none, tls.env, this._tileIndexes, map)
+    this.boxLayer = this.createLayer(
+      ['l'],
+      symbolMap, 'boxLayer', TileSetModificators.boxes, tls.env, this._tileIndexes, map)
   }
 
   createLayer(
@@ -133,16 +138,20 @@ export class MapSceneLevels {
           if (!this.notNullsMapElement(symMap, i, j)) return false
 
           if (symMap[i][j] == element) {
-            if (modificator == TileSetModificators.ground) {
-              this.setElementForGroundMod(i, j, element, symMap, indexesMap, nums)
+            switch (modificator) {
+              case TileSetModificators.ground:
+                this.setElementForGroundMod(i, j, element, symMap, indexesMap, nums)
+                break
+              // for stairs, draw begin for ladders
+              case TileSetModificators.ladders:
+                this.setElementForLadderMod(i, j, element, symMap, indexesMap, nums)
+                break
+              case TileSetModificators.boxes:
+                this.setElementForBoxesMod(i, j, element, indexesMap, nums)
+                break
+              default:
+                indexesMap[i][j] = nums[element]
             }
-            // for stairs, draw begin for ladders
-            else if (modificator == TileSetModificators.ladders) {
-              this.setElementForLadderMod(i, j, element, symMap, indexesMap, nums)
-            } else {
-              indexesMap[i][j] = nums[element]
-            }
-
             // stop search for these symbols
             return true
           } else {
@@ -167,6 +176,26 @@ export class MapSceneLevels {
   ) {
     if (this.notNullsMapElement(symMap, i - 1, j) && symMap[i - 1][j] == element && tileNums[element + element]) {
       map[i][j] = tileNums[element + element]
+    } else {
+      map[i][j] = tileNums[element]
+    }
+  }
+
+  setElementForBoxesMod(
+    i: number,
+    j: number,
+    element: string,
+    map: Array<Array<number>>,
+    tileNums: IMapTilesIndexes
+  ) {
+
+    const max = Math.floor(4)
+    const min = Math.ceil(1)
+    const newElement =
+          element + Math.floor(Math.random() * (Math.floor(max) - min + 1) + min)
+
+    if (tileNums[newElement]) {
+      map[i][j] = tileNums[newElement]
     } else {
       map[i][j] = tileNums[element]
     }

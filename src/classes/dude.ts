@@ -592,7 +592,9 @@ export class Dude {
 
   // updating overlaps with evn elements(torches, doors and other)
   overlapEnvElements(plCords: ITilesCoords) {
-    const envElementTile = this._levels.envLayer?.getTileAt(plCords.x, plCords.y)
+    const levels = this._levels
+    const envElementTile = levels.envLayer?.getTileAt(plCords.x, plCords.y)
+                                  || levels.boxLayer?.getTileAt(plCords.x, plCords.y)
     const element = envElementTile ? envStaticElementTypes[envElementTile.index] : null
     if (element == null || !element.isInteractive) {
       this.envCollisionElementData = null

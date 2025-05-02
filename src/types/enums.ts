@@ -57,7 +57,8 @@ export enum DudeClimbingTypes {
 export enum TileSetModificators {
   none,
   ladders,
-  ground
+  ground,
+  boxes,
 }
 
 export enum DudeAnimations {
@@ -84,6 +85,9 @@ export enum PocketItems {
 
 export enum EnvStaticElements {
   box = 48,
+  bigBox = 49,
+  barrels = 20,
+  bigBarrel = 28,
   torch = 50,
   door = 55,
   chest = 54,

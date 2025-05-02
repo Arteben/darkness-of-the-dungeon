@@ -10,11 +10,16 @@ import {
 
 import { MapStaticElement } from '@/classes/map-static-element'
 
+const boxes = new MapStaticElement(
+  168,
+  () => { console.log('you search in box!')},
+)
+
 export const envStaticElementTypes: IEnvElementTypes = {
-  [EnvStaticElements.box]: new MapStaticElement(
-    168,
-    () => { console.log('you search in box!')},
-  ),
+  [EnvStaticElements.box]: boxes,
+  [EnvStaticElements.bigBox]: boxes,
+  [EnvStaticElements.barrels]: boxes,
+  [EnvStaticElements.bigBarrel]: boxes,
   [EnvStaticElements.chest]: new MapStaticElement(
     168,
     () => { console.log('you search in chest!')},
