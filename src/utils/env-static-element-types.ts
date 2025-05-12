@@ -1,36 +1,51 @@
-
 import {
   EnvStaticElements,
   PocketItems,
 } from '@/types/enums'
 
 import {
-  IEnvElementTypes
+  IEnvElementTypes,
+  DroppedItemsList,
+  StaticEnvElementCallback,
 } from '@/types/main-types'
 
-import { MapStaticElement } from '@/classes/map-static-element'
+import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 
-const boxes = new MapStaticElement(
-  168,
-  () => { console.log('you search in box!')},
-)
+export const createListOfStaticElements = (tileLayer: Phaser.Tilemaps.TilemapLayer) => {
 
-export const envStaticElementTypes: IEnvElementTypes = {
-  [EnvStaticElements.box]: boxes,
-  [EnvStaticElements.bigBox]: boxes,
-  [EnvStaticElements.barrels]: boxes,
-  [EnvStaticElements.bigBarrel]: boxes,
-  [EnvStaticElements.chest]: new MapStaticElement(
-    168,
-    () => { console.log('you search in chest!')},
-  ),
-  [EnvStaticElements.door]: new MapStaticElement(
-    15,
-    () => { console.log('you open the door')},
-    PocketItems.key,
-  ),
-  [EnvStaticElements.torch]: new MapStaticElement(
-    170,
-    () => { console.log('you create a fire!')},
-  ),
+  const createUsualBoxesElement = (list: DroppedItemsList = []) => {
+    return new BoxStaticElement(tileLayer, 168, list)
+  }
+
+  const createStaticElementWithLayer = (
+    tip: number,
+    callback: StaticEnvElementCallback,
+    pocketItemType: PocketItems = PocketItems.hand,
+  ) => {
+    return new MapStaticElement(
+      tileLayer,
+      tip,
+      callback,
+      pocketItemType,
+    )
+  }
+
+  const boxes = createUsualBoxesElement()
+
+  return {
+    [EnvStaticElements.box]: boxes,
+    [EnvStaticElements.bigBox]: boxes,
+    [EnvStaticElements.barrels]: boxes,
+    [EnvStaticElements.bigBarrel]: boxes,
+    [EnvStaticElements.chest]: createUsualBoxesElement(),
+    [EnvStaticElements.door]: createStaticElementWithLayer(
+      15,
+      () => { console.log('you open the door') },
+      PocketItems.key,
+    ),
+    [EnvStaticElements.torch]: createStaticElementWithLayer(
+      170,
+      () => { console.log('you create a fire!') },
+    ),
+  } as IEnvElementTypes
 }

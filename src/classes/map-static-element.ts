@@ -1,28 +1,32 @@
 import { PocketItems } from '@/types/enums'
-import { ITilesCoords } from '@/types/main-types'
+import {
+  ITilesCoords,
+  DroppedItemsList,
+  StaticEnvElementCallback,
+} from '@/types/main-types'
 
 import { Dude } from '@/classes/dude'
-
-type callbackFunc = (a: ITilesCoords, b: Dude) => void
 
 export class MapStaticElement {
   toolType: PocketItems
   iconTip: number
   // @ts-ignore
   isInteractive: boolean
-  _useCallback: callbackFunc
+  _useCallback: StaticEnvElementCallback
+  _tileLayer: Phaser.Tilemaps.TilemapLayer
 
 
   constructor(
+    layer: Phaser.Tilemaps.TilemapLayer,
     tip: number,
-    callback: (a: ITilesCoords, b: Dude) => void,
+    callback: StaticEnvElementCallback,
     pocketItemType: PocketItems = PocketItems.hand,
-    isActive: boolean = true,
   ) {
+    this._tileLayer = layer
     this.iconTip = tip
     this._useCallback = callback
     this.toolType = pocketItemType
-    this.setInteractive(isActive)
+    this.setInteractive(true)
   }
 
   setInteractive(flag: boolean) {
@@ -35,5 +39,12 @@ export class MapStaticElement {
 
   isCorrectToolType(type: PocketItems) {
     return this.toolType == type
+  }
+}
+
+export class BoxStaticElement extends MapStaticElement {
+  constructor(layer: Phaser.Tilemaps.TilemapLayer, tip: number, list: DroppedItemsList) {
+    const callback = (coords: ITilesCoords, char: Dude) => { console.log('special class for search box!!!!!!!!', coords, Dude) }
+    super(layer, tip, callback)
   }
 }

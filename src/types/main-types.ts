@@ -3,6 +3,7 @@ import { GameState } from '@/classes/game-state'
 import { PocketItem } from '@/classes/pocket-item'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { MapStaticElement } from '@/classes/map-static-element'
+import { Dude } from '@/classes/dude'
 
 import {
   Languages,
@@ -10,6 +11,7 @@ import {
   GameStateSettings,
   DudeAnimations,
   ProgressBarTypes,
+  PocketItems as DroppedItemsEnum,
 } from '@/types/enums'
 
 
@@ -192,3 +194,7 @@ export interface IDudeProgressBarValues {
 }
 
 export type DudeProgresBarNullValues = IDudeProgressBarValues | null
+
+export type DroppedItemsList = DroppedItemsEnum[]
+
+export type StaticEnvElementCallback = (a: ITilesCoords, b: Dude) => void

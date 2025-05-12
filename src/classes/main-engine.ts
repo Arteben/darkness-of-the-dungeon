@@ -24,6 +24,7 @@ import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
+import { createListOfStaticElements } from '@/utils/env-static-element-types'
 //
 import { pocketItemTypes } from '@/utils/drop-item-types'
 
@@ -80,10 +81,14 @@ export class MainEngine extends Scene {
     droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
     droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
 
+    const listOfStaticElements = createListOfStaticElements(mapLevels.boxLayer as Phaser.Tilemaps.TilemapLayer)
+
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
       'dudeFrameSet',
-      { width: 32, height: 45 } as IResolution)
+      { width: 32, height: 45 } as IResolution,
+      listOfStaticElements,
+    )
   }
 
   update(time: number): void {

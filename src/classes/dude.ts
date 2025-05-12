@@ -7,7 +7,6 @@ import { DroppedItemsSystem as DropItems, DroppedItemsSystem } from '@/classes/d
 import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
-import { envStaticElementTypes } from '@/utils/env-static-element-types'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
 
 import { isAllNull } from '@/utils/usefull'
@@ -24,8 +23,8 @@ import {
   PocketItemDudeData,
   ISpriteNumsForCombinedTip,
   EnvElementNullData,
-  NumberNull,
   DudeProgresBarNullValues,
+  IEnvElementTypes,
 } from '@/types/main-types'
 
 import {
@@ -49,6 +48,7 @@ export class Dude {
   _dropItems: DroppedItemsSystem
   _slotSystem: PocketSlotsSystem
   _progressBar: DudeProgressBar
+  _staticElementsList: IEnvElementTypes
 
   _tilePointer: Phaser.GameObjects.Arc | null = null
 
@@ -261,7 +261,8 @@ export class Dude {
     tips: IconTips,
     dropItems: DropItems,
     slotSystem: PocketSlotsSystem,
-    keyAnimFrameSet: string, frameResolution: IResolution) {
+    keyAnimFrameSet: string, frameResolution: IResolution,
+    staticElementsList: IEnvElementTypes) {
 
     this._levels = mapLevels
     this._camera = camera
@@ -281,6 +282,7 @@ export class Dude {
     }
 
     this._frameResolution = frameResolution
+    this._staticElementsList = staticElementsList
 
     // set animation frame size for our levels
     // magic numbers
@@ -595,7 +597,7 @@ export class Dude {
     const levels = this._levels
     const envElementTile = levels.envLayer?.getTileAt(plCords.x, plCords.y)
                                   || levels.boxLayer?.getTileAt(plCords.x, plCords.y)
-    const element = envElementTile ? envStaticElementTypes[envElementTile.index] : null
+    const element = envElementTile ? this._staticElementsList[envElementTile.index] : null
     if (element == null || !element.isInteractive) {
       this.envCollisionElementData = null
       return
