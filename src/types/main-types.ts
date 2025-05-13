@@ -11,7 +11,6 @@ import {
   GameStateSettings,
   DudeAnimations,
   ProgressBarTypes,
-  PocketItems as DroppedItemsEnum,
 } from '@/types/enums'
 
 
@@ -195,6 +194,6 @@ export interface IDudeProgressBarValues {
 
 export type DudeProgresBarNullValues = IDudeProgressBarValues | null
 
-export type DroppedItemsList = DroppedItemsEnum[]
+export type DroppedItemsList = PocketItem[]
 
 export type StaticEnvElementCallback = (a: ITilesCoords, b: Dude) => void

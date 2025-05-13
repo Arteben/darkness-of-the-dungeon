@@ -1,8 +1,9 @@
-import { PocketItems } from '@/types/enums'
-
 import { EventBus } from '@/classes/event-bus'
 
-import { getTOutPromise } from '@/utils/usefull'
+import {
+  getRandomIntNumber,
+  getTOutPromise,
+} from '@/utils/usefull'
 
 import {
   ITilesCoords,
@@ -10,14 +11,18 @@ import {
   StaticEnvElementCallback,
 } from '@/types/main-types'
 
-import { BusEventsList, ProgressBarTypes } from '@/types/enums'
+import {
+  BusEventsList,
+  ProgressBarTypes,
+  PocketItemsEnum,
+} from '@/types/enums'
 
 import { Dude } from '@/classes/dude'
 
 const filledBarKey = 'filled!'
 
 export class MapStaticElement {
-  toolType: PocketItems
+  toolType: PocketItemsEnum
   iconTip: number
   // @ts-ignore
   isInteractive: boolean
@@ -34,7 +39,7 @@ export class MapStaticElement {
     tip: number,
     callback: StaticEnvElementCallback,
     time: number = 1,
-    pocketItemType: PocketItems = PocketItems.hand,
+    pocketItemType: PocketItemsEnum = PocketItemsEnum.hand,
   ) {
     this._tileLayer = layer
     this.iconTip = tip
@@ -70,11 +75,11 @@ export class MapStaticElement {
         if (resultBarFill == filledBarKey) {
           this._useCallback(coords, char)
         }
-      } catch (err) {}
+      } catch (err) { }
     })()
   }
 
-  isCorrectToolType(type: PocketItems) {
+  isCorrectToolType(type: PocketItemsEnum) {
     return this.toolType == type
   }
 
@@ -110,7 +115,12 @@ export class BoxStaticElement extends MapStaticElement {
     time: number,
     list: DroppedItemsList,
   ) {
-    const callback = (coords: ITilesCoords, char: Dude) => { console.log('special class for search box!!!!!!!!', coords, Dude) }
+    const callback = (coords: ITilesCoords, char: Dude) => {
+      const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
+      char._dropItems.drop(coords, droppedElement)
+      this.setInteractive(false)
+      console.log('set interactive false for this ', this)
+    }
     super(layer, tip, callback, time)
   }
 }

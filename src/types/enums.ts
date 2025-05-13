@@ -77,7 +77,7 @@ export enum CheckSymMapElements {
   wall,
 }
 
-export enum PocketItems {
+export enum PocketItemsEnum {
   hand = 21,
   sword = 82,
   key = 185,

@@ -34,7 +34,7 @@ import {
   DudeStates,
   DudeAnimations,
   CheckSymMapElements,
-  PocketItems as PocketItemsEnums,
+  PocketItemsEnum,
   SceneLevelZIndexes,
   ProgressBarTypes,
   BusEventsList,
@@ -799,7 +799,7 @@ export class Dude {
     // 38 - arrows, hand - 21
     const combSprites: ISpriteNumsForCombinedTip = {
       main: (+data.type),
-      rightBottom: PocketItemsEnums.hand,
+      rightBottom: PocketItemsEnum.hand,
       rightTop: undefined
     }
     if (data.cycled) combSprites.rightTop = 38

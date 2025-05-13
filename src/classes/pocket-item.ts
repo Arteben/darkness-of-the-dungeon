@@ -1,5 +1,5 @@
 import { IScreenSizes } from '@/types/main-types'
-import { PocketItems } from '@/types/enums'
+import { PocketItemsEnum } from '@/types/enums'
 
 import { Dude } from './dude'
 
@@ -7,7 +7,7 @@ type callbackType = (a: Dude) => void
 
 export class PocketItem {
 
-  type: PocketItems
+  type: PocketItemsEnum
   sizes: IScreenSizes
   isBig: boolean
   isDropped: boolean
@@ -15,7 +15,7 @@ export class PocketItem {
   _useCallback: callbackType
 
   constructor(
-    type: PocketItems,
+    type: PocketItemsEnum,
     useCallback: callbackType,
     rotates: number = 0,
     isBig: boolean = false,

@@ -1,6 +1,6 @@
 import {
   EnvStaticElements,
-  PocketItems,
+  PocketItemsEnum,
 } from '@/types/enums'
 
 import {
@@ -11,11 +11,13 @@ import {
 
 import { getRandomIntNumber } from '@/utils/usefull'
 
+import { boxDroppedItems } from '@/utils/drop-item-types'
+
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 
 export const createListOfStaticElements = (tileLayer: Phaser.Tilemaps.TilemapLayer) => {
 
-  const createUsualBoxesElement = (list: DroppedItemsList = []) => {
+  const createUsualBoxesElement = (list: DroppedItemsList = boxDroppedItems) => {
     const time = getRandomIntNumber(2, 5)
     return new BoxStaticElement(tileLayer, 168, time, list)
   }
@@ -24,7 +26,7 @@ export const createListOfStaticElements = (tileLayer: Phaser.Tilemaps.TilemapLay
     tip: number,
     callback: StaticEnvElementCallback,
     time: number = 1,
-    pocketItemType: PocketItems = PocketItems.hand,
+    pocketItemType: PocketItemsEnum = PocketItemsEnum.hand,
   ) => {
     return new MapStaticElement(
       tileLayer,
@@ -35,19 +37,17 @@ export const createListOfStaticElements = (tileLayer: Phaser.Tilemaps.TilemapLay
     )
   }
 
-  const boxes = createUsualBoxesElement()
-
   return {
-    [EnvStaticElements.box]: boxes,
-    [EnvStaticElements.bigBox]: boxes,
-    [EnvStaticElements.barrels]: boxes,
-    [EnvStaticElements.bigBarrel]: boxes,
+    [EnvStaticElements.box]: createUsualBoxesElement(),
+    [EnvStaticElements.bigBox]: createUsualBoxesElement(),
+    [EnvStaticElements.barrels]: createUsualBoxesElement(),
+    [EnvStaticElements.bigBarrel]: createUsualBoxesElement(),
     [EnvStaticElements.chest]: createUsualBoxesElement(),
     [EnvStaticElements.door]: createStaticElementWithLayer(
       15,
       () => { console.log('you open the door') },
       2,
-      PocketItems.key,
+      PocketItemsEnum.key,
     ),
     [EnvStaticElements.torch]: createStaticElementWithLayer(
       170,

@@ -8,7 +8,7 @@ import {
   ILoadedTileSets,
 } from '@/types/main-types'
 
-import { PocketItems as PocketItemsEnums } from '@/types/enums'
+import { PocketItemsEnum } from '@/types/enums'
 
 // assets
 import tilesRaw from '@assets/castle-tiles.png'
@@ -26,8 +26,6 @@ import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
 import { createListOfStaticElements } from '@/utils/env-static-element-types'
 //
-import { pocketItemTypes } from '@/utils/drop-item-types'
-
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
@@ -73,13 +71,6 @@ export class MainEngine extends Scene {
 
     // +++++ dropped Items +++++++++
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
-    // 5, 41
-    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
-    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.key])
-    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
-    droppedItems.drop({x: 5, y: 36}, pocketItemTypes[PocketItemsEnums.apple])
-    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
-    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
 
     const listOfStaticElements = createListOfStaticElements(mapLevels.boxLayer as Phaser.Tilemaps.TilemapLayer)
 

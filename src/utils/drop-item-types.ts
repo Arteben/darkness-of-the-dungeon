@@ -1,30 +1,34 @@
 
-import { PocketItems as PocketItemsEnums } from '@/types/enums'
-import { IPocketItemTypes } from '@/types/main-types'
+import { PocketItemsEnum } from '@/types/enums'
+import {
+  IPocketItemTypes,
+  DroppedItemsList,
+} from '@/types/main-types'
+
 import { PocketItem } from '@/classes/pocket-item'
 import { Dude } from '@/classes/dude'
 
 export const pocketItemTypes: IPocketItemTypes = {
-  [PocketItemsEnums.apple]: new PocketItem(
-    PocketItemsEnums.apple,
+  [PocketItemsEnum.apple]: new PocketItem(
+    PocketItemsEnum.apple,
     () => { console.log('you used apple!') },
   ),
-  [PocketItemsEnums.key]: new PocketItem(
-    PocketItemsEnums.key,
+  [PocketItemsEnum.key]: new PocketItem(
+    PocketItemsEnum.key,
     () => { console.log('you used the key!') },
     0.8,
     false,
     { x: 10, y: 10 },
   ),
-  [PocketItemsEnums.sword]: new PocketItem(
-    PocketItemsEnums.sword,
+  [PocketItemsEnum.sword]: new PocketItem(
+    PocketItemsEnum.sword,
     () => { console.log('you used sword!') },
     0.9,
     true,
     { x: 10, y: 10 },
   ),
-  [PocketItemsEnums.hand]: new PocketItem(
-    PocketItemsEnums.hand,
+  [PocketItemsEnum.hand]: new PocketItem(
+    PocketItemsEnum.hand,
     function (dude: Dude) {
       // @ts-ignore
       const that = this as PocketItem
@@ -49,3 +53,9 @@ export const pocketItemTypes: IPocketItemTypes = {
     false,
   ),
 }
+
+export const boxDroppedItems: DroppedItemsList = [
+  pocketItemTypes[PocketItemsEnum.key],
+  pocketItemTypes[PocketItemsEnum.apple],
+  pocketItemTypes[PocketItemsEnum.sword],
+]
