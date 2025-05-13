@@ -8,3 +8,7 @@ export const getTOutPromise = function (counter: number) {
     setTimeout(() => resolve('timeout is ended!'), counter)
   })
 }
+
+export const getRandomIntNumber = function (min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}

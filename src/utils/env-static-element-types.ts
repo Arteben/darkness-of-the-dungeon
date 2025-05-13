@@ -9,23 +9,28 @@ import {
   StaticEnvElementCallback,
 } from '@/types/main-types'
 
+import { getRandomIntNumber } from '@/utils/usefull'
+
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 
 export const createListOfStaticElements = (tileLayer: Phaser.Tilemaps.TilemapLayer) => {
 
   const createUsualBoxesElement = (list: DroppedItemsList = []) => {
-    return new BoxStaticElement(tileLayer, 168, list)
+    const time = getRandomIntNumber(2, 5)
+    return new BoxStaticElement(tileLayer, 168, time, list)
   }
 
   const createStaticElementWithLayer = (
     tip: number,
     callback: StaticEnvElementCallback,
+    time: number = 1,
     pocketItemType: PocketItems = PocketItems.hand,
   ) => {
     return new MapStaticElement(
       tileLayer,
       tip,
       callback,
+      time,
       pocketItemType,
     )
   }
@@ -41,6 +46,7 @@ export const createListOfStaticElements = (tileLayer: Phaser.Tilemaps.TilemapLay
     [EnvStaticElements.door]: createStaticElementWithLayer(
       15,
       () => { console.log('you open the door') },
+      2,
       PocketItems.key,
     ),
     [EnvStaticElements.torch]: createStaticElementWithLayer(

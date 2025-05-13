@@ -20,6 +20,7 @@ export enum BusEventsList {
   selectPocketItem,
   usePocketItem,
   trushPocketItem,
+  charTwitching,
 }
 
 export enum GameStateSettings {

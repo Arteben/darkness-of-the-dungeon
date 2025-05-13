@@ -1,5 +1,7 @@
 import { GameObjects, Types, Physics } from 'phaser'
 
+import { EventBus } from '@/classes/event-bus'
+
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
@@ -35,6 +37,7 @@ import {
   PocketItems as PocketItemsEnums,
   SceneLevelZIndexes,
   ProgressBarTypes,
+  BusEventsList,
 } from '@/types/enums'
 
 export class Dude {
@@ -420,6 +423,13 @@ export class Dude {
   dudeMoveStateUpdating(newState: DudeStates) {
     if (newState == this._dudeMoveState) return
 
+    if (this._dudeMoveState == DudeStates.idle && newState != DudeStates.idle) {
+      this._tips.hideTip()
+      if (this.envCollisionElementData && this.envCollisionElementData.element) {
+        EventBus.Dispatch(BusEventsList[BusEventsList.charTwitching], this.envCollisionElementData.element)
+      }
+    }
+
     switch (newState) {
       case DudeStates.idle:
         this.climbingType = DudeClimbingTypes.stand
@@ -430,25 +440,21 @@ export class Dude {
         this.calcsForDropAvailable()
         break
       case DudeStates.walk:
-        this._tips.hideTip()
         this.dudeAnimationKey = {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
         break
       case DudeStates.run:
-        this._tips.hideTip()
         this.dudeAnimationKey = {
           key: DudeAnimations.run, isIgnoreIf: true
         }
         break
       case DudeStates.climbing:
-        this._tips.hideTip()
         const coords = this.getTilePlayerCoords()
         this._playerBody.x = coords.x * this._levels.tileWidth
         this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
-        this._tips.hideTip()
         this._slotSystem.setDudeDropAvailable(false)
     }
 
