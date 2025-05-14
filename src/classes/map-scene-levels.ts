@@ -8,6 +8,8 @@ import {
 } from '@/types/main-types'
 import { TileSetModificators, CheckSymMapElements } from '@/types/enums'
 
+import { getRandomIntNumber } from '@/utils/usefull'
+
 // import DudeSet from '@assets/dude.png'
 
 export class MapSceneLevels {
@@ -48,7 +50,6 @@ export class MapSceneLevels {
   groundLayer!: Phaser.Tilemaps.TilemapLayer | null
   ladderLayer!: Phaser.Tilemaps.TilemapLayer | null
   envLayer!: Phaser.Tilemaps.TilemapLayer | null
-  boxLayer!: Phaser.Tilemaps.TilemapLayer | null
 
   tileWidth = 32
 
@@ -98,11 +99,8 @@ export class MapSceneLevels {
       ['t'], symbolMap, 'ladderLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
 
     this.envLayer = this.createLayer(
-      ['D', 'k', 'B', 'A', 'p'],
-      symbolMap, 'envLayer', TileSetModificators.none, tls.env, this._tileIndexes, map)
-    this.boxLayer = this.createLayer(
-      ['l'],
-      symbolMap, 'boxLayer', TileSetModificators.boxes, tls.env, this._tileIndexes, map)
+      ['D', 'k', 'B', 'A', 'p', 'l'],
+      symbolMap, 'envLayer', TileSetModificators.envWithBoxes, tls.env, this._tileIndexes, map)
   }
 
   createLayer(
@@ -146,8 +144,8 @@ export class MapSceneLevels {
               case TileSetModificators.ladders:
                 this.setElementForLadderMod(i, j, element, symMap, indexesMap, nums)
                 break
-              case TileSetModificators.boxes:
-                this.setElementForBoxesMod(i, j, element, indexesMap, nums)
+              case TileSetModificators.envWithBoxes:
+                this.setEnvElementsWithBoxesMod(i, j, element, indexesMap, nums)
                 break
               default:
                 indexesMap[i][j] = nums[element]
@@ -181,21 +179,15 @@ export class MapSceneLevels {
     }
   }
 
-  setElementForBoxesMod(
+  setEnvElementsWithBoxesMod(
     i: number,
     j: number,
     element: string,
     map: Array<Array<number>>,
     tileNums: IMapTilesIndexes
   ) {
-
-    const max = Math.floor(4)
-    const min = Math.ceil(1)
-    const newElement =
-          element + Math.floor(Math.random() * (Math.floor(max) - min + 1) + min)
-
-    if (tileNums[newElement]) {
-      map[i][j] = tileNums[newElement]
+    if (element == 'l') {
+      map[i][j] = tileNums[element + getRandomIntNumber(1, 4)]
     } else {
       map[i][j] = tileNums[element]
     }

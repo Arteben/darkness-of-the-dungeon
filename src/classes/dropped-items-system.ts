@@ -9,6 +9,7 @@ import {
   CheckSymMapElements,
   SceneLevelZIndexes as zIndexes,
 } from '@/types/enums'
+import { getZerosStringFromNum } from '@/utils/usefull'
 
 import { PocketItem } from '@/classes/pocket-item'
 import { MainEngine } from '@/classes/main-engine'
@@ -77,14 +78,7 @@ export class DroppedItemsSystem {
   }
 
   getStringNameForCoords(coords: ITilesCoords) {
-    const getStringFromNum = (num: number): string => {
-      const powerCount = 4
-      const numString = String(num)
-      const zeroCount = powerCount - numString.length
-      return new Array(zeroCount + 1).join('0') + numString
-    }
-
-    return getStringFromNum(coords.x) + getStringFromNum(coords.y)
+    return getZerosStringFromNum(coords.x) + getZerosStringFromNum(coords.y)
   }
 
   makeActiveAndUpShowOnlyLastItem(coordsStr: string) {

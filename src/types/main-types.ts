@@ -2,7 +2,7 @@ import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
 import { PocketItem } from '@/classes/pocket-item'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
-import { MapStaticElement } from '@/classes/map-static-element'
+import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 import { Dude } from '@/classes/dude'
 
 import {
@@ -156,7 +156,11 @@ export interface IPocketItemTypes {
 }
 
 export interface IEnvElementTypes {
-  [index: string]: MapStaticElement
+  [index: string]: (() => MapStaticElement) | (() => BoxStaticElement)
+}
+
+export interface IListOFEnvStaticElements {
+  [index: string]: MapStaticElement | BoxStaticElement
 }
 
 export interface ISpriteNumsForCombinedTip {

@@ -117,7 +117,7 @@ export class BoxStaticElement extends MapStaticElement {
   ) {
     const callback = (coords: ITilesCoords, char: Dude) => {
       const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
-      char._dropItems.drop(coords, droppedElement)
+      char.dropItems.drop(coords, droppedElement)
       this.setInteractive(false)
       console.log('set interactive false for this ', this)
     }

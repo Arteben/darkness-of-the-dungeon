@@ -37,12 +37,12 @@ export const pocketItemTypes: IPocketItemTypes = {
       if (envData && envData.element.isCorrectToolType(that.type)) {
         envData.element.use(envData.coords, dude)
       } else if (pocketItemData) {
-        const pickupItemType = dude._dropItems.pickupItem(pocketItemData.coords)
+        const pickupItemType = dude.dropItems.pickupItem(pocketItemData.coords)
         if (pickupItemType == null) return
 
         dude._slotSystem.addItem(pocketItemData.type)
 
-        dude.pocketItemCollisionData = dude._dropItems.getItemDataForActiveItem(pocketItemData.coords)
+        dude.pocketItemCollisionData = dude.dropItems.getItemDataForActiveItem(pocketItemData.coords)
       } else {
         console.warn('You want to do with you hand, but there is nothing!')
       }

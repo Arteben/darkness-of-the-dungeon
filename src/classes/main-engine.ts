@@ -8,8 +8,6 @@ import {
   ILoadedTileSets,
 } from '@/types/main-types'
 
-import { PocketItemsEnum } from '@/types/enums'
-
 // assets
 import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
@@ -24,7 +22,7 @@ import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
-import { createListOfStaticElements } from '@/utils/env-static-element-types'
+import { EnvStaticMapElements } from '@/utils/env-static-map-elements'
 //
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
@@ -72,7 +70,8 @@ export class MainEngine extends Scene {
     // +++++ dropped Items +++++++++
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
 
-    const listOfStaticElements = createListOfStaticElements(mapLevels.boxLayer as Phaser.Tilemaps.TilemapLayer)
+    const listOfStaticElements =
+      new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,

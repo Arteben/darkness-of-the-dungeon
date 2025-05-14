@@ -10,6 +10,7 @@ import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
+import { EnvStaticMapElements } from '@/utils/env-static-map-elements'
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -26,7 +27,7 @@ import {
   ISpriteNumsForCombinedTip,
   EnvElementNullData,
   DudeProgresBarNullValues,
-  IEnvElementTypes,
+  IListOFEnvStaticElements,
 } from '@/types/main-types'
 
 import {
@@ -48,10 +49,10 @@ export class Dude {
   _levels: MapSceneLevels
   _camera: SceneCamera
   _tips: IconTips
-  _dropItems: DroppedItemsSystem
+  dropItems: DroppedItemsSystem
   _slotSystem: PocketSlotsSystem
   _progressBar: DudeProgressBar
-  _staticElementsList: IEnvElementTypes
+  _staticElementsList: IListOFEnvStaticElements
 
   _tilePointer: Phaser.GameObjects.Arc | null = null
 
@@ -265,17 +266,17 @@ export class Dude {
     dropItems: DropItems,
     slotSystem: PocketSlotsSystem,
     keyAnimFrameSet: string, frameResolution: IResolution,
-    staticElementsList: IEnvElementTypes) {
+    staticElementsList: IListOFEnvStaticElements) {
 
     this._levels = mapLevels
     this._camera = camera
-    this._dropItems = dropItems
+    this.dropItems = dropItems
     this._tips = tips
     this._slotSystem = slotSystem
     // set function for drop elements
     this._slotSystem.dropFunc = (item: PocketItem) => {
       const plCrds = this.getTilePlayerCoords()
-      return this._dropItems.drop(plCrds, item)
+      return this.dropItems.drop(plCrds, item)
     }
     this._slotSystem.useFunc = (item: PocketItem) => {
       item.use(this)
@@ -340,8 +341,8 @@ export class Dude {
     this.progressBarValues = null
 
     //create overlap with droppedItems for pick up them
-    if (this._dropItems._group) {
-      engine.physics.add.overlap(this._playerBody, this._dropItems._group,
+    if (this.dropItems._group) {
+      engine.physics.add.overlap(this._playerBody, this.dropItems._group,
         (prPlayer: overlapCallbackParams, prItem: overlapCallbackParams) => {
           this.overlapDudeDropItemsCallbackUpdating(
             prItem as Types.Physics.Arcade.SpriteWithDynamicBody,
@@ -602,9 +603,15 @@ export class Dude {
   overlapEnvElements(plCords: ITilesCoords) {
     const levels = this._levels
     const envElementTile = levels.envLayer?.getTileAt(plCords.x, plCords.y)
-                                  || levels.boxLayer?.getTileAt(plCords.x, plCords.y)
-    const element = envElementTile ? this._staticElementsList[envElementTile.index] : null
-    if (element == null || !element.isInteractive) {
+    if (!envElementTile) {
+      this.envCollisionElementData = null
+      return
+    }
+
+    const element = this._staticElementsList[
+                  EnvStaticMapElements.GetIndexForStaticElement(String(envElementTile.index), plCords)]
+
+    if (!element || !element.isInteractive) {
       this.envCollisionElementData = null
       return
     }
@@ -621,7 +628,7 @@ export class Dude {
     droppedItem: Types.Physics.Arcade.SpriteWithDynamicBody,
   ) {
     const plCrds = this.getTilePlayerCoords()
-    const inTile = this._dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
+    const inTile = this.dropItems.checkItemInTile(plCrds, droppedItem.frame.name)
 
     if (!inTile) {
       this.pocketItemCollisionData = null
@@ -629,7 +636,7 @@ export class Dude {
     }
 
     if (droppedItem.active) {
-      this.pocketItemCollisionData = this._dropItems.getItemDataForActiveItem(plCrds)
+      this.pocketItemCollisionData = this.dropItems.getItemDataForActiveItem(plCrds)
     }
   }
 
@@ -787,7 +794,7 @@ export class Dude {
 
   itarateThings() {
     if (this.pocketItemCollisionData != null && this.pocketItemCollisionData.cycled) {
-      this._dropItems.itaratePileItems(this.pocketItemCollisionData.coords)
+      this.dropItems.itaratePileItems(this.pocketItemCollisionData.coords)
     }
   }
 
@@ -812,7 +819,7 @@ export class Dude {
     const selectedItem = this._slotSystem.selectedItem
     if (selectedItem && selectedItem.isDropped) {
       const idleCoords = this.getTilePlayerCoords()
-      const isPlaceble = (this._dropItems.findPlaceForItem(idleCoords) != null)
+      const isPlaceble = (this.dropItems.findPlaceForItem(idleCoords) != null)
       this._slotSystem.setDudeDropAvailable(isPlaceble)
     }
   }

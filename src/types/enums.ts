@@ -59,7 +59,7 @@ export enum TileSetModificators {
   none,
   ladders,
   ground,
-  boxes,
+  envWithBoxes,
 }
 
 export enum DudeAnimations {
