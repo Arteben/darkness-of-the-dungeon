@@ -15,9 +15,11 @@ import {
   BusEventsList,
   ProgressBarTypes,
   PocketItemsEnum,
+  EnvStaticElements,
 } from '@/types/enums'
 
 import { Dude } from '@/classes/dude'
+import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 
 const filledBarKey = 'filled!'
 
@@ -27,24 +29,32 @@ export class MapStaticElement {
   // @ts-ignore
   isInteractive: boolean
   _useCallback: StaticEnvElementCallback
-  _tileLayer: Phaser.Tilemaps.TilemapLayer
+  _staticElements: EnvStaticMapElements
   _eventBusFunc: (data: CustomEventInit) => void
   _fillBar: boolean = false
   // seconds * 10
   _fillBarTime: number
-
+  _nonInteractiveTile: EnvStaticElements
+  _tileIndex: EnvStaticElements
+  _coords: ITilesCoords
 
   constructor(
-    layer: Phaser.Tilemaps.TilemapLayer,
+    staticElements: EnvStaticMapElements,
+    tileIndex: EnvStaticElements,
+    noInterTileIndex: EnvStaticElements,
+    coords: ITilesCoords,
     tip: number,
     callback: StaticEnvElementCallback,
     time: number = 1,
     pocketItemType: PocketItemsEnum = PocketItemsEnum.hand,
   ) {
-    this._tileLayer = layer
+    this._staticElements = staticElements
     this.iconTip = tip
     this._useCallback = callback
     this.toolType = pocketItemType
+    this._tileIndex = tileIndex
+    this._nonInteractiveTile = noInterTileIndex
+    this._coords = coords
 
     this._eventBusFunc = (data: CustomEventInit) => {
       if (data && data.detail && data.detail == this) {
@@ -57,23 +67,30 @@ export class MapStaticElement {
     this.setInteractive(true)
   }
 
-  setInteractive(flag: boolean) {
+  setInteractive(flag: boolean, isStart = false) {
+    const setTile = isStart
+      ? () => { }
+      : (tile: EnvStaticElements) => this._staticElements.changeLayerTile(this._coords, tile)
+
     if (flag) {
+      setTile(this._tileIndex)
       EventBus.On(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     } else {
+      setTile(this._nonInteractiveTile)
       EventBus.off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     }
+
     this.isInteractive = flag
   }
 
-  use(coords: ITilesCoords, char: Dude) {
+  use(char: Dude) {
     if (this._fillBar || !this.isInteractive) return
 
     (async () => {
       try {
         const resultBarFill = await this.getProgressBarPromise(char)
         if (resultBarFill == filledBarKey) {
-          this._useCallback(coords, char)
+          this._useCallback(this, this._coords, char)
         }
       } catch (err) { }
     })()
@@ -110,17 +127,21 @@ export class MapStaticElement {
 
 export class BoxStaticElement extends MapStaticElement {
   constructor(
-    layer: Phaser.Tilemaps.TilemapLayer,
+    staticElements: EnvStaticMapElements,
+    tile: EnvStaticElements,
+    notInteractiveTile: EnvStaticElements,
+    coords: ITilesCoords,
     tip: number,
-    time: number,
     list: DroppedItemsList,
   ) {
-    const callback = (coords: ITilesCoords, char: Dude) => {
+    const callback = (that: MapStaticElement, coords: ITilesCoords, char: Dude) => {
       const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
       char.dropItems.drop(coords, droppedElement)
-      this.setInteractive(false)
-      console.log('set interactive false for this ', this)
+      that.setInteractive(false)
     }
-    super(layer, tip, callback, time)
+
+    const time = getRandomIntNumber(2, 5)
+
+    super(staticElements, tile, notInteractiveTile, coords, tip, callback, time)
   }
 }

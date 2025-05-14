@@ -22,7 +22,7 @@ import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
-import { EnvStaticMapElements } from '@/utils/env-static-map-elements'
+import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 //
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'

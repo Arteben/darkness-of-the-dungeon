@@ -12,7 +12,6 @@ import {
 } from '@/types/main-types'
 import { getZerosStringFromNum } from '@/utils/usefull'
 
-import { getRandomIntNumber } from '@/utils/usefull'
 import { boxDroppedItems } from '@/utils/drop-item-types'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 
@@ -35,28 +34,33 @@ export class EnvStaticMapElements {
       if (!findedType) return
 
       const indexForElement =
-        EnvStaticMapElements.GetIndexForStaticElement(findedType, {x: tile.x, y: tile.y})
+        EnvStaticMapElements.GetIndexForStaticElement(findedType, { x: tile.x, y: tile.y })
 
-      this.elementsList[indexForElement] = listOfTypesElements[findedType]()
+      this.elementsList[indexForElement] = listOfTypesElements[findedType]({ x: tile.x, y: tile.y })
     })
   }
 
-  getCreaterUsualBoxesElement(list: DroppedItemsList = boxDroppedItems) {
-    const time = getRandomIntNumber(2, 5)
-    return () => {
-      return new BoxStaticElement(this._tilesLayer, 168, time, list)
+  getCreaterUsualBoxesElement(
+    tile: EnvStaticElements, openedBoxTile: EnvStaticElements, list: DroppedItemsList = boxDroppedItems) {
+    return (coords: ITilesCoords) => {
+      return new BoxStaticElement(this, tile, openedBoxTile, coords, 168, list)
     }
   }
 
   getCreaterStaticElementWithLayer(
+    tileIndex: EnvStaticElements,
+    noInterTileIndex: EnvStaticElements,
     tip: number,
     callback: StaticEnvElementCallback,
     time: number = 1,
     pocketItemType: PocketItemsEnum = PocketItemsEnum.hand,
   ) {
-    return () => {
+    return (coords: ITilesCoords) => {
       return new MapStaticElement(
-        this._tilesLayer,
+        this,
+        tileIndex,
+        noInterTileIndex,
+        coords,
         tip,
         callback,
         time,
@@ -67,25 +71,36 @@ export class EnvStaticMapElements {
 
   getListOfElementTypes(): IEnvElementTypes {
     return {
-      [EnvStaticElements.box]: this.getCreaterUsualBoxesElement(),
-      [EnvStaticElements.bigBox]: this.getCreaterUsualBoxesElement(),
-      [EnvStaticElements.barrels]: this.getCreaterUsualBoxesElement(),
-      [EnvStaticElements.bigBarrel]: this.getCreaterUsualBoxesElement(),
-      [EnvStaticElements.chest]: this.getCreaterUsualBoxesElement(),
+      [EnvStaticElements.box]: this.getCreaterUsualBoxesElement(EnvStaticElements.box, EnvStaticElements.usedBox),
+      [EnvStaticElements.bigBox]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBox, EnvStaticElements.usedBox),
+      [EnvStaticElements.barrels]: this.getCreaterUsualBoxesElement(EnvStaticElements.barrels, EnvStaticElements.usedBox),
+      [EnvStaticElements.bigBarrel]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBarrel, EnvStaticElements.usedBox),
+      [EnvStaticElements.chest]: this.getCreaterUsualBoxesElement(EnvStaticElements.chest, EnvStaticElements.usedBox),
       [EnvStaticElements.door]: this.getCreaterStaticElementWithLayer(
+        EnvStaticElements.door,
+        EnvStaticElements.usedBox,
         15,
         () => { console.log('you open the door') },
         2,
         PocketItemsEnum.key,
       ),
       [EnvStaticElements.torch]: this.getCreaterStaticElementWithLayer(
+        EnvStaticElements.torch,
+        EnvStaticElements.torch,
         170,
-        () => { console.log('you create a fire!') },
+        (that: MapStaticElement) => {
+          that.setInteractive(false)
+          console.log('you create a fire!')
+        },
       ),
     }
   }
 
   static GetIndexForStaticElement(type: string, coords: ITilesCoords) {
     return type + getZerosStringFromNum(coords.x) + getZerosStringFromNum(coords.y)
+  }
+
+  changeLayerTile(coords: ITilesCoords, newTile: EnvStaticElements) {
+    this._tilesLayer.putTileAt(newTile, coords.x, coords.y)
   }
 }

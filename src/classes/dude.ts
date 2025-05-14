@@ -10,7 +10,7 @@ import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
-import { EnvStaticMapElements } from '@/utils/env-static-map-elements'
+import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -426,8 +426,8 @@ export class Dude {
 
     if (this._dudeMoveState == DudeStates.idle && newState != DudeStates.idle) {
       this._tips.hideTip()
-      if (this.envCollisionElementData && this.envCollisionElementData.element) {
-        EventBus.Dispatch(BusEventsList[BusEventsList.charTwitching], this.envCollisionElementData.element)
+      if (this.envCollisionElementData != null) {
+        EventBus.Dispatch(BusEventsList[BusEventsList.charTwitching], this.envCollisionElementData)
       }
     }
 
@@ -616,10 +616,7 @@ export class Dude {
       return
     }
 
-    this.envCollisionElementData = {
-      element,
-      coords: plCords,
-    }
+    this.envCollisionElementData = element
   }
 
   // active when dude has on tile with dropItem
@@ -841,8 +838,8 @@ export class Dude {
     }
 
     const combSprites: ISpriteNumsForCombinedTip = {
-      main: elData.element.iconTip,
-      rightBottom: elData.element.toolType,
+      main: elData.iconTip,
+      rightBottom: elData.toolType,
       rightTop: undefined
     }
 

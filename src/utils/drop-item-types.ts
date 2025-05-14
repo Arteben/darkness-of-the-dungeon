@@ -34,8 +34,8 @@ export const pocketItemTypes: IPocketItemTypes = {
       const that = this as PocketItem
       const envData = dude.envCollisionElementData
       const pocketItemData = dude.pocketItemCollisionData
-      if (envData && envData.element.isCorrectToolType(that.type)) {
-        envData.element.use(envData.coords, dude)
+      if (envData && envData.isCorrectToolType(that.type)) {
+        envData.use(dude)
       } else if (pocketItemData) {
         const pickupItemType = dude.dropItems.pickupItem(pocketItemData.coords)
         if (pickupItemType == null) return

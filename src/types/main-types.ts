@@ -156,7 +156,7 @@ export interface IPocketItemTypes {
 }
 
 export interface IEnvElementTypes {
-  [index: string]: (() => MapStaticElement) | (() => BoxStaticElement)
+  [index: string]: ((c: ITilesCoords) => MapStaticElement) | ((c: ITilesCoords) => BoxStaticElement)
 }
 
 export interface IListOFEnvStaticElements {
@@ -175,12 +175,7 @@ export type PocketItemNull = PocketItem | null
 
 export type NullOrGameStateSettings = GameStateSettings[] | null
 
-export interface IEnvStaticElementData {
-  coords: ITilesCoords
-  element: MapStaticElement
-}
-
-export type EnvElementNullData = IEnvStaticElementData | null
+export type EnvElementNullData = MapStaticElement | null
 
 export interface IProgressBarData {
   position: INumberCoords
@@ -200,4 +195,4 @@ export type DudeProgresBarNullValues = IDudeProgressBarValues | null
 
 export type DroppedItemsList = PocketItem[]
 
-export type StaticEnvElementCallback = (a: ITilesCoords, b: Dude) => void
+export type StaticEnvElementCallback = (c: MapStaticElement, a: ITilesCoords, b: Dude) => void
