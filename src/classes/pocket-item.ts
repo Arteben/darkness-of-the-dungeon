@@ -16,10 +16,10 @@ export class PocketItem {
 
   constructor(
     type: PocketItemsEnum,
-    useCallback: callbackType,
-    rotates: number = 0,
-    isBig: boolean = false,
     sizes: IScreenSizes = { x: 20, y: 20 },
+    useCallback: callbackType = (a: Dude) => {},
+    isBig: boolean = false,
+    rotates: number = 0,
     isDropped: boolean = true
   ) {
     this.type = type

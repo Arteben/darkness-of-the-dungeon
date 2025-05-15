@@ -82,6 +82,7 @@ export enum PocketItemsEnum {
   sword = 82,
   key = 185,
   apple = 224,
+  rock = 11,
 }
 
 export enum EnvStaticElements {

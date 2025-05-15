@@ -11,24 +11,26 @@ import { Dude } from '@/classes/dude'
 export const pocketItemTypes: IPocketItemTypes = {
   [PocketItemsEnum.apple]: new PocketItem(
     PocketItemsEnum.apple,
+    { x: 15, y: 15 },
     () => { console.log('you used apple!') },
   ),
   [PocketItemsEnum.key]: new PocketItem(
     PocketItemsEnum.key,
-    () => { console.log('you used the key!') },
-    0.8,
-    false,
     { x: 10, y: 10 },
+    () => { console.log('you used the key!') },
+    false,
+    0.8,
   ),
   [PocketItemsEnum.sword]: new PocketItem(
     PocketItemsEnum.sword,
-    () => { console.log('you used sword!') },
-    0.9,
-    true,
     { x: 10, y: 10 },
+    () => { console.log('you used sword!') },
+    true,
+    0.9,
   ),
   [PocketItemsEnum.hand]: new PocketItem(
     PocketItemsEnum.hand,
+    { x: 20, y: 20 },
     function (dude: Dude) {
       // @ts-ignore
       const that = this as PocketItem
@@ -47,15 +49,17 @@ export const pocketItemTypes: IPocketItemTypes = {
         console.warn('You want to do with you hand, but there is nothing!')
       }
     },
+    false,
     0,
     false,
-    { x: 20, y: 20 },
-    false,
+  ),
+  [PocketItemsEnum.rock]: new PocketItem(
+    PocketItemsEnum.rock,
+    { x: 15, y: 15 },
   ),
 }
 
 export const boxDroppedItems: DroppedItemsList = [
-  pocketItemTypes[PocketItemsEnum.key],
   pocketItemTypes[PocketItemsEnum.apple],
-  pocketItemTypes[PocketItemsEnum.sword],
+  pocketItemTypes[PocketItemsEnum.rock],
 ]
