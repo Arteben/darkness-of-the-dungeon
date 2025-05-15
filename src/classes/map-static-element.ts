@@ -47,6 +47,7 @@ export class MapStaticElement {
     callback: StaticEnvElementCallback,
     time: number = 1,
     pocketItemType: PocketItemsEnum = PocketItemsEnum.hand,
+    isInteractive: boolean = true,
   ) {
     this._staticElements = staticElements
     this.iconTip = tip
@@ -64,19 +65,26 @@ export class MapStaticElement {
 
     this._fillBarTime = time * 10
 
-    this.setInteractive(true)
+    this.setInteractive(isInteractive, true)
   }
 
   setInteractive(flag: boolean, isStart = false) {
-    const setTile = isStart
-      ? () => { }
-      : (tile: EnvStaticElements) => this._staticElements.changeLayerTile(this._coords, tile)
+    let changeTile = (n: EnvStaticElements, o: EnvStaticElements) => {}
+
+    if (!isStart) {
+      changeTile = (newtile: EnvStaticElements, oldTile: EnvStaticElements) => {
+        const isPushed = this._staticElements.pushNewElement(this._coords, newtile, oldTile)
+        if (isPushed) {
+          this._staticElements.changeLayerTile(this._coords, newtile)
+        }
+      }
+    }
 
     if (flag) {
-      setTile(this._tileIndex)
+      changeTile(this._tileIndex, this._nonInteractiveTile)
       EventBus.On(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     } else {
-      setTile(this._nonInteractiveTile)
+      changeTile(this._nonInteractiveTile, this._tileIndex)
       EventBus.off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     }
 

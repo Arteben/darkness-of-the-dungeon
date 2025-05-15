@@ -96,6 +96,20 @@ export class EnvStaticMapElements {
     }
   }
 
+  pushNewElement(
+    coords: ITilesCoords, newTile: EnvStaticElements, oldTile: EnvStaticElements) {
+    const getElementIdx = EnvStaticMapElements.GetIndexForStaticElement
+    const element = this.elementsList[getElementIdx(String(oldTile), coords)]
+
+    if (!element) {
+      return false
+    }
+
+    delete this.elementsList[getElementIdx(String(oldTile), coords)]
+    this.elementsList[getElementIdx(String(newTile), coords)] = element
+    return true
+  }
+
   static GetIndexForStaticElement(type: string, coords: ITilesCoords) {
     return type + getZerosStringFromNum(coords.x) + getZerosStringFromNum(coords.y)
   }
