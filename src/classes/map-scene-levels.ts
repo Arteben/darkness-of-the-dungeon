@@ -38,7 +38,7 @@ export class MapSceneLevels {
   }
   _tileIndexes: IMapTilesIndexes = {
     'D': 55, 't': 0, 'tt': 1, 'k': 54, 'B': 13, 'A': 50,
-    'l': 49, 'l1': 48, 'l2': 49, 'l3': 20, 'l4': 28, 'p': 47
+    'l': 8, 'l1': 9, 'l2': 24, 'l3': 32, 'l4': 8, 'p': 47
   }
   _tileBackInds: IMapTilesIndexes = {
     '0': 0

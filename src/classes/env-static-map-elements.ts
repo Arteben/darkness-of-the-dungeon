@@ -71,10 +71,10 @@ export class EnvStaticMapElements {
 
   getListOfElementTypes(): IEnvElementTypes {
     return {
-      [EnvStaticElements.box]: this.getCreaterUsualBoxesElement(EnvStaticElements.box, EnvStaticElements.usedBox),
-      [EnvStaticElements.bigBox]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBox, EnvStaticElements.usedBox),
-      [EnvStaticElements.barrels]: this.getCreaterUsualBoxesElement(EnvStaticElements.barrels, EnvStaticElements.usedBox),
-      [EnvStaticElements.bigBarrel]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBarrel, EnvStaticElements.usedBox),
+      [EnvStaticElements.box]: this.getCreaterUsualBoxesElement(EnvStaticElements.box, EnvStaticElements.openedBox),
+      [EnvStaticElements.bigBox]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBox, EnvStaticElements.openedBigBox),
+      [EnvStaticElements.barrels]: this.getCreaterUsualBoxesElement(EnvStaticElements.barrels, EnvStaticElements.openedBarrels),
+      [EnvStaticElements.bigBarrel]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBarrel, EnvStaticElements.openedBigBarrel),
       [EnvStaticElements.chest]: this.getCreaterUsualBoxesElement(EnvStaticElements.chest, EnvStaticElements.usedBox),
       [EnvStaticElements.door]: this.getCreaterStaticElementWithLayer(
         EnvStaticElements.door,
