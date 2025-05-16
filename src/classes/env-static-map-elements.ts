@@ -1,5 +1,5 @@
 import {
-  EnvStaticElements,
+  EnvStaticElements as EnvElmts,
   PocketItemsEnum,
 } from '@/types/enums'
 
@@ -10,10 +10,13 @@ import {
   ITilesCoords,
   IListOFEnvStaticElements,
 } from '@/types/main-types'
+
 import { getZerosStringFromNum } from '@/utils/usefull'
 
 import { boxDroppedItems } from '@/utils/drop-item-types'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
+
+import { pocketItemTypes } from '@/utils/drop-item-types'
 
 export class EnvStaticMapElements {
   _tilesLayer: Phaser.Tilemaps.TilemapLayer
@@ -41,15 +44,19 @@ export class EnvStaticMapElements {
   }
 
   getCreaterUsualBoxesElement(
-    tile: EnvStaticElements, openedBoxTile: EnvStaticElements, list: DroppedItemsList = boxDroppedItems) {
+    tile: EnvElmts,
+    openedBoxTile: EnvElmts,
+    isAlwaysFull: boolean = true,
+    list: DroppedItemsList = boxDroppedItems
+  ) {
     return (coords: ITilesCoords) => {
-      return new BoxStaticElement(this, tile, openedBoxTile, coords, 168, list)
+      return new BoxStaticElement(this, tile, openedBoxTile, coords, 168, list, isAlwaysFull)
     }
   }
 
   getCreaterStaticElementWithLayer(
-    tileIndex: EnvStaticElements,
-    noInterTileIndex: EnvStaticElements,
+    tileIndex: EnvElmts,
+    noInterTileIndex: EnvElmts,
     tip: number,
     callback: StaticEnvElementCallback,
     time: number = 1,
@@ -71,24 +78,27 @@ export class EnvStaticMapElements {
 
   getListOfElementTypes(): IEnvElementTypes {
     return {
-      [EnvStaticElements.box]: this.getCreaterUsualBoxesElement(EnvStaticElements.box, EnvStaticElements.openedBox),
-      [EnvStaticElements.bigBox]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBox, EnvStaticElements.openedBigBox),
-      [EnvStaticElements.barrels]: this.getCreaterUsualBoxesElement(EnvStaticElements.barrels, EnvStaticElements.openedBarrels),
-      [EnvStaticElements.bigBarrel]: this.getCreaterUsualBoxesElement(EnvStaticElements.bigBarrel, EnvStaticElements.openedBigBarrel),
-      [EnvStaticElements.chest]: this.getCreaterUsualBoxesElement(EnvStaticElements.chest, EnvStaticElements.usedBox),
-      [EnvStaticElements.door]: this.getCreaterStaticElementWithLayer(
-        EnvStaticElements.door,
-        EnvStaticElements.usedBox,
+      [EnvElmts.box]: this.getCreaterUsualBoxesElement(EnvElmts.box, EnvElmts.openedBox, false),
+      [EnvElmts.bigBox]: this.getCreaterUsualBoxesElement(EnvElmts.bigBox, EnvElmts.openedBigBox, false),
+      [EnvElmts.barrels]: this.getCreaterUsualBoxesElement(EnvElmts.barrels, EnvElmts.openedBarrels, false),
+      [EnvElmts.bigBarrel]: this.getCreaterUsualBoxesElement(EnvElmts.bigBarrel, EnvElmts.openedBigBarrel, false),
+      [EnvElmts.chest]: this.getCreaterUsualBoxesElement(
+        EnvElmts.chest, EnvElmts.openedChest, true, [pocketItemTypes[PocketItemsEnum.key]]),
+      [EnvElmts.fire]: this.getCreaterUsualBoxesElement(
+        EnvElmts.fire, EnvElmts.extFire, true, [pocketItemTypes[PocketItemsEnum.smolBranch]]),
+      [EnvElmts.door]: this.getCreaterStaticElementWithLayer(
+        EnvElmts.door,
+        EnvElmts.door,
         15,
-        () => { console.log('you open the door') },
+        function () { console.log('you open the door') },
         2,
         PocketItemsEnum.key,
       ),
-      [EnvStaticElements.torch]: this.getCreaterStaticElementWithLayer(
-        EnvStaticElements.torch,
-        EnvStaticElements.torch,
+      [EnvElmts.torch]: this.getCreaterStaticElementWithLayer(
+        EnvElmts.torch,
+        EnvElmts.torch,
         170,
-        (that: MapStaticElement) => {
+        function (that: MapStaticElement) {
           that.setInteractive(false)
           console.log('you create a fire!')
         },
@@ -97,7 +107,7 @@ export class EnvStaticMapElements {
   }
 
   pushNewElement(
-    coords: ITilesCoords, newTile: EnvStaticElements, oldTile: EnvStaticElements) {
+    coords: ITilesCoords, newTile: EnvElmts, oldTile: EnvElmts) {
     const getElementIdx = EnvStaticMapElements.GetIndexForStaticElement
     const element = this.elementsList[getElementIdx(String(oldTile), coords)]
 
@@ -114,7 +124,7 @@ export class EnvStaticMapElements {
     return type + getZerosStringFromNum(coords.x) + getZerosStringFromNum(coords.y)
   }
 
-  changeLayerTile(coords: ITilesCoords, newTile: EnvStaticElements) {
+  changeLayerTile(coords: ITilesCoords, newTile: EnvElmts) {
     this._tilesLayer.putTileAt(newTile, coords.x, coords.y)
   }
 }

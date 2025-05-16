@@ -6,7 +6,12 @@ import {
   ITilesCoords,
   ILoadedTileSets
 } from '@/types/main-types'
-import { TileSetModificators, CheckSymMapElements } from '@/types/enums'
+import {
+  TileSetModificators,
+  CheckSymMapElements,
+  EnvStaticElements as EnvElmtns,
+} from '@/types/enums'
+
 
 import { getRandomIntNumber } from '@/utils/usefull'
 
@@ -37,8 +42,8 @@ export class MapSceneLevels {
     '#248': 59, '#249': 44, '#250': 43, '#251': 19, '#252': 28, '#253': 29, '#254': 27,
   }
   _tileIndexes: IMapTilesIndexes = {
-    'D': 55, 't': 0, 'tt': 1, 'k': 54, 'B': 13, 'A': 50,
-    'l': 8, 'l1': 9, 'l2': 24, 'l3': 32, 'l4': 8, 'p': 47
+    'D': EnvElmtns.door, 't': 0, 'tt': 1, 'k': EnvElmtns.chest, 'B': EnvElmtns.fire, 'A': EnvElmtns.torch,
+    'l1': EnvElmtns.box, 'l2': EnvElmtns.bigBox, 'l3': EnvElmtns.barrels, 'l4': EnvElmtns.bigBarrel, 'p': 16
   }
   _tileBackInds: IMapTilesIndexes = {
     '0': 0

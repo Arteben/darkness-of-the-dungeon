@@ -69,7 +69,7 @@ export class MapStaticElement {
   }
 
   setInteractive(flag: boolean, isStart = false) {
-    let changeTile = (n: EnvStaticElements, o: EnvStaticElements) => {}
+    let changeTile = (n: EnvStaticElements, o: EnvStaticElements) => { }
 
     if (!isStart) {
       changeTile = (newtile: EnvStaticElements, oldTile: EnvStaticElements) => {
@@ -141,10 +141,15 @@ export class BoxStaticElement extends MapStaticElement {
     coords: ITilesCoords,
     tip: number,
     list: DroppedItemsList,
+    isAlwaysFull: boolean = true,
   ) {
-    const callback = (that: MapStaticElement, coords: ITilesCoords, char: Dude) => {
-      const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
-      char.dropItems.drop(coords, droppedElement)
+    const callback = function (that: MapStaticElement, coords: ITilesCoords, char: Dude) {
+      const isFullBox = isAlwaysFull || getRandomIntNumber(1, 2) == 1
+      if (isFullBox) {
+        const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
+        char.dropItems.drop(coords, droppedElement)
+      }
+
       that.setInteractive(false)
     }
 

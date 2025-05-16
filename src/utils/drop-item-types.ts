@@ -57,6 +57,13 @@ export const pocketItemTypes: IPocketItemTypes = {
     PocketItemsEnum.rock,
     { x: 15, y: 15 },
   ),
+  [PocketItemsEnum.smolBranch]: new PocketItem(
+    PocketItemsEnum.smolBranch,
+    { x: 10, y: 10 },
+    function () { },
+    true,
+    0.75,
+  ),
 }
 
 export const boxDroppedItems: DroppedItemsList = [

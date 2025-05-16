@@ -83,22 +83,24 @@ export enum PocketItemsEnum {
   key = 185,
   apple = 224,
   rock = 11,
+  smolBranch = 170,
 }
 
 export enum EnvStaticElements {
-  box = 8,
-  openedBox = 16,
-  usedBox = 5,
-  bigBox = 9,
-  openedBigBox = 17,
-  barrels = 24,
-  openedBarrels = 25,
-  bigBarrel = 32,
-  openedBigBarrel = 33,
-  torch = 50,
-  door = 55,
-  chest = 54,
-  spawn = 13,
+  box = 6,
+  openedBox = 12,
+  bigBox = 7,
+  openedBigBox = 13,
+  barrels = 18,
+  openedBarrels = 19,
+  bigBarrel = 24,
+  openedBigBarrel = 25,
+  torch = 2,
+  door = 14,
+  chest = 4,
+  openedChest = 5,
+  fire = 9,
+  extFire = 10,
 }
 
 export enum SceneLevelZIndexes {
