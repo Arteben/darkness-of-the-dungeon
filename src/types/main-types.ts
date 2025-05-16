@@ -2,7 +2,8 @@ import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
 import { PocketItem } from '@/classes/pocket-item'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
-import { MapStaticElement } from '@/classes/map-static-element'
+import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
+import { Dude } from '@/classes/dude'
 
 import {
   Languages,
@@ -155,7 +156,11 @@ export interface IPocketItemTypes {
 }
 
 export interface IEnvElementTypes {
-  [index: string]: MapStaticElement
+  [index: string]: ((c: ITilesCoords) => MapStaticElement) | ((c: ITilesCoords) => BoxStaticElement)
+}
+
+export interface IListOFEnvStaticElements {
+  [index: string]: MapStaticElement | BoxStaticElement
 }
 
 export interface ISpriteNumsForCombinedTip {
@@ -170,12 +175,7 @@ export type PocketItemNull = PocketItem | null
 
 export type NullOrGameStateSettings = GameStateSettings[] | null
 
-export interface IEnvStaticElementData {
-  coords: ITilesCoords
-  element: MapStaticElement
-}
-
-export type EnvElementNullData = IEnvStaticElementData | null
+export type EnvElementNullData = MapStaticElement | null
 
 export interface IProgressBarData {
   position: INumberCoords
@@ -192,3 +192,7 @@ export interface IDudeProgressBarValues {
 }
 
 export type DudeProgresBarNullValues = IDudeProgressBarValues | null
+
+export type DroppedItemsList = PocketItem[]
+
+export type StaticEnvElementCallback = (c: MapStaticElement, a: ITilesCoords, b: Dude) => void

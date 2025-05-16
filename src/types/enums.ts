@@ -20,6 +20,7 @@ export enum BusEventsList {
   selectPocketItem,
   usePocketItem,
   trushPocketItem,
+  charTwitching,
 }
 
 export enum GameStateSettings {
@@ -57,7 +58,8 @@ export enum DudeClimbingTypes {
 export enum TileSetModificators {
   none,
   ladders,
-  ground
+  ground,
+  envWithBoxes,
 }
 
 export enum DudeAnimations {
@@ -75,19 +77,30 @@ export enum CheckSymMapElements {
   wall,
 }
 
-export enum PocketItems {
+export enum PocketItemsEnum {
   hand = 21,
   sword = 82,
   key = 185,
   apple = 224,
+  rock = 11,
+  smolBranch = 170,
 }
 
 export enum EnvStaticElements {
-  box = 48,
-  torch = 50,
-  door = 55,
-  chest = 54,
-  spawn = 13,
+  box = 6,
+  openedBox = 12,
+  bigBox = 7,
+  openedBigBox = 13,
+  barrels = 18,
+  openedBarrels = 19,
+  bigBarrel = 24,
+  openedBigBarrel = 25,
+  torch = 2,
+  door = 14,
+  chest = 4,
+  openedChest = 5,
+  fire = 9,
+  extFire = 10,
 }
 
 export enum SceneLevelZIndexes {
