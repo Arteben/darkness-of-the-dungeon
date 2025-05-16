@@ -139,4 +139,12 @@ export class PocketSlotsSystem {
   setDudeDropAvailable(flag: boolean) {
     this._state.isDudeDropAvailable = flag
   }
+
+  cleanAllSlots() {
+    const items = this._state.pocketItems
+    for (let i = 1; i < items.length; i++) {
+      items[i] = null
+    }
+    this.selectHand()
+  }
 }

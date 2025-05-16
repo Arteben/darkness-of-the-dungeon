@@ -95,6 +95,7 @@ export class DungeonDarkness {
   startMainEngine() {
     const map = this.getSelectedMap()
     if (!this.phaser || !map || !map.name) return
+    this._slotsSystem.cleanAllSlots()
     this.phaser.scene.start(
       this._mainSceneName, { nameMap: map.name, slotsSystem: this._slotsSystem } as IParamsForInitEngine)
     this.phaser.pause()
