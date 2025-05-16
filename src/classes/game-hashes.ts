@@ -66,10 +66,15 @@ export class GameHashes {
     return params
   }
 
-  getLocalState(): IHashParams {
+  getLocalStateForStart(): IHashParams {
+    let page = this.page
+    if (page == GamePages.game) {
+      page = GamePages.mainMenu
+    }
+
     return {
       lang: this.lang,
-      page: this.page
+      page: page
     }
   }
 
