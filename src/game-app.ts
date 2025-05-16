@@ -2,7 +2,7 @@
 import { GameStateElement } from '@/classes/gamestate-element'
 
 import { css, html, unsafeCSS } from 'lit'
-import { customElement, property, queryAsync } from 'lit/decorators.js'
+import { customElement, queryAsync } from 'lit/decorators.js'
 import { styleMap } from 'lit/directives/style-map.js'
 import { GamePages } from '@/types/enums'
 
@@ -12,14 +12,10 @@ import '@/ui-elements/maps-menu'
 
 // assets
 import topPng from '@/styles/images/top.png'
-import collonsPng from '@/styles/images/collons.png'
 import bottomPng from '@/styles/images/botton.png'
 import stripPng from '@/styles/images/stripLogoElement.png'
 import leftColumnPng from '@/styles/images/leftcol.png'
 import rightColumnPng from '@/styles/images/rightcol.png'
-// import textMapRaw from '@assets/maps/map3.txt?url'
-// import tilesRaw from '@assets/castle-tiles.png'
-// import tipIcons from '@assets/tip-icons.png'
 //
 
 @customElement('game-app')
@@ -65,10 +61,10 @@ export class GameApp extends GameStateElement {
 
     return html`
         <div class="${topElementsClasses}">
-          ${logoElements}
           ${headMenu}
         </div>
         <div class="${mainElementsClasses}">
+          ${logoElements}
           ${leftColumnElement}
           ${mainMenu}
           ${mapsMenu}
@@ -101,28 +97,24 @@ export class GameApp extends GameStateElement {
   }
   
   .topElementForMainMenu {
-    display: block;
-    height: 220px;
-    background-image: linear-gradient(to bottom, #000000, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));    
+    display: none;
   }
 
   .mainMenulogoElement {
     width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    right: 0;
   }
 
   .logoMainMenuElement {
+    height: 220px;
+    margin-top: -128px;
     background-image: url(${unsafeCSS(topPng)});
     background-position: center;
     background-repeat: no-repeat;
   }
 
   .stripMainMenuElement {
-    background-image: url(${unsafeCSS(stripPng)});
     height: 121px;
+    background-image: url(${unsafeCSS(stripPng)});
     background-position: bottom;
     background-repeat: repeat-x;
   }
@@ -138,10 +130,8 @@ export class GameApp extends GameStateElement {
   }
 
   .mainElementsForMainMenu {
-    margin-top: 210px;
-    background-image: url(${unsafeCSS(collonsPng)});
-    background-position: center;
-    background-repeat: repeat-y;
+    flex-direction: column;
+    margin-top: 0;
   }
 
   .bottomElements {
