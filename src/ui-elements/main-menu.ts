@@ -4,8 +4,10 @@ import '@/ui-elements/menu-button'
 import '@/ui-elements/special-title'
 import '@/ui-elements/info-panel'
 
-import { css, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { css, html, unsafeCSS } from 'lit'
+import { customElement } from 'lit/decorators.js'
+
+import collonsPng from '@/styles/images/collons.png'
 
 import {
   MainButtonType,
@@ -137,10 +139,15 @@ export class MainMenu extends GameStateElement {
     :host {
       display: flex;
       flex-flow: column;
+      flex-grow: 1;
       justify-content: center;
       align-self: stretch;
       align-items: center;
-      margin-top: 10px;
+      padding-top: 15px;
+      margin-top: -10px;
+      background-image: url(${unsafeCSS(collonsPng)});
+      background-position: center;
+      background-repeat: repeat-y;
     }
   `
 }
