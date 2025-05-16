@@ -1,11 +1,16 @@
-import { GameObjects, Physics } from 'phaser'
+import { Physics } from 'phaser'
 import {
   IPocketDroppedItemSprites,
   INumberCoords,
   ITilesCoords,
   PocketItemDudeData,
 } from '@/types/main-types'
-import { CheckSymMapElements } from '@/types/enums'
+import {
+  CheckSymMapElements,
+  SceneLevelZIndexes as zIndexes,
+} from '@/types/enums'
+
+import { getZerosStringFromNum, getRandomIntNumber } from '@/utils/usefull'
 
 import { PocketItem } from '@/classes/pocket-item'
 import { MainEngine } from '@/classes/main-engine'
@@ -18,8 +23,6 @@ export class DroppedItemsSystem {
   _group: Physics.Arcade.Group
   _key: string
   _levels: MapSceneLevels
-
-  _depthLayer: number = 1
 
   constructor(
     engine: MainEngine, groundLevels: MapSceneLevels, textureKey: string) {
@@ -54,13 +57,24 @@ export class DroppedItemsSystem {
 
     if (simpleCheck(x, y)) return { x, y }
 
+    const firstDirectionIndent = getRandomIntNumber(1, 2)
+    const getIndentDirection = (isCeil: boolean) => {
+      const getParams = (phase: boolean) => phase ? 1 : (-1)
+
+      if (firstDirectionIndent == 1) {
+        return getParams(isCeil)
+      } else {
+        return getParams(!isCeil)
+      }
+    }
+
     const getIndent = (num: number): number => {
       let indent
 
       if (num % 2 > 0) {
-        indent = Math.ceil(num / 2)
+        indent = Math.ceil(num / 2) * getIndentDirection(true)
       } else {
-        indent = -(num / 2)
+        indent = (num / 2) * getIndentDirection(false)
       }
 
       return indent
@@ -76,14 +90,7 @@ export class DroppedItemsSystem {
   }
 
   getStringNameForCoords(coords: ITilesCoords) {
-    const getStringFromNum = (num: number): string => {
-      const powerCount = 4
-      const numString = String(num)
-      const zeroCount = powerCount - numString.length
-      return new Array(zeroCount + 1).join('0') + numString
-    }
-
-    return getStringFromNum(coords.x) + getStringFromNum(coords.y)
+    return getZerosStringFromNum(coords.x) + getZerosStringFromNum(coords.y)
   }
 
   makeActiveAndUpShowOnlyLastItem(coordsStr: string) {
@@ -95,10 +102,10 @@ export class DroppedItemsSystem {
 
     items.forEach((item) => {
       item.setActive(false)
-      item.setDepth(this._depthLayer)
+      item.setDepth(zIndexes.pocketItemLevel)
     })
     items[items.length - 1].setActive(true)
-    items[items.length - 1].setDepth(this._depthLayer + 1)
+    items[items.length - 1].setDepth(zIndexes.pocketItemLevel + 1)
   }
 
   // drop some item on ground
@@ -118,7 +125,7 @@ export class DroppedItemsSystem {
     child.setOrigin(0.5, 0.5)
     child.setScale(scaleSize)
     child.setSize(item.sizes.x, item.sizes.y)
-    child.setDepth(this._depthLayer)
+    child.setDepth(zIndexes.pocketItemLevel)
     child.rotation = item.droppedRotete
 
     const coordsStr = this.getStringNameForCoords(checkedCoords)
@@ -132,7 +139,7 @@ export class DroppedItemsSystem {
     return true
   }
 
-  itaratePileItems(coords:ITilesCoords) {
+  itaratePileItems(coords: ITilesCoords) {
     const itemsForCoordsKey = this.getStringNameForCoords(coords)
     const itemsForTile = this._items[itemsForCoordsKey]
     if (itemsForTile.length <= 1) {
@@ -148,7 +155,7 @@ export class DroppedItemsSystem {
       itemsForTile.push(pushItem)
       itemsForTile.splice(0, 1)
       if (itemsForTile[0].frame.name == typeForFirst) {
-        if(counter < itemsForTile.length) {
+        if (counter < itemsForTile.length) {
           counter++
           itarateElementsWithSameType(itemsForTile[0])
         }

@@ -8,8 +8,6 @@ import {
   ILoadedTileSets,
 } from '@/types/main-types'
 
-import { PocketItems as PocketItemsEnums } from '@/types/enums'
-
 // assets
 import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
@@ -24,9 +22,8 @@ import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
+import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 //
-import { pocketItemTypes } from '@/utils/drop-item-types'
-
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 
@@ -72,28 +69,24 @@ export class MainEngine extends Scene {
 
     // +++++ dropped Items +++++++++
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
-    // 5, 41
-    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.apple])
-    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.key])
-    droppedItems.drop({x: 5, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
-    droppedItems.drop({x: 5, y: 36}, pocketItemTypes[PocketItemsEnums.apple])
-    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.key])
-    droppedItems.drop({x: 3, y: 41}, pocketItemTypes[PocketItemsEnums.sword])
+
+    const listOfStaticElements =
+      new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
       'dudeFrameSet',
-      { width: 32, height: 32 } as IResolution)
-
-    sceneCamera.startFollow(this._dude.player)
+      { width: 32, height: 45 } as IResolution,
+      listOfStaticElements,
+    )
   }
 
   update(time: number): void {
     if (this._keys) {
       this._dude.updateKyes(time, this._keys)
     }
-
-    this._dude.updateTips(time)
+    this._dude.updateClimbingMovements()
+    this._dude.mainUpdate(time)
   }
 
   preload() {

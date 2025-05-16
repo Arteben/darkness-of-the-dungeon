@@ -1,11 +1,11 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
-import { PocketItemNull } from '@/types/main-types'
+import { NullOrGameStateSettings, PocketItemNull } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
 
-import { BusEventsList } from '@/types/enums'
+import { BusEventsList, GameStateSettings } from '@/types/enums'
 
 import { GameStateElement } from '@/classes/gamestate-element'
 

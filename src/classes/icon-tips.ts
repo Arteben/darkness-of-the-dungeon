@@ -1,5 +1,11 @@
 import { Scene, GameObjects, Types, Physics } from 'phaser'
-import { INumberCoords, ISpriteNumsForCombinedTip, NumberNull } from '@/types/main-types'
+
+import {
+  INumberCoords,
+  ISpriteNumsForCombinedTip,
+  NumberNull,
+  ITilesCoords,
+} from '@/types/main-types'
 
 import { MainEngine } from '@/classes/main-engine'
 import { SceneCamera } from '@/classes/scene-camera'
@@ -123,7 +129,8 @@ export class IconTips {
     }
 
     if (sprites.rightTop != undefined) {
-      const rtSprite = this._engineFac.sprite(iconOffset * horIndent, iconOffset * (-1.3) , this._addIconsSet, sprites.rightTop)
+      const rtSprite = this._engineFac.sprite(
+        iconOffset * horIndent, iconOffset * (-1.3), this._addIconsSet, sprites.rightTop)
       rtSprite.setScale(scaleAddIcon, scaleAddIcon)
       this._activeTip.add(rtSprite)
     }
@@ -132,5 +139,12 @@ export class IconTips {
     this._activeTip.add(mainSprite)
 
     this.setCoordsWithOffsets(coords)
+  }
+
+  static GetTipPos(coords: ITilesCoords, tileWidth: number): INumberCoords {
+    return {
+      w: (coords.x + 0.5) * tileWidth,
+      h: (coords.y + 0.5) * tileWidth,
+    }
   }
 }

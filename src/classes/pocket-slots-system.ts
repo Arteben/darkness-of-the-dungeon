@@ -1,5 +1,5 @@
 import {
-  PocketItems as PocketItemsEnums,
+  PocketItemsEnum,
   BusEventsList,
 } from '@/types/enums'
 
@@ -58,7 +58,7 @@ export class PocketSlotsSystem {
   }
 
   addHandItem() {
-    this.addItem(String(PocketItemsEnums.hand))
+    this.addItem(String(PocketItemsEnum.hand))
   }
 
   addItem(typeItem: string) {

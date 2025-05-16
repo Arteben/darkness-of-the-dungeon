@@ -2,12 +2,15 @@ import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
 import { PocketItem } from '@/classes/pocket-item'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
+import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
+import { Dude } from '@/classes/dude'
 
 import {
   Languages,
   GamePages,
   GameStateSettings,
   DudeAnimations,
+  ProgressBarTypes,
 } from '@/types/enums'
 
 
@@ -152,6 +155,14 @@ export interface IPocketItemTypes {
   [index: string]: PocketItem
 }
 
+export interface IEnvElementTypes {
+  [index: string]: ((c: ITilesCoords) => MapStaticElement) | ((c: ITilesCoords) => BoxStaticElement)
+}
+
+export interface IListOFEnvStaticElements {
+  [index: string]: MapStaticElement | BoxStaticElement
+}
+
 export interface ISpriteNumsForCombinedTip {
   main: number
   rightTop: number | undefined
@@ -161,3 +172,27 @@ export interface ISpriteNumsForCombinedTip {
 export type NumberNull = number | null
 
 export type PocketItemNull = PocketItem | null
+
+export type NullOrGameStateSettings = GameStateSettings[] | null
+
+export type EnvElementNullData = MapStaticElement | null
+
+export interface IProgressBarData {
+  position: INumberCoords
+  progress: number
+  type: ProgressBarTypes
+}
+
+export type ProgressBarNullData = IProgressBarData | null
+
+export interface IDudeProgressBarValues {
+  // its persent (0-100)
+  progress: number
+  type: ProgressBarTypes
+}
+
+export type DudeProgresBarNullValues = IDudeProgressBarValues | null
+
+export type DroppedItemsList = PocketItem[]
+
+export type StaticEnvElementCallback = (c: MapStaticElement, a: ITilesCoords, b: Dude) => void

@@ -9,7 +9,7 @@ import { GameHashes } from '@/classes/game-hashes'
 import { GameLocSettings } from '@/classes/game-loc-settings'
 
 EventBus.Create()
-const hashParams = new GameHashes().getLocalState()
+const hashParams = new GameHashes().getLocalStateForStart()
 const locSettings = new GameLocSettings().getLocSettings()
 
 const gameState = new GameState(hashParams, locSettings)

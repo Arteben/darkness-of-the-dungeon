@@ -10,10 +10,17 @@ import '@/ui-elements/menu-button'
 import { css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
-import { GamePages } from '@/types/enums'
+import { GamePages, GameStateSettings } from '@/types/enums'
+import { NullOrGameStateSettings } from '@/types/main-types'
 
 @customElement('head-menu')
 export class MainMenu extends GameStateElement {
+
+  _stateSettings: NullOrGameStateSettings = [
+    GameStateSettings.selectedMap,
+    GameStateSettings.pages,
+    GameStateSettings.lang,
+  ]
 
   render() {
     const map = this.getSelectedMap()
