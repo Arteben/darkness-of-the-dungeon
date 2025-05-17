@@ -132,7 +132,11 @@ export class DungeonDarkness {
       if (this.state.page == GamePages.game) {
         if (this.phaser.isPaused) {
           this.phaser.resume()
+          if (!this.state.isGameStarted) {
+            this.state.isGameStarted = true
+          }
         }
+
         window.setTimeout(() => { this.onWindowResize() }, 100)
       } else if (!this.phaser.isPaused) {
         this.phaser.pause()
@@ -146,6 +150,7 @@ export class DungeonDarkness {
 
   restartMainEngine() {
     if (!this.phaser) return
+    this.state.isGameStarted = false
     this.phaser.scene.stop(this._mainSceneName)
     this.startMainEngine()
   }
