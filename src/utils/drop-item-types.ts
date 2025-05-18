@@ -1,5 +1,9 @@
 
-import { PocketItemsEnum } from '@/types/enums'
+import {
+  PocketItemsEnum,
+  UserNotificationTypes,
+} from '@/types/enums'
+
 import {
   IPocketItemTypes,
   DroppedItemsList,
@@ -46,7 +50,10 @@ export const pocketItemTypes: IPocketItemTypes = {
 
         dude.pocketItemCollisionData = dude.dropItems.getItemDataForActiveItem(pocketItemData.coords)
       } else {
-        console.warn('You want to do with you hand, but there is nothing!')
+        dude.showNotification({
+          type: UserNotificationTypes.error,
+          text: 'You want to do with you hand, but there is nothing!',
+        })
       }
     },
     false,

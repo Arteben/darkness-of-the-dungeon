@@ -91,17 +91,15 @@ export class MapStaticElement {
     this.isInteractive = flag
   }
 
-  use(char: Dude) {
+  async use(char: Dude) {
     if (this._fillBar || !this.isInteractive) return
 
-    (async () => {
-      try {
-        const resultBarFill = await this.getProgressBarPromise(char)
-        if (resultBarFill == filledBarKey) {
-          this._useCallback(this, this._coords, char)
-        }
-      } catch (err) { }
-    })()
+    try {
+      const resultBarFill = await this.getProgressBarPromise(char)
+      if (resultBarFill == filledBarKey) {
+        this._useCallback(this, this._coords, char)
+      }
+    } catch (err) { }
   }
 
   isCorrectToolType(type: PocketItemsEnum) {

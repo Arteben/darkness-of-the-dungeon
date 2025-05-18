@@ -2,6 +2,7 @@ import { Physics } from 'phaser'
 import { GameState } from '@/classes/game-state'
 import { PocketItem } from '@/classes/pocket-item'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
+import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 import { Dude } from '@/classes/dude'
 
@@ -11,8 +12,8 @@ import {
   GameStateSettings,
   DudeAnimations,
   ProgressBarTypes,
+  UserNotificationTypes,
 } from '@/types/enums'
-
 
 export type nullNumber = null | number;
 
@@ -115,6 +116,7 @@ export type GameStateChangeData = {
 export interface IParamsForInitEngine {
   nameMap: string
   slotsSystem: PocketSlotsSystem
+  modalsSystem: NotificationsModalsSystem
 }
 
 export interface ILoadedTileSets {
@@ -196,3 +198,16 @@ export type DudeProgresBarNullValues = IDudeProgressBarValues | null
 export type DroppedItemsList = PocketItem[]
 
 export type StaticEnvElementCallback = (c: MapStaticElement, a: ITilesCoords, b: Dude) => void
+
+export interface INotificationData {
+  text?: string
+  type: UserNotificationTypes
+}
+
+export type NotificationNullData = INotificationData | null
+
+export interface INotificationAnimTimeouts {
+  start: number
+  break: number
+  hold: number
+}

@@ -32,6 +32,7 @@ export enum GameStateSettings {
   pocketItems,
   selectedPocketItem,
   isDudeDropAvailable,
+  userNotification,
 }
 
 export enum GamePages {
@@ -113,4 +114,11 @@ export enum SceneLevelZIndexes {
 export enum ProgressBarTypes {
   usual,
   swordSwing,
+}
+
+export enum UserNotificationTypes {
+  error,
+  ok,
+  start,
+  break,
 }

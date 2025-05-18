@@ -1,10 +1,17 @@
-import { Languages, BusEventsList, GamePages, GameStateSettings } from '@/types/enums'
+import {
+  Languages,
+  BusEventsList,
+  GamePages,
+  GameStateSettings,
+  UserNotificationTypes,
+} from '@/types/enums'
 import {
   IHashParams,
   ILocSettings,
   IStateParams,
   GameStateChangeData,
   PocketItemNull,
+  NotificationNullData,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
@@ -94,6 +101,25 @@ export class GameState implements IStateParams {
   }
   public get isDudeDropAvailable(): boolean {
     return this._isDudeDropAvailable
+  }
+  //
+
+  // userNotification
+  private _userNotification: NotificationNullData = null
+  public set userNotification(data: NotificationNullData) {
+    if (data == this._userNotification) return
+
+    if (data != null) {
+      console.log('set notification with type ', UserNotificationTypes[data.type])
+    } else {
+      console.log('notification turned off!')
+    }
+
+    this._userNotification = data
+    this.triggerChnageState(GameStateSettings.userNotification)
+  }
+  public get userNotification(): NotificationNullData {
+    return this._userNotification
   }
   //
 

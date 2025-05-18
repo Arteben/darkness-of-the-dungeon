@@ -6,6 +6,7 @@ import {
   IResolution,
   GameStateChangeData,
   IParamsForInitEngine,
+  INotificationAnimTimeouts,
 } from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame } from 'phaser'
@@ -21,6 +22,7 @@ import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
 import { MainEngine } from '@/classes/main-engine'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
+import { NotificationsModalsSystem as ModalsSystem } from '@/classes/notifications-modals-system'
 
 export let dungeonDarknessGame: DungeonDarkness | null = null
 
@@ -65,7 +67,13 @@ export class DungeonDarkness {
   _slotsSystem: PocketSlotsSystem
   maxSlots: number
 
-  // _slotSystem:
+  _modalsSystem: ModalsSystem
+  // time in seconds
+  notificationAnimTimeouts: INotificationAnimTimeouts = {
+    start: 3,
+    break: 1,
+    hold: 10,
+  }
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -76,6 +84,8 @@ export class DungeonDarkness {
 
     this._slotsSystem = new PocketSlotsSystem(state)
     this.maxSlots = this._slotsSystem.maxSlotsNum
+
+    this._modalsSystem = new ModalsSystem(state, this.notificationAnimTimeouts)
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
@@ -95,9 +105,13 @@ export class DungeonDarkness {
   startMainEngine() {
     const map = this.getSelectedMap()
     if (!this.phaser || !map || !map.name) return
-    this._slotsSystem.cleanAllSlots()
-    this.phaser.scene.start(
-      this._mainSceneName, { nameMap: map.name, slotsSystem: this._slotsSystem } as IParamsForInitEngine)
+
+    const initParams: IParamsForInitEngine = {
+      nameMap: map.name,
+      slotsSystem: this._slotsSystem,
+      modalsSystem: this._modalsSystem,
+    }
+    this.phaser.scene.start(this._mainSceneName, initParams)
     this.phaser.pause()
   }
 
@@ -150,7 +164,9 @@ export class DungeonDarkness {
 
   restartMainEngine() {
     if (!this.phaser) return
+
     this.state.isGameStarted = false
+    this._slotsSystem.cleanAllSlots()
     this.phaser.scene.stop(this._mainSceneName)
     this.startMainEngine()
   }

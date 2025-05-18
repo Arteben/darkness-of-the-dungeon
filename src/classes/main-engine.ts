@@ -26,6 +26,7 @@ import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 //
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
+import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -34,9 +35,12 @@ export class MainEngine extends Scene {
   _dude!: Dude
   _keys!: mainKeys
 
+  _selectedMap: string = ''
   //@ts-ignore
   _slotSystem: PocketSlotsSystem
-  _selectedMap: string = ''
+  //@ts-ignore
+  _modalsSystem: NotificationsModalsSystem
+
 
   constructor() {
     super()
@@ -45,6 +49,7 @@ export class MainEngine extends Scene {
   init(initParams: IParamsForInitEngine) {
     this._selectedMap = initParams.nameMap
     this._slotSystem = initParams.slotsSystem
+    this._modalsSystem = initParams.modalsSystem
   }
 
   create() {
@@ -74,7 +79,8 @@ export class MainEngine extends Scene {
       new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
     this._dude = new Dude(
-      this, mapLevels, sceneCamera, tips, droppedItems, this._slotSystem,
+      this, mapLevels, sceneCamera, tips, droppedItems,
+      this._slotSystem, this._modalsSystem,
       'dudeFrameSet',
       { width: 32, height: 45 } as IResolution,
       listOfStaticElements,
