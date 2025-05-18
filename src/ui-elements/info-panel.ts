@@ -1,6 +1,8 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 
+import { commonVars } from '@/utils/common-css-vars'
+
 @customElement('info-panel')
 export class InfoPanel extends LitElement {
   @property({ type: Number })
@@ -23,18 +25,19 @@ export class InfoPanel extends LitElement {
       </div>`
   }
 
-  static styles = css`
-    :host {
+  static styles = [
+    commonVars,
+    css`:host {
       display: flex;
       flex-direction: column;
       justify-content: start;
       align-items: center;
       background-image: linear-gradient(to bottom, #edece7, #fdfdfd, #e9e8e0);
-      border: #304147 ridge 0;
+      border: var(--main-border);
       border-width: 9px;
       border-radius: 3px;
-      color: #304147;
-      font-family: Xarrovv;
+      color: var(--main-color-dark);
+      font-family: var(--info-panels-font);
       font-weight: bold;
       font-size: 25px;
       overflow: auto;
@@ -64,6 +67,6 @@ export class InfoPanel extends LitElement {
     div.isSmall {
       font-size: 20px;
       margin: 0 10px 10px 10px;
-    }
-  `
+    }`
+  ]
 }

@@ -1,6 +1,8 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 
+import { commonVars } from '@/utils/common-css-vars'
+
 @customElement('menu-button')
 export class MainMenu extends LitElement {
   @property({ type: String })
@@ -30,20 +32,21 @@ export class MainMenu extends LitElement {
     `
   }
 
-  static styles = css`
-    :host {
+  static styles = [
+    commonVars,
+    css`:host {
       display: block;
       margin: 10px 0px;
     }
 
     button {
-    font-family: Faberge;
+    font-family: var(--main-buttons-font);
     display: inline-block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    color: #f7ffff;
-    background-color: #304147;
+    color: var(--main-color-light);
+    background-color: var(--main-buttons-background);
     border: black solid 2px;
     border-radius: 2px;
   }
@@ -81,6 +84,6 @@ export class MainMenu extends LitElement {
     }
     button.mapsMenu.light:hover, button.mapsMenu.light:active {
       outline: none;
-    }
-  `
+    }`
+  ]
 }
