@@ -4,9 +4,17 @@ import { GameStateElement } from '@/classes/gamestate-element'
 import { css, html, unsafeCSS } from 'lit'
 import { customElement, queryAsync } from 'lit/decorators.js'
 import { styleMap } from 'lit/directives/style-map.js'
-import { GamePages } from '@/types/enums'
+
+import {
+  BusEventsList,
+  GamePages,
+  GameStateSettings,
+} from '@/types/enums'
+import { NullOrGameStateSettings } from '@/types/main-types'
 
 import { commonVars } from '@/utils/common-css-vars'
+
+import { EventBus } from '@/classes/event-bus'
 
 import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
@@ -24,13 +32,25 @@ import rightColumnPng from '@/styles/images/rightcol.png'
 @customElement('game-app')
 export class GameApp extends GameStateElement {
 
+  _stateSettings: NullOrGameStateSettings = [
+    GameStateSettings.pages,
+    GameStateSettings.userNotification,
+  ]
+
   @queryAsync('canvas')
   phaserCanvas!: Promise<HTMLCanvasElement | null>
 
   @queryAsync('div.mainElements')
   canvasParent!: Promise<HTMLElement | null>
 
+  onNotificationClick (e: Event) {
+    e.stopPropagation()
+    EventBus.Dispatch(BusEventsList[BusEventsList.notificationClick], null)
+  }
+
   render() {
+    if (!this._game) return
+
     let mainMenu = html``
     let headMenu = html`<head-menu></head-menu>`
     let convasDisplay = { 'display': 'none' }
@@ -41,12 +61,13 @@ export class GameApp extends GameStateElement {
     let bottomImageForMainMenu = html``
     let leftColumnElement = html`<img class="columnPagesElement" src="${leftColumnPng}"/>`
     let rightColumnElement = html`<img class="columnPagesElement" src="${rightColumnPng}"/>`
+    let userNotificationElement = html``
 
     switch (this._state.page) {
       case GamePages.mainMenu:
         mainMenu = html`<main-menu></main-menu>`
         headMenu = html``
-        logoElements = html `<div class="mainMenulogoElement stripMainMenuElement"></div>
+        logoElements = html`<div class="mainMenulogoElement stripMainMenuElement"></div>
                               <div class="mainMenulogoElement logoMainMenuElement" ></div>`
         topElementsClasses += 'topElementForMainMenu'
         mainElementsClasses += 'mainElementsForMainMenu'
@@ -56,6 +77,11 @@ export class GameApp extends GameStateElement {
       case GamePages.game:
         convasDisplay = { 'display': 'block' }
         leftColumnElement = rightColumnElement = html``
+        userNotificationElement =
+          this._state.userNotification != null
+            ? html`<user-notifications @click="${this.onNotificationClick}">
+              </user-notifications>`
+            : html``
         break
       case GamePages.maps:
         mapsMenu = html`<maps-menu></maps-menu>`
@@ -76,13 +102,13 @@ export class GameApp extends GameStateElement {
         </div>
         ${bottomImageForMainMenu}
         <mobile-controls></mobile-controls>
-        <user-notifications></user-notifications>
+        ${userNotificationElement}
     `
   }
 
   static styles = [
-  commonVars,
-  css`:host {
+    commonVars,
+    css`:host {
       background: var(--game-app-bg-color);
       width: 100%;
       min-height: 100%;
@@ -157,6 +183,10 @@ export class GameApp extends GameStateElement {
       height: 900px;
       border: var(--main-border);
       border-width: 10px;
+    }
+    
+    user-notifications {
+      cursor: pointer;
     }`
   ]
 }

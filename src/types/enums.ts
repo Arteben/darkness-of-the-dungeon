@@ -21,6 +21,7 @@ export enum BusEventsList {
   usePocketItem,
   trushPocketItem,
   charTwitching,
+  notificationClick,
 }
 
 export enum GameStateSettings {

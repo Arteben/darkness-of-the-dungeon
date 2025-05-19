@@ -70,8 +70,8 @@ export class DungeonDarkness {
   _modalsSystem: ModalsSystem
   // time in seconds
   notificationAnimTimeouts: INotificationAnimTimeouts = {
-    start: 3,
-    break: 1,
+    start: 0.2,
+    break: 0.5,
     hold: 10,
   }
 

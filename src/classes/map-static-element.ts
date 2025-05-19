@@ -85,7 +85,7 @@ export class MapStaticElement {
       EventBus.On(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     } else {
       changeTile(this._nonInteractiveTile, this._tileIndex)
-      EventBus.off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
+      EventBus.Off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     }
 
     this.isInteractive = flag

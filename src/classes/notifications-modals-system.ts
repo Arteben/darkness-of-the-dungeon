@@ -19,16 +19,33 @@ export class NotificationsModalsSystem {
   _logs: INotificationData[]
   _specAnimTimeouts: INotificationAnimTimeouts
   _isShownNotification: boolean = false
+  _callbackForClicks: () => void
 
   constructor(state: GameState, animTimeouts: INotificationAnimTimeouts) {
     this._state = state
     this._logs = []
     this._specAnimTimeouts = animTimeouts
+    this._callbackForClicks = () => {
+      this.natificationTurnOff()
+    }
+  }
+
+  getLastLog() {
+    return this._logs[this._logs.length - 1]
+  }
+
+  spliceIfTooMany() {
+    if (this._logs.length >= 20) {
+      this._logs.splice(0, 10)
+    }
   }
 
   showNotification(notData: INotificationData) {
     this._logs.push(notData)
+    this.spliceIfTooMany()
+
     if (!this._isShownNotification) {
+      EventBus.On(BusEventsList[BusEventsList.notificationClick], this._callbackForClicks)
       this._isShownNotification = true
       this.showNotificationWithAnim(notData)
     }
@@ -39,10 +56,12 @@ export class NotificationsModalsSystem {
 
     if (!isShownNatification() || this._logs.length <= 0) return
 
-    const getLastLog = () => this._logs[this._logs.length - 1]
     const multyTimeNum = 1000
 
-    this._state.userNotification = { type: UserNotificationTypes.start }
+    this._state.userNotification = {
+      type: UserNotificationTypes.start,
+      text: currentNotification.text
+    }
     await getTOutPromise(this._specAnimTimeouts.start * multyTimeNum)
     if (!isShownNatification()) return
     let counter = 0
@@ -52,14 +71,18 @@ export class NotificationsModalsSystem {
       text: currentNotification.text,
     }
 
-    while(isShownNatification() && this._specAnimTimeouts.hold > counter) {
-      if (currentNotification != getLastLog()) {
+    const doMoreCalcs = 2
+    const hold = this._specAnimTimeouts.hold * doMoreCalcs
+
+    while (isShownNatification() && hold > counter) {
+      if (currentNotification != this.getLastLog()) {
         this._state.userNotification = { type: UserNotificationTypes.break }
         await getTOutPromise(this._specAnimTimeouts.break * multyTimeNum)
-        this.showNotificationWithAnim(getLastLog())
+        if (!isShownNatification()) return
+        this.showNotificationWithAnim(this.getLastLog())
         return
       }
-      await getTOutPromise(multyTimeNum)
+      await getTOutPromise(multyTimeNum / doMoreCalcs)
       counter++
     }
 
@@ -69,6 +92,7 @@ export class NotificationsModalsSystem {
   }
 
   natificationTurnOff() {
+    EventBus.Off(BusEventsList[BusEventsList.notificationClick], this._callbackForClicks)
     this._state.userNotification = null
     this._isShownNotification = false
   }

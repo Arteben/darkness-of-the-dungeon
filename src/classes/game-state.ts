@@ -109,12 +109,6 @@ export class GameState implements IStateParams {
   public set userNotification(data: NotificationNullData) {
     if (data == this._userNotification) return
 
-    if (data != null) {
-      console.log('set notification with type ', UserNotificationTypes[data.type])
-    } else {
-      console.log('notification turned off!')
-    }
-
     this._userNotification = data
     this.triggerChnageState(GameStateSettings.userNotification)
   }
