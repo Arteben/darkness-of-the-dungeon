@@ -32,8 +32,7 @@ export function getDungeonDarknessGame() {
 
 export class DungeonDarkness {
   state: GameState
-
-  loc: (a: string, b?: IJsonTranslatesType) => string
+  locals: Translates
 
   _phConfig: Types.Core.GameConfig = {
     width: 800,
@@ -78,14 +77,14 @@ export class DungeonDarkness {
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     dungeonDarknessGame = this
-    // get object with methods with translates
     this.state = state
-    this.loc = locals.loc.bind(locals)
+    this.locals = locals
 
     this._slotsSystem = new PocketSlotsSystem(state)
     this.maxSlots = this._slotsSystem.maxSlotsNum
 
-    this._modalsSystem = new ModalsSystem(state, this.notificationAnimTimeouts)
+    this._modalsSystem = new ModalsSystem(
+      state, this.notificationAnimTimeouts, this.locals)
 
     // select any map if map not selected!
     if (!this.getSelectedMap()) {

@@ -13,6 +13,8 @@ import { customElement } from 'lit/decorators.js'
 import { GamePages, GameStateSettings } from '@/types/enums'
 import { NullOrGameStateSettings } from '@/types/main-types'
 
+import { default as mapTranlates } from '@/translates/maps.json'
+
 @customElement('head-menu')
 export class MainMenu extends GameStateElement {
 
@@ -26,7 +28,7 @@ export class MainMenu extends GameStateElement {
     const map = this.getSelectedMap()
     let mapName = ''
     if (map) {
-      mapName = this.loc(map.name)
+      mapName = this.loc(map.name, mapTranlates)
     }
 
     const isGame = this._game && this._state.page == GamePages.game

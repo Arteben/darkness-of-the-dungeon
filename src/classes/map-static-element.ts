@@ -16,6 +16,7 @@ import {
   ProgressBarTypes,
   PocketItemsEnum,
   EnvStaticElements,
+  UserNotificationTypes,
 } from '@/types/enums'
 
 import { Dude } from '@/classes/dude'
@@ -146,6 +147,11 @@ export class BoxStaticElement extends MapStaticElement {
       if (isFullBox) {
         const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
         char.dropItems.drop(coords, droppedElement)
+      } else {
+        char.showNotification({
+          type: UserNotificationTypes.error,
+          text: 'Unfortunately, you didnt find anything',
+        })
       }
 
       that.setInteractive(false)

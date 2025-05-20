@@ -58,47 +58,6 @@
   "menuSelectedMap": {
     "ru": "Уровень:",
     "eng": "Level:"
-  },
-
-
-  "map0": {
-    "ru": "Скрип теней",
-    "eng": "Shadow's Crypt"
-  },
-  "map1": {
-    "ru": "Бездна пещер",
-    "eng": "Abyssal Cavern"
-  },
-  "map2": {
-    "ru": "Логово дракона",
-    "eng": "Dragon's Lair"
-  },
-  "map3": {
-    "ru": "Забытые катакомбы",
-    "eng": "Forgotten Catacombs"
-  },
-  "map4": {
-    "ru": "Мрачный замок",
-    "eng": "Grimstone Keep"
-  },
-  "map5": {
-    "ru": "Пустошь укуса",
-    "eng": "Bite Hollow"
-  },
-  "map6": {
-    "ru": "Проклятые шахты",
-    "eng": "Haunted Mines"
-  },
-  "map7": {
-    "ru": "Храм кровавой луны",
-    "eng": "Bloodmoon Temple"
-  },
-  "map8": {
-    "ru": "Затерянный лабиринт",
-    "eng": "Lost Labyrinth"
-  },
-  "map9": {
-    "ru": "Глубины инферно",
-    "eng": "Inferno Depths"
   }
+
 }

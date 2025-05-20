@@ -13,6 +13,7 @@ import { getTOutPromise } from '@/utils/usefull'
 
 import { GameState } from '@/classes/game-state'
 import { EventBus } from '@/classes/event-bus'
+import { Translates } from '@/classes/translates'
 
 export class NotificationsModalsSystem {
   _state: GameState
@@ -20,13 +21,21 @@ export class NotificationsModalsSystem {
   _specAnimTimeouts: INotificationAnimTimeouts
   _isShownNotification: boolean = false
   _callbackForClicks: () => void
+  loc: (str: string) => string
+  argsLoc: (str: string, args: string[]) => string
 
-  constructor(state: GameState, animTimeouts: INotificationAnimTimeouts) {
+  constructor(
+    state: GameState, animTimeouts: INotificationAnimTimeouts, locals: Translates) {
     this._state = state
     this._logs = []
     this._specAnimTimeouts = animTimeouts
     this._callbackForClicks = () => {
       this.natificationTurnOff()
+    }
+
+    this.loc = (str: string) => locals.loc(str)
+    this.argsLoc = (str: string, args: string[]) => {
+      return locals.locWithArgs(str, args)
     }
   }
 
