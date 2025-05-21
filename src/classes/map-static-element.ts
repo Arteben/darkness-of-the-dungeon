@@ -148,9 +148,9 @@ export class BoxStaticElement extends MapStaticElement {
         const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
         char.dropItems.drop(coords, droppedElement)
       } else {
-        char.showNotification({
+        char.userModals.showNotification({
           type: UserNotificationTypes.error,
-          text: 'Unfortunately, you didnt find anything',
+          text: char.userModals.loc('boxSeachNothingAction'),
         })
       }
 

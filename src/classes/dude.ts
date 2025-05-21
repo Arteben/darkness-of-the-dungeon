@@ -57,7 +57,7 @@ export class Dude {
   _progressBar: DudeProgressBar
   _staticElementsList: IListOFEnvStaticElements
 
-  showNotification: (d: INotificationData) => void
+  userModals: NotificationsModalsSystem
 
   _tilePointer: Phaser.GameObjects.Arc | null = null
 
@@ -346,9 +346,7 @@ export class Dude {
     this._progressBar = new DudeProgressBar(engine)
     this.progressBarValues = null
 
-    this.showNotification = (notification: INotificationData) => {
-      modalsSystem.showNotification(notification)
-    }
+    this.userModals = modalsSystem
 
     //create overlap with droppedItems for pick up them
     if (this.dropItems._group) {

@@ -38,9 +38,10 @@ export class Translates {
   }
 
   locWithArgs(str: string, args: string[], pageTranslates?: IJsonTranslatesType) {
-    const translatedString = this.loc(str, pageTranslates)
+    let translatedString = this.loc(str, pageTranslates)
     args.forEach((arg, idx) => {
-      translatedString.replace(this.getArgsSearchRgx(idx), this.loc(arg, pageTranslates))
+      translatedString =
+        translatedString.replace(this.getArgsSearchRgx(idx), ' ' + this.loc(arg, pageTranslates))
     })
     return translatedString
   }
