@@ -32,12 +32,13 @@ export class UserDialogModals extends GameStateElement {
         <div class="textClass">
           <span>
             Приведённый выше пример показывает очень простое использование элемента <img>. Атрибут src обязателен и содержит путь к изображению, которое вы хотите встроить в документ. Атрибут alt содержит текстовое описание изображения, которое не обязательно, но невероятно полезно для доступности — программы чтения с экрана читают это описание своим пользователям, так они знают какое изображение показано, и так же оно отображается на странице, если изображение не может быть загружено по какой-либо причине.
+
           </span>
           <span>
             <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
             <label for="vehicle1"> I have a bike</label><br></span>
-          <menu-button>Ok!</menu-button>
-        </div>
+            <menu-button>Ok!</menu-button>
+          </div>
       </div>
     `
   }
@@ -49,6 +50,8 @@ export class UserDialogModals extends GameStateElement {
       flex-direction: column;
       align-items: center;
       position: absolute;
+      max-width: 70%;
+      max-height: 90%;
       top: 30px;
     }
     
@@ -56,15 +59,15 @@ export class UserDialogModals extends GameStateElement {
       display: flex;
       flex-direction: column;
       align-items: center;
-      max-width: 70%;
       background: black;
       outline: var(--main-border);
       outline-width: 5px;
       line-height: 30px;
+      overflow: hidden;
     }
 
     .imgClass {
-      height: 240px;
+      height: 250px;
       object-fit: contain;
     }
 
