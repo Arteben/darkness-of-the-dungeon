@@ -3,7 +3,9 @@ import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 
 import warriorImg from '@assets/warrior-modal.png'
+
 import '@/ui-elements/font-icon'
+import '@/ui-elements/label-checkbox'
 
 import { GameStateElement } from '@/classes/gamestate-element'
 
@@ -23,6 +25,10 @@ export class UserDialogModals extends GameStateElement {
     GameStateSettings.userDialogModal
   ]
 
+  onCheckbox(e: CustomEvent) {
+    console.log('get value from checkbox ', e.detail)
+  }
+
   render() {
     if (!this._game) return
 
@@ -32,12 +38,12 @@ export class UserDialogModals extends GameStateElement {
         <div class="textClass">
           <span>
             Приведённый выше пример показывает очень простое использование элемента <img>. Атрибут src обязателен и содержит путь к изображению, которое вы хотите встроить в документ. Атрибут alt содержит текстовое описание изображения, которое не обязательно, но невероятно полезно для доступности — программы чтения с экрана читают это описание своим пользователям, так они знают какое изображение показано, и так же оно отображается на странице, если изображение не может быть загружено по какой-либо причине.
-
           </span>
-          <span>
-            <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-            <label for="vehicle1"> I have a bike</label><br></span>
-            <menu-button>Ok!</menu-button>
+          <label-checkbox
+            hasChecked="true"
+            @checkbox="${this.onCheckbox}"
+            >Продолжить?</label-checkbox>
+          <menu-button>Ok!</menu-button>
           </div>
       </div>
     `
