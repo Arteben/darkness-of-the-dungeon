@@ -20,6 +20,7 @@ import '@/ui-elements/main-menu'
 import '@/ui-elements/head-menu'
 import '@/ui-elements/maps-menu'
 import '@/ui-elements/user-notifications'
+import '@/ui-elements/user-dialog-modals'
 
 // assets
 import topPng from '@/styles/images/top.png'
@@ -35,6 +36,7 @@ export class GameApp extends GameStateElement {
   _stateSettings: NullOrGameStateSettings = [
     GameStateSettings.pages,
     GameStateSettings.userNotification,
+    GameStateSettings.userDialogModal,
   ]
 
   @queryAsync('canvas')
@@ -43,7 +45,7 @@ export class GameApp extends GameStateElement {
   @queryAsync('div.mainElements')
   canvasParent!: Promise<HTMLElement | null>
 
-  onNotificationClick (e: Event) {
+  onNotificationClick(e: Event) {
     e.stopPropagation()
     EventBus.Dispatch(BusEventsList[BusEventsList.notificationClick], null)
   }
@@ -62,6 +64,7 @@ export class GameApp extends GameStateElement {
     let leftColumnElement = html`<img class="columnPagesElement" src="${leftColumnPng}"/>`
     let rightColumnElement = html`<img class="columnPagesElement" src="${rightColumnPng}"/>`
     let userNotificationElement = html``
+    let userModalElement = html``
 
     switch (this._state.page) {
       case GamePages.mainMenu:
@@ -82,6 +85,11 @@ export class GameApp extends GameStateElement {
             ? html`<user-notifications @click="${this.onNotificationClick}">
               </user-notifications>`
             : html``
+
+        // userModalElement =
+        //   this._state.userModal != null
+        //     ? html`<user-dialog-modals></user-dialog-modals>` : html``
+        userModalElement = html`<user-dialog-modals></user-dialog-modals>`
         break
       case GamePages.maps:
         mapsMenu = html`<maps-menu></maps-menu>`
@@ -103,6 +111,7 @@ export class GameApp extends GameStateElement {
         ${bottomImageForMainMenu}
         <mobile-controls></mobile-controls>
         ${userNotificationElement}
+        ${userModalElement}
     `
   }
 

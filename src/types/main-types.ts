@@ -211,3 +211,16 @@ export interface INotificationAnimTimeouts {
   break: number
   hold: number
 }
+
+export interface IUserModalAddOptions {
+  [index: string]: boolean
+}
+
+export interface IUserModalData {
+  text: string
+  image?: string
+  options?: IUserModalAddOptions
+  callback: (a?: IUserModalAddOptions) => void
+}
+
+export type UserModalNullData = IUserModalData | null

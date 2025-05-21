@@ -3,7 +3,6 @@ import {
   BusEventsList,
   GamePages,
   GameStateSettings,
-  UserNotificationTypes,
 } from '@/types/enums'
 import {
   IHashParams,
@@ -12,6 +11,7 @@ import {
   GameStateChangeData,
   PocketItemNull,
   NotificationNullData,
+  UserModalNullData,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
@@ -114,6 +114,19 @@ export class GameState implements IStateParams {
   }
   public get userNotification(): NotificationNullData {
     return this._userNotification
+  }
+  //
+
+    // userModal
+  private _userModal: UserModalNullData = null
+  public set userModal(data: UserModalNullData) {
+    if (data == this._userModal) return
+
+    this._userModal = data
+    this.triggerChnageState(GameStateSettings.userDialogModal)
+  }
+  public get userModal(): UserModalNullData {
+    return this._userModal
   }
   //
 

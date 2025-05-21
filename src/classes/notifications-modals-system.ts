@@ -7,6 +7,8 @@ import {
 import {
   INotificationData,
   INotificationAnimTimeouts,
+  IUserModalData,
+  IUserModalAddOptions,
 } from '@/types/main-types'
 
 import { getTOutPromise } from '@/utils/usefull'
@@ -20,7 +22,9 @@ export class NotificationsModalsSystem {
   _logs: INotificationData[]
   _specAnimTimeouts: INotificationAnimTimeouts
   _isShownNotification: boolean = false
-  _callbackForClicks: () => void
+  _isShowModal: boolean = false
+  _callbackForNotificationClicks: () => void
+  _callbackModalOk: (e: CustomEventInit) => void
   loc: (str: string) => string
   argsLoc: (str: string, args: string[]) => string
 
@@ -29,8 +33,13 @@ export class NotificationsModalsSystem {
     this._state = state
     this._logs = []
     this._specAnimTimeouts = animTimeouts
-    this._callbackForClicks = () => {
+
+    this._callbackForNotificationClicks = () => {
       this.natificationTurnOff()
+    }
+
+    this._callbackModalOk = (event: CustomEventInit) => {
+      this.userModalClose(event.detail?.options)
     }
 
     this.loc = (str: string) => locals.loc(str)
@@ -53,8 +62,8 @@ export class NotificationsModalsSystem {
     this._logs.push(notData)
     this.spliceIfTooMany()
 
-    if (!this._isShownNotification) {
-      EventBus.On(BusEventsList[BusEventsList.notificationClick], this._callbackForClicks)
+    if (!this._isShownNotification && !this._isShowModal) {
+      EventBus.On(BusEventsList[BusEventsList.notificationClick], this._callbackForNotificationClicks)
       this._isShownNotification = true
       this.showNotificationWithAnim(notData)
     }
@@ -101,8 +110,28 @@ export class NotificationsModalsSystem {
   }
 
   natificationTurnOff() {
-    EventBus.Off(BusEventsList[BusEventsList.notificationClick], this._callbackForClicks)
+    EventBus.Off(BusEventsList[BusEventsList.notificationClick], this._callbackForNotificationClicks)
     this._state.userNotification = null
     this._isShownNotification = false
+  }
+
+  userModalClose(options?: IUserModalAddOptions) {
+    this._state.userModal?.callback(options)
+    EventBus.Off(BusEventsList[BusEventsList.userModalOk], this._callbackModalOk)
+    this._isShowModal = false
+    this._state.userModal = null
+  }
+
+  showModal(data: IUserModalData) {
+    if (this._isShowModal) return
+
+    this._isShowModal = true
+    EventBus.On(BusEventsList[BusEventsList.userModalOk], this._callbackModalOk)
+
+    if (this._isShownNotification) {
+      this.natificationTurnOff()
+    }
+
+    this._state.userModal = data
   }
 }

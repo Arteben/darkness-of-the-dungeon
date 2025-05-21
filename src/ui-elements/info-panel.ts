@@ -32,7 +32,7 @@ export class InfoPanel extends LitElement {
       flex-direction: column;
       justify-content: start;
       align-items: center;
-      background-image: linear-gradient(to bottom, #edece7, #fdfdfd, #e9e8e0);
+      background-image: var(--main-background-light);
       border: var(--main-border);
       border-width: 9px;
       border-radius: 3px;

@@ -22,6 +22,7 @@ export enum BusEventsList {
   trushPocketItem,
   charTwitching,
   notificationClick,
+  userModalOk,
 }
 
 export enum GameStateSettings {
@@ -34,6 +35,7 @@ export enum GameStateSettings {
   selectedPocketItem,
   isDudeDropAvailable,
   userNotification,
+  userDialogModal,
 }
 
 export enum GamePages {
