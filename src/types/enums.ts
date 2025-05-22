@@ -21,6 +21,8 @@ export enum BusEventsList {
   usePocketItem,
   trushPocketItem,
   charTwitching,
+  notificationClick,
+  userModalOk,
 }
 
 export enum GameStateSettings {
@@ -32,6 +34,8 @@ export enum GameStateSettings {
   pocketItems,
   selectedPocketItem,
   isDudeDropAvailable,
+  userNotification,
+  userDialogModal,
 }
 
 export enum GamePages {
@@ -79,7 +83,6 @@ export enum CheckSymMapElements {
 
 export enum PocketItemsEnum {
   hand = 21,
-  sword = 82,
   key = 185,
   apple = 224,
   rock = 11,
@@ -113,4 +116,15 @@ export enum SceneLevelZIndexes {
 export enum ProgressBarTypes {
   usual,
   swordSwing,
+}
+
+export enum UserNotificationTypes {
+  error,
+  ok,
+  start,
+  break,
+}
+
+export enum UserModalAddOptionsEnum {
+  shownOnStart,
 }

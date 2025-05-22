@@ -59,46 +59,28 @@
     "ru": "Уровень:",
     "eng": "Level:"
   },
-
-
-  "map0": {
-    "ru": "Скрип теней",
-    "eng": "Shadow's Crypt"
+  "droppedItemrock": {
+    "ru": "камень",
+    "eng": "a stone"
   },
-  "map1": {
-    "ru": "Бездна пещер",
-    "eng": "Abyssal Cavern"
+  "boxSeachNothingAction": {
+    "ru": "Увы, вы ничего не нашли.",
+    "eng": "Unfortunately, you didn't find anything."
   },
-  "map2": {
-    "ru": "Логово дракона",
-    "eng": "Dragon's Lair"
+  "droppedItemActionhand": {
+    "ru": "Вы хотите что-то потрогать рукой, но нет нечего подходящего!",
+    "eng": "You want to touch something with hand, but nothing!"
   },
-  "map3": {
-    "ru": "Забытые катакомбы",
-    "eng": "Forgotten Catacombs"
+  "droppedItemActionItem": {
+    "ru": "Нет ничего, с чем бы этот {0} мог бы взаимодействовать!",
+    "eng": "There is nothing this {0} can interact with!"
   },
-  "map4": {
-    "ru": "Мрачный замок",
-    "eng": "Grimstone Keep"
+  "shownOnStart": {
+    "ru": "Показавать при запуске новой игры?",
+    "eng": "Show when starting a new game?"
   },
-  "map5": {
-    "ru": "Пустошь укуса",
-    "eng": "Bite Hollow"
-  },
-  "map6": {
-    "ru": "Проклятые шахты",
-    "eng": "Haunted Mines"
-  },
-  "map7": {
-    "ru": "Храм кровавой луны",
-    "eng": "Bloodmoon Temple"
-  },
-  "map8": {
-    "ru": "Затерянный лабиринт",
-    "eng": "Lost Labyrinth"
-  },
-  "map9": {
-    "ru": "Глубины инферно",
-    "eng": "Inferno Depths"
+  "buttonOk": {
+    "ru": "Хорошо",
+    "eng": "Ok"
   }
 }

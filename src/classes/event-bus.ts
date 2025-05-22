@@ -36,7 +36,7 @@ export class EventBus {
     eventBus.addEventListener(name, callbackWihBindThis)
   }
 
-  static off(name: string, callback: (e: Event) => void) {
+  static Off(name: string, callback: (e: Event) => void) {
     eventBus.removeEventListener(name, callback)
   }
 
@@ -56,6 +56,6 @@ export class EventBus {
   }
 
   static offStateChangesSubscribe(callback: (eventData: CustomEventInit) => void) {
-    EventBus.off(BusEventsList[BusEventsList.changeGameState], callback)
+    EventBus.Off(BusEventsList[BusEventsList.changeGameState], callback)
   }
 }

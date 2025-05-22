@@ -1,5 +1,9 @@
 
-import { PocketItemsEnum } from '@/types/enums'
+import {
+  PocketItemsEnum,
+  UserNotificationTypes,
+} from '@/types/enums'
+
 import {
   IPocketItemTypes,
   DroppedItemsList,
@@ -7,6 +11,18 @@ import {
 
 import { PocketItem } from '@/classes/pocket-item'
 import { Dude } from '@/classes/dude'
+
+const translatesDroppedItemKey = 'droppedItemAction'
+
+const getNotesForNoIteractiveItems = (item: PocketItemsEnum, char: Dude) => {
+  const translate = char.userModals.argsLoc(
+    translatesDroppedItemKey + 'Item', ['droppedItem' + PocketItemsEnum[item]])
+
+  return {
+    type: UserNotificationTypes.error,
+    text: translate,
+  }
+}
 
 export const pocketItemTypes: IPocketItemTypes = {
   [PocketItemsEnum.apple]: new PocketItem(
@@ -20,13 +36,6 @@ export const pocketItemTypes: IPocketItemTypes = {
     () => { console.log('you used the key!') },
     false,
     0.8,
-  ),
-  [PocketItemsEnum.sword]: new PocketItem(
-    PocketItemsEnum.sword,
-    { x: 10, y: 10 },
-    () => { console.log('you used sword!') },
-    true,
-    0.9,
   ),
   [PocketItemsEnum.hand]: new PocketItem(
     PocketItemsEnum.hand,
@@ -46,7 +55,11 @@ export const pocketItemTypes: IPocketItemTypes = {
 
         dude.pocketItemCollisionData = dude.dropItems.getItemDataForActiveItem(pocketItemData.coords)
       } else {
-        console.warn('You want to do with you hand, but there is nothing!')
+        dude.userModals.showNotification({
+          type: UserNotificationTypes.error,
+          text: dude.userModals.loc(
+            translatesDroppedItemKey + PocketItemsEnum[that.type]),
+        })
       }
     },
     false,
@@ -56,6 +69,11 @@ export const pocketItemTypes: IPocketItemTypes = {
   [PocketItemsEnum.rock]: new PocketItem(
     PocketItemsEnum.rock,
     { x: 15, y: 15 },
+    function (dude: Dude) {
+      // @ts-ignore
+      const that = this as PocketItem
+      dude.userModals.showNotification(getNotesForNoIteractiveItems(that.type, dude))
+    },
   ),
   [PocketItemsEnum.smolBranch]: new PocketItem(
     PocketItemsEnum.smolBranch,

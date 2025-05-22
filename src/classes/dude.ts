@@ -11,6 +11,8 @@ import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
 import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
+import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
+
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -28,6 +30,7 @@ import {
   EnvElementNullData,
   DudeProgresBarNullValues,
   IListOFEnvStaticElements,
+  INotificationData,
 } from '@/types/main-types'
 
 import {
@@ -53,6 +56,8 @@ export class Dude {
   _slotSystem: PocketSlotsSystem
   _progressBar: DudeProgressBar
   _staticElementsList: IListOFEnvStaticElements
+
+  userModals: NotificationsModalsSystem
 
   _tilePointer: Phaser.GameObjects.Arc | null = null
 
@@ -265,6 +270,7 @@ export class Dude {
     tips: IconTips,
     dropItems: DropItems,
     slotSystem: PocketSlotsSystem,
+    modalsSystem: NotificationsModalsSystem,
     keyAnimFrameSet: string, frameResolution: IResolution,
     staticElementsList: IListOFEnvStaticElements) {
 
@@ -339,6 +345,8 @@ export class Dude {
 
     this._progressBar = new DudeProgressBar(engine)
     this.progressBarValues = null
+
+    this.userModals = modalsSystem
 
     //create overlap with droppedItems for pick up them
     if (this.dropItems._group) {
@@ -609,7 +617,7 @@ export class Dude {
     }
 
     const element = this._staticElementsList[
-                  EnvStaticMapElements.GetIndexForStaticElement(String(envElementTile.index), plCords)]
+      EnvStaticMapElements.GetIndexForStaticElement(String(envElementTile.index), plCords)]
 
     if (!element || !element.isInteractive) {
       this.envCollisionElementData = null

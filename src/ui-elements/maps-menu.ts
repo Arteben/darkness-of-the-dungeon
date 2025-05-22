@@ -7,6 +7,7 @@ import { customElement } from 'lit/decorators.js'
 import { MainButtonRenderInfo, IJsonMap } from '@/types/main-types'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
+import { default as mapTranlates } from '@/translates/maps.json'
 
 interface IMapButton extends MainButtonRenderInfo {
   selected: boolean
@@ -21,9 +22,10 @@ export class MapsMenu extends GameStateElement {
     const mapList: IJsonMap[] = JsonMapList
 
     mapList.forEach((mapButton) => {
-      const newButton: IMapButton = { type: '', name: '', selected: false, difficult: 'easy', hidden: false }
+      const newButton: IMapButton =
+      { type: '', name: '', selected: false, difficult: 'easy', hidden: false }
 
-      newButton.name = this.loc(mapButton.name)
+      newButton.name = this.loc(mapButton.name, mapTranlates)
       newButton.type = mapButton.name
       newButton.difficult = this.loc(mapButton.level)
 

@@ -3,6 +3,7 @@ import { LitElement } from 'lit'
 import {
   SelectedJsonMap,
   NullOrGameStateSettings,
+  IJsonTranslatesType,
 } from '@/types/main-types'
 
 import { GameState } from '@/classes/game-state'
@@ -49,13 +50,13 @@ export class GameStateElement extends LitElement {
     }
   }
 
-  loc(someString: string): string {
+  loc(someString: string, pageTranslates?: IJsonTranslatesType): string {
     if (!this._game) {
       console.error('the component dosent find object game!!!!!!')
       return ''
     }
 
-    return this._game.loc(someString)
+    return this._game.locals.loc(someString, pageTranslates)
   }
 
   getSelectedMap(): SelectedJsonMap {

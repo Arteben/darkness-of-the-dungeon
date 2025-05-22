@@ -8,6 +8,7 @@ import { css, html, unsafeCSS } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
 import collonsPng from '@/styles/images/collons.png'
+import { default as mapTranlates } from '@/translates/maps.json'
 
 import {
   MainButtonType,
@@ -115,7 +116,7 @@ export class MainMenu extends GameStateElement {
         mapInfo = html`
           <info-panel ?smallmap=${true} style="max-width:150px;">
             <span slot="head">${this.loc('menuSelectedMap')}</span>
-            <span slot="content"> ${this.loc(map.name)} (${this.loc(map.level)})</span>
+            <span slot="content"> ${this.loc(map.name, mapTranlates)} (${this.loc(map.level)})</span>
           </info-panel>
         `
       }

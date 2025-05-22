@@ -16,6 +16,7 @@ import {
   ProgressBarTypes,
   PocketItemsEnum,
   EnvStaticElements,
+  UserNotificationTypes,
 } from '@/types/enums'
 
 import { Dude } from '@/classes/dude'
@@ -85,23 +86,21 @@ export class MapStaticElement {
       EventBus.On(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     } else {
       changeTile(this._nonInteractiveTile, this._tileIndex)
-      EventBus.off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
+      EventBus.Off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     }
 
     this.isInteractive = flag
   }
 
-  use(char: Dude) {
+  async use(char: Dude) {
     if (this._fillBar || !this.isInteractive) return
 
-    (async () => {
-      try {
-        const resultBarFill = await this.getProgressBarPromise(char)
-        if (resultBarFill == filledBarKey) {
-          this._useCallback(this, this._coords, char)
-        }
-      } catch (err) { }
-    })()
+    try {
+      const resultBarFill = await this.getProgressBarPromise(char)
+      if (resultBarFill == filledBarKey) {
+        this._useCallback(this, this._coords, char)
+      }
+    } catch (err) { }
   }
 
   isCorrectToolType(type: PocketItemsEnum) {
@@ -148,6 +147,11 @@ export class BoxStaticElement extends MapStaticElement {
       if (isFullBox) {
         const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
         char.dropItems.drop(coords, droppedElement)
+      } else {
+        char.userModals.showNotification({
+          type: UserNotificationTypes.error,
+          text: char.userModals.loc('boxSeachNothingAction'),
+        })
       }
 
       that.setInteractive(false)
