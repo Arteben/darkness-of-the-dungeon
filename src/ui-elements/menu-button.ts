@@ -1,5 +1,6 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { styleMap } from 'lit-html/directives/style-map.js'
 
 import { commonVars } from '@/utils/common-css-vars'
 
@@ -10,6 +11,9 @@ export class MainMenu extends LitElement {
 
   @property({ type: Boolean })
   isSpecial = false
+
+  @property({ type: String })
+  customMagins = ''
 
   private classesRender() {
     let classes = ''
@@ -27,8 +31,17 @@ export class MainMenu extends LitElement {
   }
 
   render() {
+    const buttonAddStyles = {
+      margin: this.customMagins != '' ? this.customMagins : '',
+    }
+
     return html`
-      <button class=${this.classesRender()}><slot></slot></button>
+      <button
+        class=${this.classesRender()}
+        style="${styleMap(buttonAddStyles)}"
+      >
+        <slot></slot>
+      </button>
     `
   }
 
@@ -36,19 +49,19 @@ export class MainMenu extends LitElement {
     commonVars,
     css`:host {
       display: block;
-      margin: 10px 0px;
     }
 
     button {
-    font-family: var(--main-buttons-font);
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    color: var(--main-color-light);
-    background-color: var(--main-buttons-background);
-    border: black solid 2px;
-    border-radius: 2px;
+      font-family: var(--main-buttons-font);
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--main-color-light);
+      background-color: var(--main-buttons-background);
+      border: black solid 2px;
+      border-radius: 2px;
+      margin: 10px 0px;
   }
 
     button.mainMenu, button.mapsMenu {

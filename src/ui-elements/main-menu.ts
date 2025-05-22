@@ -105,7 +105,7 @@ export class MainMenu extends GameStateElement {
       const map = this.getSelectedMap()
       if (buttonData.type == 'gameStart' && map) {
         mapInfo = html`
-          <info-panel ?smallmap=${true} style="max-width:150px;">
+          <info-panel ?smallmap="${true}" customMaxWidth="245px" class="infoPanel">
             <span slot="head">${this.loc('menuSelectedMap')}</span>
             <span slot="content"> ${this.loc(map.name, mapTranlates)} (${this.loc(map.level)})</span>
           </info-panel>
@@ -140,6 +140,10 @@ export class MainMenu extends GameStateElement {
       background-image: url(${unsafeCSS(collonsPng)});
       background-position: center;
       background-repeat: repeat-y;
+    }
+
+    .infoPanel {
+      margin-bottom: 20px;
     }
   `
 }

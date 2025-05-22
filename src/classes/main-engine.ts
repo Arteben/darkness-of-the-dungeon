@@ -82,21 +82,21 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    // this._modalsSystem.showModal({
-    //   text: 'Theres a baby in the back of the glider, but its not mine. Sure, she looks like my baby, but my baby never cries when were cruising through the Kuiper belt. Quite the opposite. Cruising through the solar systems outer reaches is sometimes the only way I can get her to fall asleep. But this baby is wailing like an electric guitar. And if theres any doubt, then theres the smell, or the lack of it. My baby farts like a race horse. No filtration system known to man can completely dilute it.',
-    //   callback: (options?: IUserModalAddOptions[]) => {
-    //     if (options && options.length > 0) {
-    //       options.forEach((element: IUserModalAddOptions) => {
-    //         console.log('options from callback', element.prop, element.value)
-    //       })
-    //     }
-    //   },
-    //   image: warriorImg,
-    //   options: [{
-    //     value: true,
-    //     prop: UserModalAddOptionsEnum.shownOnStart,
-    //   }]
-    // })
+    this._modalsSystem.showModal({
+      text: 'Theres a baby in the back of the glider, but its not mine. Sure, she looks like my baby, but my baby never cries when were cruising through the Kuiper belt. Quite the opposite. Cruising through the solar systems outer reaches is sometimes the only way I can get her to fall asleep. But this baby is wailing like an electric guitar. And if theres any doubt, then theres the smell, or the lack of it. My baby farts like a race horse. No filtration system known to man can completely dilute it.',
+      callback: (options?: IUserModalAddOptions[]) => {
+        if (options && options.length > 0) {
+          options.forEach((element: IUserModalAddOptions) => {
+            console.log('options from callback', element.prop, element.value)
+          })
+        }
+      },
+      image: warriorImg,
+      options: [{
+        value: true,
+        prop: UserModalAddOptionsEnum.shownOnStart,
+      }]
+    })
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,

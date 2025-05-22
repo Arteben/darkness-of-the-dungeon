@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js'
 
 import '@/ui-elements/font-icon'
 import '@/ui-elements/label-checkbox'
+import '@/ui-elements/info-panel'
 
 import { GameStateElement } from '@/classes/gamestate-element'
 import { commonVars } from '@/utils/common-css-vars'
@@ -67,15 +68,23 @@ export class UserDialogModals extends GameStateElement {
     return html`
       <div class="wrap">
         ${imgElement}
-        <div class="textClass">
-          <span>${userModal.text}</span>
-          ${userModal.options?.map(checkbox => {
-            return getOptionCheckbox(checkbox)
-          })}
-          <menu-button @click="${this.onClickOk}">
-            ${this.loc('buttonOk')}
-          </menu-button>
+        <info-panel
+          ?noBorders="${true}"
+          ?isCenterFloat="${true}"
+        >
+          <div class="content" slot="content">
+            <span>${userModal.text}</span>
+            ${userModal.options?.map(checkbox => {
+              return getOptionCheckbox(checkbox)
+            })}
+            <menu-button
+              customMagins="10px 0 0 0"
+              @click="${this.onClickOk}"
+            >
+              ${this.loc('buttonOk')}
+            </menu-button>
           </div>
+        </info-panel>
       </div>
     `
   }
@@ -115,23 +124,15 @@ export class UserDialogModals extends GameStateElement {
     }
 
     .imgClass {
-      height: 250px;
+      height: 220px;
       object-fit: contain;
     }
 
-    .textClass {
+    .content {
       display: flex;
       flex-direction: column;
       justify-content: start;
       align-items: center;
-      font-family: var(--info-panels-font);
-      background: var(--main-background-light);
-      font-weight: bold;
-      font-size: 17px;
-      padding: 20px;
-      padding-bottom: 0;
-      overflow: auto;
-      overflow-x: hidden;
     }`
   ]
 }

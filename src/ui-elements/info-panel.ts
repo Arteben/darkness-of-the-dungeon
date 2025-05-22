@@ -1,33 +1,53 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { styleMap } from 'lit-html/directives/style-map.js'
+import { classMap } from 'lit-html/directives/class-map.js'
 
 import { commonVars } from '@/utils/common-css-vars'
 
 @customElement('info-panel')
 export class InfoPanel extends LitElement {
-  @property({ type: Number })
-  customMaxWidth = 0
+  @property({ type: String })
+  customMaxWidth = ''
+
+  @property({ type: Boolean })
+  noBorders = false
 
   @property({ type: Boolean })
   smallMap = false
 
-  private isSmallClases() {
-    return this.smallMap ? 'isSmall' : ''
-  }
-
   render() {
+    const wrapStyles = {
+      width: this.customMaxWidth != '' ? this.customMaxWidth : '',
+    }
+
+    const wrapAddClasses = {
+      wrapNoBorders: this.noBorders,
+    }
+
+    const isSmallClass = { isSmall: this.smallMap }
+
     return html`
-      <h2 class="${this.isSmallClases()}">
-        <slot name="head"> </slot>
-      </h2> 
-      <div class="${this.isSmallClases()}">
-        <slot name="content"></slot>
+      <div class="wrap ${classMap(wrapAddClasses)}" style="${styleMap(wrapStyles)}">
+        <h2 class="${classMap(isSmallClass)}">
+          <slot name="head"> </slot>
+        </h2> 
+        <div class="textDiv ${classMap(isSmallClass)}">
+          <slot name="content"></slot>
+        </div>
       </div>`
   }
 
   static styles = [
     commonVars,
     css`:host {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .wrap {
       display: flex;
       flex-direction: column;
       justify-content: start;
@@ -38,34 +58,38 @@ export class InfoPanel extends LitElement {
       border-radius: 3px;
       color: var(--main-color-dark);
       font-family: var(--info-panels-font);
-      font-weight: bold;
-      font-size: 25px;
       overflow: auto;
       overflow-x: hidden;
-      max-width: 700px;
+      font-weight: bold;
+    }
+
+    .wrapNoBorders {
+      border: none;
     }
     
     h2 {
       margin: 20px 0 10px 0;
       border: #304147 solid 0;
       border-width: 0 0 1px 0;
+      font-size: 25px;
     }
 
     h2.isSmall {
       margin: 5px 10px 5px 10px;
       border: none;
-      font-size: 25px;
+      font-size: 22px;
       align-self: start;
     }
 
-    div {
+    .textDiv {
       display: flex;
       align-self: start;
-      margin: 0 20px 30px 20px;
+      font-size: 17px;
+      margin: 0 15px 20px 15px;
     }
 
     div.isSmall {
-      font-size: 20px;
+      font-size: 19px;
       margin: 0 10px 10px 10px;
     }`
   ]
