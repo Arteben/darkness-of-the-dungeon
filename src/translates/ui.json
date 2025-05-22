@@ -59,17 +59,14 @@
     "ru": "Уровень:",
     "eng": "Level:"
   },
-
   "droppedItemrock": {
     "ru": "камень",
     "eng": "a stone"
   },
-
   "boxSeachNothingAction": {
     "ru": "Увы, вы ничего не нашли.",
     "eng": "Unfortunately, you didn't find anything."
   },
-
   "droppedItemActionhand": {
     "ru": "Вы хотите что-то потрогать рукой, но нет нечего подходящего!",
     "eng": "You want to touch something with hand, but nothing!"
@@ -77,5 +74,13 @@
   "droppedItemActionItem": {
     "ru": "Нет ничего, с чем бы этот {0} мог бы взаимодействовать!",
     "eng": "There is nothing this {0} can interact with!"
+  },
+  "shownOnStart": {
+    "ru": "Показавать при запуске новой игры?",
+    "eng": "Show when starting a new game?"
+  },
+  "buttonOk": {
+    "ru": "Хорошо",
+    "eng": "Ok"
   }
 }

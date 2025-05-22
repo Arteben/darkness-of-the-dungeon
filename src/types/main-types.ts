@@ -13,6 +13,7 @@ import {
   DudeAnimations,
   ProgressBarTypes,
   UserNotificationTypes,
+  UserModalAddOptionsEnum,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -213,14 +214,17 @@ export interface INotificationAnimTimeouts {
 }
 
 export interface IUserModalAddOptions {
-  [index: string]: boolean
+  value: boolean
+  prop: UserModalAddOptionsEnum
 }
+
+export type UserModalCallback = (a?: IUserModalAddOptions[]) => void
 
 export interface IUserModalData {
   text: string
   image?: string
-  options?: IUserModalAddOptions
-  callback: (a?: IUserModalAddOptions) => void
+  options?: IUserModalAddOptions[]
+  callback: UserModalCallback
 }
 
 export type UserModalNullData = IUserModalData | null

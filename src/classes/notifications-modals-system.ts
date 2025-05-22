@@ -115,7 +115,7 @@ export class NotificationsModalsSystem {
     this._isShownNotification = false
   }
 
-  userModalClose(options?: IUserModalAddOptions) {
+  userModalClose(options?: IUserModalAddOptions[]) {
     this._state.userModal?.callback(options)
     EventBus.Off(BusEventsList[BusEventsList.userModalOk], this._callbackModalOk)
     this._isShowModal = false

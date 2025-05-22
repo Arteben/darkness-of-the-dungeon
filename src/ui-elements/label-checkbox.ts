@@ -12,7 +12,7 @@ export class LabelCheckbox extends LitElement {
     return html`
       <div class="root">
         <input
-          id="inputCheckbox" type="checkbox" checked="${this.hasChecked}" @change="${this.onCheckbox}">
+          id="inputCheckbox" type="checkbox" ?checked="${this.hasChecked}" @change="${this.onCheckbox}">
         <label class="label" for="inputCheckbox">
           <slot></slot>
         </label>

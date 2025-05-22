@@ -1,22 +1,25 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
-
-import warriorImg from '@assets/warrior-modal.png'
 
 import '@/ui-elements/font-icon'
 import '@/ui-elements/label-checkbox'
 
 import { GameStateElement } from '@/classes/gamestate-element'
-
 import { commonVars } from '@/utils/common-css-vars'
+
+import { EventBus } from '@/classes/event-bus'
 
 import {
   GameStateSettings,
+  UserModalAddOptionsEnum,
+  BusEventsList,
 } from '@/types/enums'
 import {
   NullOrGameStateSettings,
+  IUserModalAddOptions,
 } from '@/types/main-types'
+
+const userModalMaxWidth = '70%'
 
 @customElement('user-dialog-modals')
 export class UserDialogModals extends GameStateElement {
@@ -25,25 +28,55 @@ export class UserDialogModals extends GameStateElement {
     GameStateSettings.userDialogModal
   ]
 
-  onCheckbox(e: CustomEvent) {
-    console.log('get value from checkbox ', e.detail)
+  _modalAddOptions?: IUserModalAddOptions[]
+
+  onCheckbox(prop: UserModalAddOptionsEnum, value: boolean) {
+    const options = this._modalAddOptions
+    if (!options || options.length == 0) return
+    options.forEach((option: IUserModalAddOptions) => {
+      if (option.prop == prop) {
+        option.value = value
+      }
+    })
+  }
+
+  onClickOk() {
+    EventBus.Dispatch(
+      BusEventsList[BusEventsList.userModalOk], {options: this._modalAddOptions})
   }
 
   render() {
     if (!this._game) return
 
+    const userModal = this._state.userModal
+    if (userModal == null) {
+      this._modalAddOptions = undefined
+      return
+    }
+
+    this._modalAddOptions = userModal.options
+
+    const getOptionCheckbox = (checkbox: IUserModalAddOptions) => {
+    return html`<label-checkbox
+        ?hasChecked="${checkbox.value}"
+        @checkbox="${(e: CustomEvent) => {this.onCheckbox(checkbox.prop, e.detail) }}"
+        >${this.loc(UserModalAddOptionsEnum[checkbox.prop])}</label-checkbox>`
+  }
+
+    const imgElement = userModal.image
+      ? html`<img class="imgClass" src="${userModal.image}"/>` : html``
+
     return html`
       <div class="wrap">
-        <img class="imgClass" src="${warriorImg}"/>
+        ${imgElement}
         <div class="textClass">
-          <span>
-            Приведённый выше пример показывает очень простое использование элемента <img>. Атрибут src обязателен и содержит путь к изображению, которое вы хотите встроить в документ. Атрибут alt содержит текстовое описание изображения, которое не обязательно, но невероятно полезно для доступности — программы чтения с экрана читают это описание своим пользователям, так они знают какое изображение показано, и так же оно отображается на странице, если изображение не может быть загружено по какой-либо причине.
-          </span>
-          <label-checkbox
-            hasChecked="true"
-            @checkbox="${this.onCheckbox}"
-            >Продолжить?</label-checkbox>
-          <menu-button>Ok!</menu-button>
+          <span>${userModal.text}</span>
+          ${userModal.options?.map(checkbox => {
+            return getOptionCheckbox(checkbox)
+          })}
+          <menu-button @click="${this.onClickOk}">
+            ${this.loc('buttonOk')}
+          </menu-button>
           </div>
       </div>
     `
@@ -56,9 +89,18 @@ export class UserDialogModals extends GameStateElement {
       flex-direction: column;
       align-items: center;
       position: absolute;
-      max-width: 70%;
-      max-height: 90%;
-      top: 30px;
+      max-width: ${unsafeCSS(userModalMaxWidth)};
+      max-height: 80%;
+      top: 10%;
+    }
+
+    @keyframes expandIn {
+      from {
+        max-width: 0%;
+      }
+      to {
+        max-width: ${unsafeCSS(userModalMaxWidth)};
+      }
     }
     
     .wrap {
@@ -70,6 +112,8 @@ export class UserDialogModals extends GameStateElement {
       outline-width: 5px;
       line-height: 30px;
       overflow: hidden;
+      animation-name: expandIn;
+      animation-duration: 0.3s;
     }
 
     .imgClass {
@@ -90,13 +134,6 @@ export class UserDialogModals extends GameStateElement {
       padding-bottom: 0;
       overflow: auto;
       overflow-x: hidden;
-    }
-
-    /* @keyframes expandIn {
-      from {
-      }
-      to {
-      }
-    } */`
+    }`
   ]
 }

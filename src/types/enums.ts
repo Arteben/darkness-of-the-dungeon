@@ -124,3 +124,7 @@ export enum UserNotificationTypes {
   start,
   break,
 }
+
+export enum UserModalAddOptionsEnum {
+  shownOnStart,
+}
