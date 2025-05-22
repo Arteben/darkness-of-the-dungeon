@@ -74,11 +74,7 @@ export class MainMenu extends GameStateElement {
   private OnClickButton(type: string, e: Event) {
     e.stopPropagation()
 
-    if (!this._game) {
-      return
-    }
-
-    const state = this._game.state
+    const state = this._state
 
     switch (type) {
       case 'gameStart':
@@ -99,12 +95,7 @@ export class MainMenu extends GameStateElement {
     }
   }
 
-  render() {
-
-    if (!this._game) {
-      return
-    }
-
+  renderWithGame() {
     const renderOrderButton = (buttonData: MenuButtonRenderInfo) => {
       if (buttonData.hidden) {
         return html``
@@ -132,7 +123,7 @@ export class MainMenu extends GameStateElement {
     }
 
     return html`
-        ${this.getRenderButtons(this._game.state).map(el => renderOrderButton(el))}
+        ${this.getRenderButtons(this._state).map(el => renderOrderButton(el))}
     `
   }
 

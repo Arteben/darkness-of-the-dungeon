@@ -50,9 +50,7 @@ export class GameApp extends GameStateElement {
     EventBus.Dispatch(BusEventsList[BusEventsList.notificationClick], null)
   }
 
-  render() {
-    if (!this._game) return
-
+  renderWithGame() {
     let mainMenu = html``
     let headMenu = html`<head-menu></head-menu>`
     let convasDisplay = { 'display': 'none' }

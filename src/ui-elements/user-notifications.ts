@@ -5,6 +5,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import '@/ui-elements/font-icon'
 
 import { GameStateElement } from '@/classes/gamestate-element'
+import { DungeonDarkness } from '@/classes/dungeon-darkness'
 
 import { commonVars } from '@/utils/common-css-vars'
 
@@ -27,13 +28,11 @@ export class UserNotifications extends GameStateElement {
     GameStateSettings.userNotification
   ]
 
-  render() {
-    if (!this._game) return
-
+  renderWithGame(game: DungeonDarkness) {
     const notification: NotificationNullData = this._state.userNotification
     if (notification == null) return
 
-    const timeouts = this._game.notificationAnimTimeouts
+    const timeouts = game.notificationAnimTimeouts
 
     let startDiv = html``
     let mainTextDiv = html``

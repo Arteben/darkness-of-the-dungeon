@@ -6,6 +6,7 @@ import {
   IJsonTranslatesType,
 } from '@/types/main-types'
 
+import { DungeonDarkness } from '@/classes/dungeon-darkness'
 import { GameState } from '@/classes/game-state'
 import { EventBus } from '@/classes/event-bus'
 
@@ -50,12 +51,17 @@ export class GameStateElement extends LitElement {
     }
   }
 
-  loc(someString: string, pageTranslates?: IJsonTranslatesType): string {
-    if (!this._game) {
-      console.error('the component dosent find object game!!!!!!')
-      return ''
-    }
+  render() {
+    if (!this._game) { return }
+    return this.renderWithGame(this._game)
+  }
 
+  // added function here
+  // it runs with GAME OBJECT!
+  renderWithGame(game: DungeonDarkness) {}
+
+  loc(someString: string, pageTranslates?: IJsonTranslatesType): string {
+    if (!this._game) return ''
     return this._game.locals.loc(someString, pageTranslates)
   }
 

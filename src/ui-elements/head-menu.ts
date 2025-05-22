@@ -24,14 +24,14 @@ export class MainMenu extends GameStateElement {
     GameStateSettings.lang,
   ]
 
-  render() {
+  renderWithGame() {
     const map = this.getSelectedMap()
     let mapName = ''
     if (map) {
       mapName = this.loc(map.name, mapTranlates)
     }
 
-    const isGame = this._game && this._state.page == GamePages.game
+    const isGame = this._state.page == GamePages.game
     const pocketSlots = isGame ? html`<pocket-slots-ui></pocket-slots-ui>` : html``
 
     return html`

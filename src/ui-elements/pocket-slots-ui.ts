@@ -17,9 +17,7 @@ import '@/ui-elements/pocket-slots-item-ui'
 @customElement('pocket-slots-ui')
 export class PocketSlotsUi extends GameStateElement {
 
-  render() {
-    if (!this._game) return
-
+  renderWithGame() {
     const pocketSlots = this._state.pocketItems
 
     const getPocketSlot = (item: PocketItemNull, idx: number) => {

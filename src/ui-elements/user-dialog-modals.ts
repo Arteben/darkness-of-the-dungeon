@@ -45,9 +45,7 @@ export class UserDialogModals extends GameStateElement {
       BusEventsList[BusEventsList.userModalOk], {options: this._modalAddOptions})
   }
 
-  render() {
-    if (!this._game) return
-
+  renderWithGame() {
     const userModal = this._state.userModal
     if (userModal == null) {
       this._modalAddOptions = undefined
