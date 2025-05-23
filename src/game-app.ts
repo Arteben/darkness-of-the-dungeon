@@ -84,10 +84,9 @@ export class GameApp extends GameStateElement {
               </user-notifications>`
             : html``
 
-        // userModalElement =
-        //   this._state.userModal != null
-        //     ? html`<user-dialog-modals></user-dialog-modals>` : html``
-        userModalElement = html`<user-dialog-modals></user-dialog-modals>`
+        userModalElement =
+          this._state.userModal != null
+            ? html`<user-dialog-modals></user-dialog-modals>` : html``
         break
       case GamePages.maps:
         mapsMenu = html`<maps-menu></maps-menu>`

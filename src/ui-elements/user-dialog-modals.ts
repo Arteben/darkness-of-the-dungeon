@@ -57,6 +57,7 @@ export class UserDialogModals extends GameStateElement {
 
     const getOptionCheckbox = (checkbox: IUserModalAddOptions) => {
     return html`<label-checkbox
+        class='labelCheckbox'
         ?hasChecked="${checkbox.value}"
         @checkbox="${(e: CustomEvent) => {this.onCheckbox(checkbox.prop, e.detail) }}"
         >${this.loc(UserModalAddOptionsEnum[checkbox.prop])}</label-checkbox>`
@@ -133,6 +134,10 @@ export class UserDialogModals extends GameStateElement {
       flex-direction: column;
       justify-content: start;
       align-items: center;
+    }
+    
+    .labelCheckbox {
+      font-size: 14px;
     }`
   ]
 }

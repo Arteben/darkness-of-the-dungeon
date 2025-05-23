@@ -5,6 +5,7 @@ import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 import { Dude } from '@/classes/dude'
+import { ScopeEndGame } from '@/classes/scope-and-end-game'
 
 import {
   Languages,
@@ -50,6 +51,7 @@ export interface IJsonTranslatesType {
 
 export interface ILocSettings {
   isSound: boolean
+  isShowGameIntro: boolean
   selectedMap?: string
 }
 
@@ -57,14 +59,6 @@ export interface IJsonMap {
   name: string
   file: string
   level: string
-}
-
-export interface IStateParams extends IHashParams, ILocSettings {
-  lang: Languages
-  page: GamePages
-  isGameStarted: boolean
-  isSound: boolean
-  selectedMap?: string
 }
 
 // phaser types
@@ -118,6 +112,7 @@ export interface IParamsForInitEngine {
   nameMap: string
   slotsSystem: PocketSlotsSystem
   modalsSystem: NotificationsModalsSystem
+  scopeEndGame: ScopeEndGame
 }
 
 export interface ILoadedTileSets {

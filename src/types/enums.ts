@@ -36,6 +36,7 @@ export enum GameStateSettings {
   isDudeDropAvailable,
   userNotification,
   userDialogModal,
+  isShowGameIntro,
 }
 
 export enum GamePages {

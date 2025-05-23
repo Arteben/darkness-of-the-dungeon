@@ -23,6 +23,7 @@ import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { MainEngine } from '@/classes/main-engine'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem as ModalsSystem } from '@/classes/notifications-modals-system'
+import { ScopeEndGame } from '@/classes/scope-and-end-game'
 
 export let dungeonDarknessGame: DungeonDarkness | null = null
 
@@ -74,6 +75,8 @@ export class DungeonDarkness {
     hold: 10,
   }
 
+  _scopeEndGame?: ScopeEndGame
+
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     dungeonDarknessGame = this
@@ -103,15 +106,16 @@ export class DungeonDarkness {
 
   startMainEngine() {
     const map = this.getSelectedMap()
-    if (!this.phaser || !map || !map.name) return
+    if (!this.phaser || !this._scopeEndGame || !map) return
 
     const initParams: IParamsForInitEngine = {
       nameMap: map.name,
       slotsSystem: this._slotsSystem,
       modalsSystem: this._modalsSystem,
+      scopeEndGame: this._scopeEndGame
     }
     this.phaser.scene.start(this._mainSceneName, initParams)
-    this.phaser.pause()
+    this._scopeEndGame.pause()
   }
 
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
@@ -119,6 +123,7 @@ export class DungeonDarkness {
     this._phConfig.parent = parentApp
     this._phConfig.canvas = canvas
     this.phaser = new PhaserGame(this._phConfig)
+    this._scopeEndGame = new ScopeEndGame(this.phaser, this.state)
     this.phaser.scene.add(this._mainSceneName, MainEngine, false)
     this.startMainEngine()
   }
@@ -139,20 +144,19 @@ export class DungeonDarkness {
 
   private onChangeGameState(data: CustomEventInit) {
     const eventDetail = data.detail as GameStateChangeData
-    if (!this.phaser) return
+    if (!this._scopeEndGame) return
 
     if (eventDetail.property == GameStateSettings.pages) {
       if (this.state.page == GamePages.game) {
-        if (this.phaser.isPaused) {
-          this.phaser.resume()
-          if (!this.state.isGameStarted) {
-            this.state.isGameStarted = true
-          }
+        if (this.state.isGameStarted) {
+          this._scopeEndGame.resume()
+        } else if (!this._scopeEndGame.isShowIntro()) {
+          this._scopeEndGame.startGame()
         }
 
         window.setTimeout(() => { this.onWindowResize() }, 100)
-      } else if (!this.phaser.isPaused) {
-        this.phaser.pause()
+      } else {
+        this._scopeEndGame.pause()
       }
     }
 
@@ -162,10 +166,10 @@ export class DungeonDarkness {
   }
 
   restartMainEngine() {
-    if (!this.phaser) return
+    if (!this.phaser || !this._scopeEndGame) return
 
-    this.state.isGameStarted = false
     this._slotsSystem.cleanAllSlots()
+    this._scopeEndGame.endGame()
     this.phaser.scene.stop(this._mainSceneName)
     this.startMainEngine()
   }

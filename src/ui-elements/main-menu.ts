@@ -13,8 +13,9 @@ import { default as mapTranlates } from '@/translates/maps.json'
 import {
   MainButtonType,
   MainButtonRenderInfo,
+  NullOrGameStateSettings,
 } from '@/types/main-types'
-import { Languages, GamePages } from '@/types/enums'
+import { Languages, GamePages, GameStateSettings } from '@/types/enums'
 import { GameState } from '@/classes/game-state'
 
 
@@ -33,6 +34,13 @@ const buttons: Array<MainButtonType> = [
 
 @customElement('main-menu')
 export class MainMenu extends GameStateElement {
+
+  _stateSettings: NullOrGameStateSettings = [
+    GameStateSettings.isGameStarted,
+    GameStateSettings.isSound,
+    GameStateSettings.lang,
+    GameStateSettings.pages,
+  ]
 
   getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []

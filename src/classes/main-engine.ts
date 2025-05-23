@@ -9,7 +9,7 @@ import {
   IUserModalAddOptions,
 } from '@/types/main-types'
 
-import {UserModalAddOptionsEnum} from '@/types/enums'
+import { UserModalAddOptionsEnum } from '@/types/enums'
 
 // assets
 import tilesRaw from '@assets/castle-tiles.png'
@@ -31,6 +31,7 @@ import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
+import { ScopeEndGame } from '@/classes/scope-and-end-game'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -44,6 +45,8 @@ export class MainEngine extends Scene {
   _slotSystem: PocketSlotsSystem
   //@ts-ignore
   _modalsSystem: NotificationsModalsSystem
+  //@ts-ignore
+  _scopeEndGame: ScopeEndGame
 
 
   constructor() {
@@ -54,6 +57,7 @@ export class MainEngine extends Scene {
     this._selectedMap = initParams.nameMap
     this._slotSystem = initParams.slotsSystem
     this._modalsSystem = initParams.modalsSystem
+    this._scopeEndGame = initParams.scopeEndGame
   }
 
   create() {
@@ -82,22 +86,6 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    this._modalsSystem.showModal({
-      text: 'Theres a baby in the back of the glider, but its not mine. Sure, she looks like my baby, but my baby never cries when were cruising through the Kuiper belt. Quite the opposite. Cruising through the solar systems outer reaches is sometimes the only way I can get her to fall asleep. But this baby is wailing like an electric guitar. And if theres any doubt, then theres the smell, or the lack of it. My baby farts like a race horse. No filtration system known to man can completely dilute it.',
-      callback: (options?: IUserModalAddOptions[]) => {
-        if (options && options.length > 0) {
-          options.forEach((element: IUserModalAddOptions) => {
-            console.log('options from callback', element.prop, element.value)
-          })
-        }
-      },
-      image: warriorImg,
-      options: [{
-        value: true,
-        prop: UserModalAddOptionsEnum.shownOnStart,
-      }]
-    })
-
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,
       this._slotSystem, this._modalsSystem,
@@ -105,6 +93,27 @@ export class MainEngine extends Scene {
       { width: 32, height: 45 } as IResolution,
       listOfStaticElements,
     )
+
+    if (this._scopeEndGame.isShowIntro()) {
+      this._modalsSystem.showModal({
+        text: this._modalsSystem.loc('gameIntroModalText'),
+        callback: (options?: IUserModalAddOptions[]) => {
+          this._scopeEndGame.startGame()
+
+          if (!options) return
+          options.forEach((element: IUserModalAddOptions) => {
+            if (UserModalAddOptionsEnum[element.prop] == 'shownOnStart') {
+              this._scopeEndGame.setIsShowIntro(element.value)
+            }
+          })
+        },
+        image: warriorImg,
+        options: [{
+          value: true,
+          prop: UserModalAddOptionsEnum.shownOnStart,
+        }]
+      })
+    }
   }
 
   update(time: number): void {

@@ -7,7 +7,6 @@ import {
 import {
   IHashParams,
   ILocSettings,
-  IStateParams,
   GameStateChangeData,
   PocketItemNull,
   NotificationNullData,
@@ -16,16 +15,14 @@ import {
 
 import { EventBus } from '@/classes/event-bus'
 
-export class GameState implements IStateParams {
+export class GameState implements IHashParams, ILocSettings {
 
-  private _page: GamePages = GamePages.mainMenu
-  private _lang: Languages = Languages.eng
-  private _isGameStarted: boolean = false
-  private _isSound: boolean = true
-  private _selectedMap?: string
 
   // pages
+  private _page: GamePages = GamePages.mainMenu
   public set page(page: GamePages) {
+    if (page == this._page) return
+
     this._page = page
     this.triggerChnageState(GameStateSettings.pages)
   }
@@ -33,7 +30,10 @@ export class GameState implements IStateParams {
     return this._page
   }
   // lang
+  private _lang: Languages = Languages.eng
   public set lang(lang: Languages) {
+    if (this._lang == lang) return
+
     this._lang = lang
     this.triggerChnageState(GameStateSettings.lang)
   }
@@ -42,7 +42,10 @@ export class GameState implements IStateParams {
   }
   //
   // isGameStarted
+  private _isGameStarted: boolean = false
   public set isGameStarted(flag: boolean) {
+    if (this._isGameStarted == flag) return
+
     this._isGameStarted = flag
     this.triggerChnageState(GameStateSettings.isGameStarted)
   }
@@ -51,6 +54,7 @@ export class GameState implements IStateParams {
   }
   //
   // isSound
+  private _isSound: boolean = true
   public set isSound(flag: boolean) {
     if (this._isSound != flag) {
       this._isSound = flag
@@ -62,11 +66,11 @@ export class GameState implements IStateParams {
   }
   //
   // selected map
+  private _selectedMap?: string
   public set selectedMap(str: string) {
-    if (this._selectedMap != str) {
-      this._selectedMap = str
-      this.triggerChnageState(GameStateSettings.selectedMap)
-    }
+    if (this._selectedMap == str) return
+    this._selectedMap = str
+    this.triggerChnageState(GameStateSettings.selectedMap)
   }
   public get selectedMap(): string | undefined {
     return this._selectedMap
@@ -117,7 +121,7 @@ export class GameState implements IStateParams {
   }
   //
 
-    // userModal
+  // userModal
   private _userModal: UserModalNullData = null
   public set userModal(data: UserModalNullData) {
     if (data == this._userModal) return
@@ -130,6 +134,19 @@ export class GameState implements IStateParams {
   }
   //
 
+  // isShowGameIntro
+  private _isShowGameIntro: boolean = true
+  public set isShowGameIntro(flag: boolean) {
+    if (flag == this._isShowGameIntro) return
+
+    this._isShowGameIntro = flag
+    this.triggerChnageState(GameStateSettings.isShowGameIntro)
+  }
+  public get isShowGameIntro(): boolean {
+    return this._isShowGameIntro
+  }
+  //
+
   constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {
       this.lang = newParams.lang
@@ -139,6 +156,7 @@ export class GameState implements IStateParams {
     if (locSettings) {
       this._isSound = locSettings.isSound
       this._selectedMap = locSettings.selectedMap
+      this._isShowGameIntro = locSettings.isShowGameIntro
     }
   }
 
