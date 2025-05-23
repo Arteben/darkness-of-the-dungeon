@@ -111,7 +111,7 @@ export class MainEngine extends Scene {
         options: [{
           value: true,
           prop: UserModalAddOptionsEnum.shownOnStart,
-        }]
+        }],
       })
     }
   }

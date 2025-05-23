@@ -18,6 +18,7 @@ import {
 import {
   NullOrGameStateSettings,
   IUserModalAddOptions,
+  IUserModalAddTitle,
 } from '@/types/main-types'
 
 const userModalMaxWidth = '70%'
@@ -43,7 +44,7 @@ export class UserDialogModals extends GameStateElement {
 
   onClickOk() {
     EventBus.Dispatch(
-      BusEventsList[BusEventsList.userModalOk], {options: this._modalAddOptions})
+      BusEventsList[BusEventsList.userModalOk], { options: this._modalAddOptions })
   }
 
   renderWithGame() {
@@ -56,15 +57,27 @@ export class UserDialogModals extends GameStateElement {
     this._modalAddOptions = userModal.options
 
     const getOptionCheckbox = (checkbox: IUserModalAddOptions) => {
-    return html`<label-checkbox
+      return html`<label-checkbox
         class='labelCheckbox'
         ?hasChecked="${checkbox.value}"
-        @checkbox="${(e: CustomEvent) => {this.onCheckbox(checkbox.prop, e.detail) }}"
+        @checkbox="${(e: CustomEvent) => { this.onCheckbox(checkbox.prop, e.detail) }}"
         >${this.loc(UserModalAddOptionsEnum[checkbox.prop])}</label-checkbox>`
-  }
+    }
+
+    const getTitle = (title: IUserModalAddTitle) => {
+      return html`<span class="specialTitleText">${title.title}:</span><span> ${title.value}</span><br>`
+    }
 
     const imgElement = userModal.image
       ? html`<img class="imgClass" src="${userModal.image}"/>` : html``
+
+    let titlesElements = html``
+    const titles = userModal.titles
+    if (titles && titles.length > 0) {
+      titlesElements = html`<span class="titles">
+        ${titles.map(title => getTitle(title))}
+      </span>`
+    }
 
     return html`
       <div class="wrap">
@@ -75,6 +88,7 @@ export class UserDialogModals extends GameStateElement {
         >
           <div class="content" slot="content">
             <span>${userModal.text}</span>
+            ${titlesElements}
             ${userModal.options?.map(checkbox => {
               return getOptionCheckbox(checkbox)
             })}
@@ -137,7 +151,20 @@ export class UserDialogModals extends GameStateElement {
     }
     
     .labelCheckbox {
-      font-size: 14px;
+      font-size: 15px;
+      font-family: 'Faberge';
+      font-weight: normal;
+    }
+    
+    .titles {
+      font-family: 'Faberge';
+      margin: 10px 0;
+      font-weight: normal;
+      font-size: 15px;
+    }
+    
+    .specialTitleText {
+      font-weight: bold
     }`
   ]
 }

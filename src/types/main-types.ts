@@ -213,12 +213,18 @@ export interface IUserModalAddOptions {
   prop: UserModalAddOptionsEnum
 }
 
+export interface IUserModalAddTitle {
+  title: string
+  value: string
+}
+
 export type UserModalCallback = (a?: IUserModalAddOptions[]) => void
 
 export interface IUserModalData {
   text: string
   image?: string
   options?: IUserModalAddOptions[]
+  titles?: IUserModalAddTitle[]
   callback: UserModalCallback
 }
 
