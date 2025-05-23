@@ -11,6 +11,7 @@ import {
   PocketItemNull,
   NotificationNullData,
   UserModalNullData,
+  ISelectedMap,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
@@ -66,13 +67,13 @@ export class GameState implements IHashParams, ILocSettings {
   }
   //
   // selected map
-  private _selectedMap?: string
-  public set selectedMap(str: string) {
-    if (this._selectedMap == str) return
-    this._selectedMap = str
+  private _selectedMap?: ISelectedMap
+  public set selectedMap(data: ISelectedMap) {
+    if (data == this._selectedMap) return
+    this._selectedMap = data
     this.triggerChnageState(GameStateSettings.selectedMap)
   }
-  public get selectedMap(): string | undefined {
+  public get selectedMap(): ISelectedMap | undefined {
     return this._selectedMap
   }
   //

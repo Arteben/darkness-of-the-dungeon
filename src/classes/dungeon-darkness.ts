@@ -1,7 +1,6 @@
 import { GamePages, GameStateSettings } from '@/types/enums'
 
 import {
-  IJsonTranslatesType,
   IJsonMap,
   IResolution,
   GameStateChangeData,
@@ -92,11 +91,15 @@ export class DungeonDarkness {
     // select any map if map not selected!
     if (!this.getSelectedMap()) {
       const mapList = JsonMapList as IJsonMap[]
-      if (mapList.length > 0) {
-        this.state.selectedMap = mapList[0].name
-      } else {
+
+      if (mapList.length == 0) {
         console.error('MAPS arent unviable')
         return
+      }
+
+      this.state.selectedMap = {
+        type: mapList[0].name,
+        difficult: mapList[0].level,
       }
     }
 
@@ -135,7 +138,7 @@ export class DungeonDarkness {
     if (!selectedMap)
       return null
 
-    const findedMapIndex = mapList.findIndex((el) => el.name == selectedMap)
+    const findedMapIndex = mapList.findIndex((el) => el.name == selectedMap.type)
     if (findedMapIndex == -1)
       return null
 

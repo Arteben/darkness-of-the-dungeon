@@ -45,7 +45,7 @@ const createLabyrinth = (degree) => {
 };
 
 const getElementMapList = (name, nameMapFile, w, h) => {
-  const levels = ['easy', 'middle', 'hard', 'veryhard'];
+  const levels = [0, 1, 2, 3];
   const getLevels = (width, height) => {
     const div = Math.floor((width + height) / 100);
     return div > (levels.length - 1) ? (levels.length - 1) : div;

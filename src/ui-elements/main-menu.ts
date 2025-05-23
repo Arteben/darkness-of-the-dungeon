@@ -15,7 +15,13 @@ import {
   MainButtonRenderInfo,
   NullOrGameStateSettings,
 } from '@/types/main-types'
-import { Languages, GamePages, GameStateSettings } from '@/types/enums'
+import {
+  Languages,
+  GamePages,
+  GameStateSettings,
+  DifficultyLevels,
+} from '@/types/enums'
+
 import { GameState } from '@/classes/game-state'
 
 
@@ -115,7 +121,9 @@ export class MainMenu extends GameStateElement {
         mapInfo = html`
           <info-panel ?smallmap="${true}" customMaxWidth="245px" class="infoPanel">
             <span slot="head">${this.loc('menuSelectedMap')}</span>
-            <span slot="content"> ${this.loc(map.name, mapTranlates)} (${this.loc(map.level)})</span>
+            <span slot="content">
+              ${this.loc(map.name, mapTranlates)} (${this.loc(DifficultyLevels[map.level])})
+            </span>
           </info-panel>
         `
       }

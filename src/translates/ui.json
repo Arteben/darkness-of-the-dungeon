@@ -40,20 +40,20 @@
     "eng": "Change the level"
   },
   "easy": {
-    "ru": "легкий",
-    "eng": "easy"
+    "ru": "Легкий",
+    "eng": "Easy"
   },
   "middle": {
-    "ru": "средний",
-    "eng": "middle"
+    "ru": "Cредний",
+    "eng": "Middle"
   },
   "hard": {
-    "ru": "cложный",
-    "eng": "hard"
+    "ru": "Cложный",
+    "eng": "Hard"
   },
   "veryhard": {
     "ru": "Очень cложный",
-    "eng": "very hard"
+    "eng": "Very hard"
   },
   "menuSelectedMap": {
     "ru": "Уровень:",

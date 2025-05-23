@@ -15,6 +15,7 @@ import {
   ProgressBarTypes,
   UserNotificationTypes,
   UserModalAddOptionsEnum,
+  DifficultyLevels,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -52,13 +53,13 @@ export interface IJsonTranslatesType {
 export interface ILocSettings {
   isSound: boolean
   isShowGameIntro: boolean
-  selectedMap?: string
+  selectedMap?: ISelectedMap
 }
 
 export interface IJsonMap {
   name: string
   file: string
-  level: string
+  level: DifficultyLevels
 }
 
 // phaser types
@@ -229,3 +230,8 @@ export interface IUserModalData {
 }
 
 export type UserModalNullData = IUserModalData | null
+
+export interface ISelectedMap {
+  type: string
+  difficult: DifficultyLevels
+}

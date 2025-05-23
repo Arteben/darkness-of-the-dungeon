@@ -8,6 +8,7 @@ export enum DifficultyLevels {
   easy,
   middle,
   hard,
+  veryhard,
 }
 
 export enum ImportantDomElementIds {
@@ -128,4 +129,10 @@ export enum UserNotificationTypes {
 
 export enum UserModalAddOptionsEnum {
   shownOnStart,
+}
+
+export enum ScopeActions {
+  searchBox,
+  difficultLevel,
+  onTimes,
 }
