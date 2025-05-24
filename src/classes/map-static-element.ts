@@ -17,6 +17,7 @@ import {
   PocketItemsEnum,
   EnvStaticElements,
   UserNotificationTypes,
+  ScopeActions,
 } from '@/types/enums'
 
 import { Dude } from '@/classes/dude'
@@ -36,7 +37,7 @@ export class MapStaticElement {
   // seconds * 10
   _fillBarTime: number
   _nonInteractiveTile: EnvStaticElements
-  _tileIndex: EnvStaticElements
+  tileIndex: EnvStaticElements
   _coords: ITilesCoords
 
   constructor(
@@ -54,7 +55,7 @@ export class MapStaticElement {
     this.iconTip = tip
     this._useCallback = callback
     this.toolType = pocketItemType
-    this._tileIndex = tileIndex
+    this.tileIndex = tileIndex
     this._nonInteractiveTile = noInterTileIndex
     this._coords = coords
 
@@ -82,10 +83,10 @@ export class MapStaticElement {
     }
 
     if (flag) {
-      changeTile(this._tileIndex, this._nonInteractiveTile)
+      changeTile(this.tileIndex, this._nonInteractiveTile)
       EventBus.On(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     } else {
-      changeTile(this._nonInteractiveTile, this._tileIndex)
+      changeTile(this._nonInteractiveTile, this.tileIndex)
       EventBus.Off(BusEventsList[BusEventsList.charTwitching], this._eventBusFunc)
     }
 
@@ -98,7 +99,7 @@ export class MapStaticElement {
     try {
       const resultBarFill = await this.getProgressBarPromise(char)
       if (resultBarFill == filledBarKey) {
-        this._useCallback(this, this._coords, char)
+        this._useCallback(this._coords, char)
       }
     } catch (err) { }
   }
@@ -142,11 +143,12 @@ export class BoxStaticElement extends MapStaticElement {
     list: DroppedItemsList,
     isAlwaysFull: boolean = true,
   ) {
-    const callback = function (that: MapStaticElement, coords: ITilesCoords, char: Dude) {
+    const callback = function (this: MapStaticElement, coords: ITilesCoords, char: Dude) {
       const isFullBox = isAlwaysFull || getRandomIntNumber(1, 2) == 1
       if (isFullBox) {
         const droppedElement = list[getRandomIntNumber(1, list.length) - 1]
         char.dropItems.drop(coords, droppedElement)
+        char.scopeEndGame.addScope(ScopeActions.searchBox)
       } else {
         char.userModals.showNotification({
           type: UserNotificationTypes.error,
@@ -154,7 +156,7 @@ export class BoxStaticElement extends MapStaticElement {
         })
       }
 
-      that.setInteractive(false)
+      this.setInteractive(false)
     }
 
     const time = getRandomIntNumber(2, 5)

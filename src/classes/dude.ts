@@ -12,7 +12,7 @@ import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
 import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
-
+import { ScopeEndGame } from '@/classes/scope-and-end-game'
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -30,7 +30,6 @@ import {
   EnvElementNullData,
   DudeProgresBarNullValues,
   IListOFEnvStaticElements,
-  INotificationData,
 } from '@/types/main-types'
 
 import {
@@ -56,6 +55,7 @@ export class Dude {
   _slotSystem: PocketSlotsSystem
   _progressBar: DudeProgressBar
   _staticElementsList: IListOFEnvStaticElements
+  scopeEndGame: ScopeEndGame
 
   userModals: NotificationsModalsSystem
 
@@ -271,6 +271,7 @@ export class Dude {
     dropItems: DropItems,
     slotSystem: PocketSlotsSystem,
     modalsSystem: NotificationsModalsSystem,
+    scopeEndGame: ScopeEndGame,
     keyAnimFrameSet: string, frameResolution: IResolution,
     staticElementsList: IListOFEnvStaticElements) {
 
@@ -290,6 +291,8 @@ export class Dude {
     this._slotSystem.calcAvailableDrop = () => {
       this.calcsForDropAvailable()
     }
+
+    this.scopeEndGame = scopeEndGame
 
     this._frameResolution = frameResolution
     this._staticElementsList = staticElementsList

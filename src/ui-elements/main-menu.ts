@@ -13,8 +13,15 @@ import { default as mapTranlates } from '@/translates/maps.json'
 import {
   MainButtonType,
   MainButtonRenderInfo,
+  NullOrGameStateSettings,
 } from '@/types/main-types'
-import { Languages, GamePages } from '@/types/enums'
+import {
+  Languages,
+  GamePages,
+  GameStateSettings,
+  DifficultyLevels,
+} from '@/types/enums'
+
 import { GameState } from '@/classes/game-state'
 
 
@@ -33,6 +40,13 @@ const buttons: Array<MainButtonType> = [
 
 @customElement('main-menu')
 export class MainMenu extends GameStateElement {
+
+  _stateSettings: NullOrGameStateSettings = [
+    GameStateSettings.isGameStarted,
+    GameStateSettings.isSound,
+    GameStateSettings.lang,
+    GameStateSettings.pages,
+  ]
 
   getRenderButtons(state: GameState) {
     const renderButtons: Array<MenuButtonRenderInfo> = []
@@ -107,7 +121,9 @@ export class MainMenu extends GameStateElement {
         mapInfo = html`
           <info-panel ?smallmap="${true}" customMaxWidth="245px" class="infoPanel">
             <span slot="head">${this.loc('menuSelectedMap')}</span>
-            <span slot="content"> ${this.loc(map.name, mapTranlates)} (${this.loc(map.level)})</span>
+            <span slot="content">
+              ${this.loc(map.name, mapTranlates)} (${this.loc(DifficultyLevels[map.level])})
+            </span>
           </info-panel>
         `
       }

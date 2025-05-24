@@ -40,20 +40,20 @@
     "eng": "Change the level"
   },
   "easy": {
-    "ru": "легкий",
-    "eng": "easy"
+    "ru": "Легкий",
+    "eng": "Easy"
   },
   "middle": {
-    "ru": "средний",
-    "eng": "middle"
+    "ru": "Cредний",
+    "eng": "Middle"
   },
   "hard": {
-    "ru": "cложный",
-    "eng": "hard"
+    "ru": "Cложный",
+    "eng": "Hard"
   },
   "veryhard": {
     "ru": "Очень cложный",
-    "eng": "very hard"
+    "eng": "Very hard"
   },
   "menuSelectedMap": {
     "ru": "Уровень:",
@@ -75,6 +75,10 @@
     "ru": "Нет ничего, с чем бы этот {0} мог бы взаимодействовать!",
     "eng": "There is nothing this {0} can interact with!"
   },
+  "droppedItemActionWrongDoor": {
+    "ru": "Заперто! Что бы открыть нужен ключ!",
+    "eng": "Locked! You need a key to open it!"
+  },
   "shownOnStart": {
     "ru": "Показавать при запуске новой игры?",
     "eng": "Show when starting a new game?"
@@ -82,5 +86,21 @@
   "buttonOk": {
     "ru": "Хорошо",
     "eng": "Ok"
+  },
+  "gameIntroModalText": {
+    "ru": "Вы приходите в себя где-то в тёмных подземельях. Как вы здесь оказались — неизвестно, но всё подсказывает: это место опасно. Рядом тлеют остатки костра. Вы — Приключенец, возвращавшийся домой после не самой удачной вылазки. Время поджимало, и вы решили переночевать у старых руин, несмотря на внутренний голос, убеждавший держаться подальше от этого места. Теперь вы здесь, в темноте. И у вас только одна цель — выбраться.",
+    "eng": "You come to your senses somewhere in dark, damp dungeons. How you ended up here is a mystery — but everything around you screams danger. Nearby, the remains of a campfire still smolder. You are an adventurer, returning home after a less-than-successful expedition. Time was pressing, so you decided to spend the night near some ancient ruins, despite the nagging voice inside warning you to stay away. Now you're here, in the darkness. And you have only one goal — to get out."
+  },
+  "gameEndModalText": {
+    "ru": "Поздравляем! Вы выбрались из мрачных глубин подземелий! Свет снова озарил путь Приключенца — впереди новые дороги, опасности и надежды.",
+    "eng": "Congratulations! You have escaped the dark depths of the dungeon! Light once again shines upon the Adventurer's path — ahead lie new roads, dangers, and hopes."
+  },
+  "gameEndModalTitleTime": {
+    "ru": "Время",
+    "eng": "Time"
+  },
+  "gameEndModalTitleScope": {
+    "ru": "Результат",
+    "eng": "Scope"
   }
 }

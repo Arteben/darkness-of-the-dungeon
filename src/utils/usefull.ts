@@ -1,15 +1,15 @@
 
-export const isAllNull = function (a: any, b: any) {
+export const isAllNull = (a: any, b: any) => {
   return a == null && b == null
 }
 
-export const getTOutPromise = function (counter: number) {
+export const getTOutPromise = (counter: number) =>{
   return new Promise((resolve, reject) => {
     setTimeout(() => resolve('timeout is ended!'), counter)
   })
 }
 
-export const getRandomIntNumber = function (min: number, max: number) {
+export const getRandomIntNumber = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 

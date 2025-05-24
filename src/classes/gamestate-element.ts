@@ -56,7 +56,7 @@ export class GameStateElement extends LitElement {
     return this.renderWithGame(this._game)
   }
 
-  // added function here
+  // added functions here
   // it runs with GAME OBJECT!
   renderWithGame(game: DungeonDarkness) {}
 
