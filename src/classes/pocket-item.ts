@@ -17,7 +17,7 @@ export class PocketItem {
   constructor(
     type: PocketItemsEnum,
     sizes: IScreenSizes = { x: 20, y: 20 },
-    useCallback: callbackType = (a: Dude) => {},
+    useCallback: callbackType = function (a: Dude) {},
     isBig: boolean = false,
     rotates: number = 0,
     isDropped: boolean = true

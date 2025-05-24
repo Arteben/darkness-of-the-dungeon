@@ -1,6 +1,9 @@
+import dateFormater from 'dateformat'
+
 import {
   EnvStaticElements as EnvElmts,
   PocketItemsEnum,
+  ScopeActions,
 } from '@/types/enums'
 
 import {
@@ -11,10 +14,13 @@ import {
   IListOFEnvStaticElements,
 } from '@/types/main-types'
 
+import warriorModalEnd from '@assets/warrior-modal-end.png'
+
 import { getZerosStringFromNum } from '@/utils/usefull'
 
 import { boxDroppedItems } from '@/utils/drop-item-types'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
+import { Dude } from '@/classes/dude'
 
 import { pocketItemTypes } from '@/utils/drop-item-types'
 
@@ -90,7 +96,26 @@ export class EnvStaticMapElements {
         EnvElmts.door,
         EnvElmts.door,
         15,
-        function () { console.log('you open the door') },
+        function (this: MapStaticElement, coords: ITilesCoords, char: Dude) {
+          const userModals = char.userModals
+          const scopeEndGame = char.scopeEndGame
+          scopeEndGame.addScope(ScopeActions.difficultLevel)
+          scopeEndGame.addScope(ScopeActions.onTimes)
+          const gameTime = new Date(scopeEndGame.getGameTime())
+
+          userModals.showModal({
+            text: userModals.loc('gameEndModalText'),
+            callback: () => { scopeEndGame.restartTheGame() },
+            image: warriorModalEnd,
+            titles: [{
+              title: ' ' + userModals.loc('gameEndModalTitleScope'),
+              value: String(scopeEndGame.gameScope)
+            },{
+              title: userModals.loc('gameEndModalTitleTime'),
+              value: ' ' + dateFormater(gameTime, 'MM:ss')
+            }],
+          })
+        },
         2,
         PocketItemsEnum.key,
       ),
@@ -98,9 +123,8 @@ export class EnvStaticMapElements {
         EnvElmts.torch,
         EnvElmts.torch,
         170,
-        function (that: MapStaticElement) {
-          that.setInteractive(false)
-          console.log('you create a fire!')
+        function (this: MapStaticElement) {
+          this.setInteractive(false)
         },
       ),
     }

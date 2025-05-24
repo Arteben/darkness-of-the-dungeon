@@ -26,7 +26,7 @@ import { ScopeEndGame } from '@/classes/scope-and-end-game'
 
 export let dungeonDarknessGame: DungeonDarkness | null = null
 
-export function getDungeonDarknessGame() {
+export const getDungeonDarknessGame = () => {
   return dungeonDarknessGame
 }
 
@@ -126,7 +126,7 @@ export class DungeonDarkness {
     this._phConfig.parent = parentApp
     this._phConfig.canvas = canvas
     this.phaser = new PhaserGame(this._phConfig)
-    this._scopeEndGame = new ScopeEndGame(this.phaser, this.state)
+    this._scopeEndGame = new ScopeEndGame(this.phaser, this.state, this)
     this.phaser.scene.add(this._mainSceneName, MainEngine, false)
     this.startMainEngine()
   }

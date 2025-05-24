@@ -140,6 +140,7 @@ export class UserDialogModals extends GameStateElement {
 
     .imgClass {
       height: 220px;
+      margin: 10px 0;
       object-fit: contain;
     }
 

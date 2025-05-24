@@ -1,7 +1,7 @@
-
 import {
   PocketItemsEnum,
   UserNotificationTypes,
+  EnvStaticElements,
 } from '@/types/enums'
 
 import {
@@ -33,19 +33,24 @@ export const pocketItemTypes: IPocketItemTypes = {
   [PocketItemsEnum.key]: new PocketItem(
     PocketItemsEnum.key,
     { x: 10, y: 10 },
-    () => { console.log('you used the key!') },
+    function (this: PocketItem, dude: Dude) {
+      const envData = dude.envCollisionElementData
+      if (envData && envData.isCorrectToolType(this.type)) {
+        envData.use(dude)
+      } else {
+        dude.userModals.showNotification(getNotesForNoIteractiveItems(this.type, dude))
+      }
+    },
     false,
     0.8,
   ),
   [PocketItemsEnum.hand]: new PocketItem(
     PocketItemsEnum.hand,
     { x: 20, y: 20 },
-    function (dude: Dude) {
-      // @ts-ignore
-      const that = this as PocketItem
+    function (this: PocketItem, dude: Dude) {
       const envData = dude.envCollisionElementData
       const pocketItemData = dude.pocketItemCollisionData
-      if (envData && envData.isCorrectToolType(that.type)) {
+      if (envData && envData.isCorrectToolType(this.type)) {
         envData.use(dude)
       } else if (pocketItemData) {
         const pickupItemType = dude.dropItems.pickupItem(pocketItemData.coords)
@@ -54,11 +59,17 @@ export const pocketItemTypes: IPocketItemTypes = {
         dude._slotSystem.addItem(pocketItemData.type)
 
         dude.pocketItemCollisionData = dude.dropItems.getItemDataForActiveItem(pocketItemData.coords)
+      } else if (envData && envData.tileIndex == EnvStaticElements.door) {
+        dude.userModals.showNotification({
+          type: UserNotificationTypes.error,
+          text: dude.userModals.loc('droppedItemActionWrongDoor')
+        })
       } else {
         dude.userModals.showNotification({
           type: UserNotificationTypes.error,
           text: dude.userModals.loc(
-            translatesDroppedItemKey + PocketItemsEnum[that.type]),
+            translatesDroppedItemKey + PocketItemsEnum[this.type]
+          ),
         })
       }
     },
@@ -69,10 +80,8 @@ export const pocketItemTypes: IPocketItemTypes = {
   [PocketItemsEnum.rock]: new PocketItem(
     PocketItemsEnum.rock,
     { x: 15, y: 15 },
-    function (dude: Dude) {
-      // @ts-ignore
-      const that = this as PocketItem
-      dude.userModals.showNotification(getNotesForNoIteractiveItems(that.type, dude))
+    function (this: PocketItem, dude: Dude) {
+      dude.userModals.showNotification(getNotesForNoIteractiveItems(this.type, dude))
     },
   ),
   [PocketItemsEnum.smolBranch]: new PocketItem(

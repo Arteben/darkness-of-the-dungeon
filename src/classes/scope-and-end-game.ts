@@ -1,18 +1,28 @@
 import { Game as PhaserGame } from 'phaser'
 
 import { GameState } from '@/classes/game-state'
+import { DungeonDarkness } from '@/classes/dungeon-darkness'
 import { nullNumber } from '@/types/main-types'
-import { ScopeActions } from '@/types/enums'
+import {
+  ScopeActions,
+  GamePages,
+} from '@/types/enums'
 
 export class ScopeEndGame {
   _state: GameState
   _phaser: PhaserGame
-  _gameScope: number = 0
+  gameScope: number = 0
   _startTime: nullNumber = null
 
-  constructor(phaser: PhaserGame, state: GameState) {
+  restartTheGame: VoidFunction
+
+  constructor(phaser: PhaserGame, state: GameState, dungeonDarkness: DungeonDarkness) {
     this._state = state
     this._phaser = phaser
+    this.restartTheGame = () => {
+      dungeonDarkness.restartMainEngine()
+      this._state.page = GamePages.mainMenu
+    }
   }
 
   startGame() {
@@ -23,12 +33,13 @@ export class ScopeEndGame {
 
   getGameTime() {
     if (!this._startTime) return 0
-    return this._startTime - Date.now()
+    return Date.now() - this._startTime
   }
 
   endGame() {
     this._state.isGameStarted = false
     this._startTime = null
+    this.gameScope = 0
     this.pause()
   }
 
@@ -57,17 +68,16 @@ export class ScopeEndGame {
       case ScopeActions.difficultLevel:
         const levels = { 0: 0, 1: 5, 2: 15, 3: 50 }
         const level = this._state.selectedMap?.difficult
-        this._gameScope += level ? levels[level] : 0
+        this.gameScope += level ? levels[level] : 0
         break
       case ScopeActions.onTimes:
         const oneMinute = 60000
         const maxTime = 10 * oneMinute
         const restTime = maxTime - this.getGameTime()
-        console.log('times', this.getGameTime(), 'rest time', restTime, Math.ceil(restTime / oneMinute))
-        this._gameScope += restTime > 0 ? Math.ceil(restTime / oneMinute) * 3 : 0
+        this.gameScope += restTime > 0 ? Math.floor(restTime / oneMinute) * 1 : 0
         break
       case ScopeActions.searchBox:
-        this._gameScope += 10
+        this.gameScope += 3
     }
   }
 }

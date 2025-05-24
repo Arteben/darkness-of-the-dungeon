@@ -88,7 +88,7 @@ export class MainEngine extends Scene {
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,
-      this._slotSystem, this._modalsSystem,
+      this._slotSystem, this._modalsSystem, this._scopeEndGame,
       'dudeFrameSet',
       { width: 32, height: 45 } as IResolution,
       listOfStaticElements,

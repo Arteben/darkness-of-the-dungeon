@@ -194,7 +194,7 @@ export type DudeProgresBarNullValues = IDudeProgressBarValues | null
 
 export type DroppedItemsList = PocketItem[]
 
-export type StaticEnvElementCallback = (c: MapStaticElement, a: ITilesCoords, b: Dude) => void
+export type StaticEnvElementCallback = (a: ITilesCoords, b: Dude) => void
 
 export interface INotificationData {
   text?: string
