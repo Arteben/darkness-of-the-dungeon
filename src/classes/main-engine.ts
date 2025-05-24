@@ -6,10 +6,7 @@ import {
   IJsonMap,
   IParamsForInitEngine,
   ILoadedTileSets,
-  IUserModalAddOptions,
 } from '@/types/main-types'
-
-import { UserModalAddOptionsEnum } from '@/types/enums'
 
 // assets
 import tilesRaw from '@assets/castle-tiles.png'
@@ -19,7 +16,6 @@ import bricksRaw from '@assets/bricks.png'
 import charRaw from '@assets/char.png'
 import itemIcons from '@assets/items-Icons.png'
 import additinalIcons from '@assets/add-tip-icons.png'
-import warriorImg from '@assets/warrior-modal.png'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -93,27 +89,6 @@ export class MainEngine extends Scene {
       { width: 32, height: 45 } as IResolution,
       listOfStaticElements,
     )
-
-    if (this._scopeEndGame.isShowIntro()) {
-      this._modalsSystem.showModal({
-        text: this._modalsSystem.loc('gameIntroModalText'),
-        callback: (options?: IUserModalAddOptions[]) => {
-          this._scopeEndGame.startGame()
-
-          if (!options) return
-          options.forEach((element: IUserModalAddOptions) => {
-            if (UserModalAddOptionsEnum[element.prop] == 'shownOnStart') {
-              this._scopeEndGame.setIsShowIntro(element.value)
-            }
-          })
-        },
-        image: warriorImg,
-        options: [{
-          value: true,
-          prop: UserModalAddOptionsEnum.shownOnStart,
-        }],
-      })
-    }
   }
 
   update(time: number): void {
