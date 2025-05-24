@@ -668,7 +668,7 @@ export class Dude {
     if (isUp) {
       this._playerBody.setVelocityY(-80)
     } else {
-      this._playerBody.setVelocityY(100)
+      this._playerBody.setVelocityY(120)
     }
   }
   // stop for dude
