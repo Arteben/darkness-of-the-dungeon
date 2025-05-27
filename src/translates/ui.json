@@ -61,7 +61,15 @@
   },
   "droppedItemrock": {
     "ru": "камень",
-    "eng": "a stone"
+    "eng": "stone"
+  },
+  "droppedItemkey": {
+    "ru": "ключ",
+    "eng": "key"
+  },
+  "droppedItemapple": {
+    "ru": "яблоко",
+    "eng": "apple"
   },
   "boxSeachNothingAction": {
     "ru": "Увы, вы ничего не нашли.",

@@ -132,6 +132,7 @@ export class DungeonDarkness {
     this.gameApp = appElement
     this._phConfig.parent = parentApp
     this._phConfig.canvas = canvas
+    canvas.style.opacity = '0'
     this.phaser = new PhaserGame(this._phConfig)
     this._scopeEndGame = new ScopeEndGame(this.phaser, this.state, this)
     this.phaser.scene.add(this._mainSceneName, MainEngine, false)

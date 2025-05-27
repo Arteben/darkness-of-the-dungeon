@@ -27,6 +27,7 @@ export class ScopeEndGame {
 
   startGame() {
     this._state.isGameStarted = true
+    this._phaser.canvas.style.opacity = '1'
     this.resume()
     this._startTime = Date.now()
   }
@@ -40,6 +41,7 @@ export class ScopeEndGame {
     this._state.isGameStarted = false
     this._startTime = null
     this.gameScope = 0
+    this._phaser.canvas.style.opacity = '0'
     this.pause()
   }
 

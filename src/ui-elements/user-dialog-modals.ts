@@ -1,5 +1,6 @@
 import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { styleMap } from 'lit-html/directives/style-map.js'
 
 import '@/ui-elements/font-icon'
 import '@/ui-elements/label-checkbox'
@@ -65,7 +66,9 @@ export class UserDialogModals extends GameStateElement {
     }
 
     const getTitle = (title: IUserModalAddTitle) => {
-      return html`<span class="specialTitleText">${title.title}:</span><span> ${title.value}</span><br>`
+      const specialScopeSize = title.bigValue == true ? {'font-size': '20px'}: {}
+      return html`<span class="specialTitleText">${title.title}:</span>
+      <span style="${styleMap(specialScopeSize)}"> ${title.value}</span><br>`
     }
 
     const imgElement = userModal.image
