@@ -8,7 +8,7 @@ const projectAbsPath = path.resolve(__dirname, '../');
 const config = {
   mapSizes: [{
     degreeOfWidth: 4,
-    count: 2,
+    count: 1,
   }, {
     degreeOfWidth: 30,
     count: 2,
@@ -16,7 +16,7 @@ const config = {
     degreeOfWidth: 60,
     count: 2,
   }, {
-    degreeOfWidth: 200,
+    degreeOfWidth: 150,
     count: 2,
   }],
   json: 'map-list.json',
@@ -47,7 +47,7 @@ const createLabyrinth = (degree) => {
 const getElementMapList = (name, nameMapFile, w, h) => {
   const levels = [0, 1, 2, 3];
   const getLevels = (width, height) => {
-    const div = Math.floor((width + height) / 100);
+    const div = Math.floor((width + height) / 140);
     return div > (levels.length - 1) ? (levels.length - 1) : div;
   }
   return {

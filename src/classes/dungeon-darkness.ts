@@ -1,4 +1,8 @@
-import { GamePages, GameStateSettings } from '@/types/enums'
+import {
+  GamePages,
+  GameStateSettings,
+  UserModalAddOptionsEnum,
+} from '@/types/enums'
 
 import {
   IJsonMap,
@@ -6,6 +10,7 @@ import {
   GameStateChangeData,
   IParamsForInitEngine,
   INotificationAnimTimeouts,
+  IUserModalAddOptions,
 } from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame } from 'phaser'
@@ -16,6 +21,8 @@ import { Translates } from '@/classes/translates'
 
 import '@/game-app'
 import { GameApp } from '@/game-app'
+
+import warriorImg from '@assets/warrior-modal.png'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
@@ -148,13 +155,32 @@ export class DungeonDarkness {
   private onChangeGameState(data: CustomEventInit) {
     const eventDetail = data.detail as GameStateChangeData
     if (!this._scopeEndGame) return
+    const scopeEndGame = this._scopeEndGame
 
     if (eventDetail.property == GameStateSettings.pages) {
       if (this.state.page == GamePages.game) {
         if (this.state.isGameStarted) {
-          this._scopeEndGame.resume()
-        } else if (!this._scopeEndGame.isShowIntro()) {
-          this._scopeEndGame.startGame()
+          scopeEndGame.resume()
+        } else if (scopeEndGame.isShowIntro()) {
+          this._modalsSystem.showModal({
+            text: this._modalsSystem.loc('gameIntroModalText'),
+            callback: (options?: IUserModalAddOptions[]) => {
+              scopeEndGame.startGame()
+              if (!options) return
+              options.forEach((element: IUserModalAddOptions) => {
+                if (UserModalAddOptionsEnum[element.prop] == 'shownOnStart') {
+                  scopeEndGame.setIsShowIntro(element.value)
+                }
+              })
+            },
+            image: warriorImg,
+            options: [{
+              value: true,
+              prop: UserModalAddOptionsEnum.shownOnStart,
+            }],
+          })
+        } else {
+          scopeEndGame.startGame()
         }
 
         window.setTimeout(() => { this.onWindowResize() }, 100)

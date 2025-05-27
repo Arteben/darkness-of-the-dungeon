@@ -42,7 +42,7 @@ export class MapSceneLevels {
     '#248': 59, '#249': 44, '#250': 43, '#251': 19, '#252': 28, '#253': 29, '#254': 27,
   }
   _tileIndexes: IMapTilesIndexes = {
-    'D': EnvElmtns.door, 't': 0, 'tt': 1, 'k': EnvElmtns.chest, 'B': EnvElmtns.fire, 'A': EnvElmtns.torch,
+    'D': EnvElmtns.door, 'DD': EnvElmtns.topDoor, 't': 0, 'tt': 1, 'k': EnvElmtns.chest, 'B': EnvElmtns.fire, 'A': EnvElmtns.torch,
     'l1': EnvElmtns.box, 'l2': EnvElmtns.bigBox, 'l3': EnvElmtns.barrels, 'l4': EnvElmtns.bigBarrel, 'p': 16
   }
   _tileBackInds: IMapTilesIndexes = {
@@ -104,7 +104,7 @@ export class MapSceneLevels {
       ['t'], symbolMap, 'ladderLayer', TileSetModificators.ladders, tls.env, this._tileIndexes, map)
 
     this.envLayer = this.createLayer(
-      ['D', 'k', 'B', 'A', 'p', 'l'],
+      ['D', 'DD', 'k', 'B', 'A', 'p', 'l'],
       symbolMap, 'envLayer', TileSetModificators.envWithBoxes, tls.env, this._tileIndexes, map)
   }
 
@@ -193,6 +193,11 @@ export class MapSceneLevels {
   ) {
     if (element == 'l') {
       map[i][j] = tileNums[element + getRandomIntNumber(1, 4)]
+    } else if (element == 'D') {
+      if (map[i-1][j]) {
+        map[i-1][j] = tileNums[element + element]
+      }
+      map[i][j] = tileNums[element]
     } else {
       map[i][j] = tileNums[element]
     }

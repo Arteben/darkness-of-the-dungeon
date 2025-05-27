@@ -20,8 +20,8 @@ export class ScopeEndGame {
     this._state = state
     this._phaser = phaser
     this.restartTheGame = () => {
-      dungeonDarkness.restartMainEngine()
       this._state.page = GamePages.mainMenu
+      dungeonDarkness.restartMainEngine()
     }
   }
 
@@ -56,7 +56,7 @@ export class ScopeEndGame {
   }
 
   isShowIntro() {
-    return this._state.isShowGameIntro && !this._state.isGameStarted
+    return this._state.isShowGameIntro
   }
 
   setIsShowIntro(flag: boolean) {
