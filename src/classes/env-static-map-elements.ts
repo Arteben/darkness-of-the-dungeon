@@ -109,7 +109,8 @@ export class EnvStaticMapElements {
             image: warriorModalEnd,
             titles: [{
               title: ' ' + userModals.loc('gameEndModalTitleScope'),
-              value: String(scopeEndGame.gameScope)
+              value: String(scopeEndGame.gameScope),
+              bigValue: true,
             },{
               title: userModals.loc('gameEndModalTitleTime'),
               value: ' ' + dateFormater(gameTime, 'MM:ss')

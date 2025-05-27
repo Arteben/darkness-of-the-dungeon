@@ -217,6 +217,7 @@ export interface IUserModalAddOptions {
 export interface IUserModalAddTitle {
   title: string
   value: string
+  bigValue?: boolean
 }
 
 export type UserModalCallback = (a?: IUserModalAddOptions[]) => void
