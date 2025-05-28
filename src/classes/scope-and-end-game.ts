@@ -27,7 +27,7 @@ export class ScopeEndGame {
 
   startGame() {
     this._state.isGameStarted = true
-    this._phaser.canvas.style.opacity = '1'
+    this.setTransparent(false)
     this.resume()
     this._startTime = Date.now()
   }
@@ -41,7 +41,7 @@ export class ScopeEndGame {
     this._state.isGameStarted = false
     this._startTime = null
     this.gameScope = 0
-    this._phaser.canvas.style.opacity = '0'
+    this.setTransparent(true)
     this.pause()
   }
 
@@ -81,5 +81,10 @@ export class ScopeEndGame {
       case ScopeActions.searchBox:
         this.gameScope += 3
     }
+  }
+
+  setTransparent(flag: boolean) {
+    if (!this._phaser || !this._phaser.canvas) return
+    this._phaser.canvas.style.opacity = flag ? '0' : '1'
   }
 }
