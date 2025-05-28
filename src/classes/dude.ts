@@ -81,7 +81,9 @@ export class Dude {
   // @ts-ignore // isDudeState
   private _dudeMoveState: DudeStates
   public set dudeMoveState(newState: DudeStates) {
-    this.dudeMoveStateUpdating(newState)
+    if (this.dudeMoveStateUpdating(newState)) {
+      this._dudeMoveState = newState
+    }
   }
   public get dudeMoveState(): DudeStates {
     return this._dudeMoveState
@@ -412,28 +414,37 @@ export class Dude {
     this._tips.update(time)
   }
 
+  setXPlayerBodyForClimbing() {
+    const coords = this.getTilePlayerCoords()
+    this._playerBody.x = coords.x * this._levels.tileWidth
+  }
+
   updateClimbingMovements() {
-    if (this.dudeMoveState == DudeStates.climbing) {
-      switch (this.climbingType) {
-        case DudeClimbingTypes.up:
-          this.dudeAnimationKey = { key: DudeAnimations.climbingUp, isIgnoreIf: true }
-          this.setDudeUpDownMoveSizes(true)
-          break
-        case DudeClimbingTypes.down:
-          this.dudeAnimationKey = { key: DudeAnimations.climbingDown, isIgnoreIf: true }
-          this.setDudeUpDownMoveSizes(false)
-          break
-        default:
-          this.dudeAnimationKey = { key: DudeAnimations.climbingStand, isIgnoreIf: true }
-          this.setDydeStaySizes()
-      }
+    if (this.dudeMoveState != DudeStates.climbing) return
+
+    if (this._playerBody.x % this._levels.tileWidth > 0) {
+      this.setXPlayerBodyForClimbing()
+    }
+
+    switch (this.climbingType) {
+      case DudeClimbingTypes.up:
+        this.dudeAnimationKey = { key: DudeAnimations.climbingUp, isIgnoreIf: true }
+        this.setDudeUpDownMoveSizes(true)
+        break
+      case DudeClimbingTypes.down:
+        this.dudeAnimationKey = { key: DudeAnimations.climbingDown, isIgnoreIf: true }
+        this.setDudeUpDownMoveSizes(false)
+        break
+      default:
+        this.dudeAnimationKey = { key: DudeAnimations.climbingStand, isIgnoreIf: true }
+        this.setDydeStaySizes()
     }
   }
 
   // update dude state
   // change move & climp & fight states
   dudeMoveStateUpdating(newState: DudeStates) {
-    if (newState == this._dudeMoveState) return
+    if (newState == this._dudeMoveState) return false
 
     if (this._dudeMoveState == DudeStates.idle && newState != DudeStates.idle) {
       this._tips.hideTip()
@@ -462,15 +473,14 @@ export class Dude {
         }
         break
       case DudeStates.climbing:
-        const coords = this.getTilePlayerCoords()
-        this._playerBody.x = coords.x * this._levels.tileWidth
+        this.setXPlayerBodyForClimbing()
         this._slotSystem.setDudeDropAvailable(false)
         break
       case DudeStates.fighting:
         this._slotSystem.setDudeDropAvailable(false)
     }
 
-    this._dudeMoveState = newState
+    return true
   }
 
   // function for updating left\right bottons keys
@@ -666,9 +676,9 @@ export class Dude {
   // up, down
   setDudeUpDownMoveSizes(isUp: boolean) {
     if (isUp) {
-      this._playerBody.setVelocityY(-80)
+      this._playerBody.setVelocityY(-100)
     } else {
-      this._playerBody.setVelocityY(120)
+      this._playerBody.setVelocityY(150)
     }
   }
   // stop for dude
