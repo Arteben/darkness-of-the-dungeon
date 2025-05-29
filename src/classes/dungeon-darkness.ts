@@ -63,6 +63,9 @@ export class DungeonDarkness {
       target: 60,
       forceSetTimeOut: true,
     },
+    audio: {
+      disableWebAudio: false
+    }
   }
 
   phaser?: PhaserGame

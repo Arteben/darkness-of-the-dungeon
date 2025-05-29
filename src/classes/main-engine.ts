@@ -1,11 +1,14 @@
 import { Scene, GameObjects } from 'phaser'
 
+import { SoundLevels } from '@/types/enums'
+
 import {
   IResolution,
   mainKeys,
   IJsonMap,
   IParamsForInitEngine,
   ILoadedTileSets,
+  IAudioSpriteCollection,
 } from '@/types/main-types'
 
 //maps
@@ -29,6 +32,7 @@ import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -44,6 +48,8 @@ export class MainEngine extends Scene {
   modalsSystem: NotificationsModalsSystem
   //@ts-ignore
   scopeEndGame: ScopeEndGame
+  //@ts-ignore
+  sountSystem: SoundSystem
 
 
   constructor() {
@@ -82,6 +88,13 @@ export class MainEngine extends Scene {
 
     const listOfStaticElements =
       new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
+
+    const soundLevelsSprites: IAudioSpriteCollection = {
+      [SoundLevels.dudeMovements]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite('asdf')
+    }
+
+    const sprite = this.sound.addAudioSprite('asdf')
+    this.sountSystem = new SoundSystem(this, soundLevelsSprites)
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,

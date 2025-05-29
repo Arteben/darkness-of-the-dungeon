@@ -236,3 +236,7 @@ export interface ISelectedMap {
   type: string
   difficult: DifficultyLevels
 }
+
+export interface IAudioSpriteCollection {
+  [index: number]: Phaser.Sound.WebAudioSound
+}

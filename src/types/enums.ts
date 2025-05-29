@@ -137,3 +137,13 @@ export enum ScopeActions {
   difficultLevel,
   onTimes,
 }
+
+export enum SoundLevels {
+  dudeMovements,
+}
+
+export enum DudeMovementsSounds {
+  walk,
+  run,
+  climbing,
+}
