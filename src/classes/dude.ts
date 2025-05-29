@@ -271,17 +271,16 @@ export class Dude {
     camera: SceneCamera,
     tips: IconTips,
     dropItems: DropItems,
-    slotSystem: PocketSlotsSystem,
-    modalsSystem: NotificationsModalsSystem,
-    scopeEndGame: ScopeEndGame,
-    keyAnimFrameSet: string, frameResolution: IResolution,
-    staticElementsList: IListOFEnvStaticElements) {
+    keyAnimFrameSet: string,
+    frameResolution: IResolution,
+    staticElementsList: IListOFEnvStaticElements
+  ) {
 
     this._levels = mapLevels
     this._camera = camera
     this.dropItems = dropItems
     this._tips = tips
-    this._slotSystem = slotSystem
+    this._slotSystem = engine.slotSystem
     // set function for drop elements
     this._slotSystem.dropFunc = (item: PocketItem) => {
       const plCrds = this.getTilePlayerCoords()
@@ -294,7 +293,7 @@ export class Dude {
       this.calcsForDropAvailable()
     }
 
-    this.scopeEndGame = scopeEndGame
+    this.scopeEndGame = engine.scopeEndGame
 
     this._frameResolution = frameResolution
     this._staticElementsList = staticElementsList
@@ -351,7 +350,7 @@ export class Dude {
     this._progressBar = new DudeProgressBar(engine)
     this.progressBarValues = null
 
-    this.userModals = modalsSystem
+    this.userModals = engine.modalsSystem
 
     //create overlap with droppedItems for pick up them
     if (this.dropItems._group) {

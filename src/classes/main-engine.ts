@@ -1,4 +1,4 @@
-import { Scene, GameObjects, Types, Physics } from 'phaser'
+import { Scene, GameObjects } from 'phaser'
 
 import {
   IResolution,
@@ -8,7 +8,9 @@ import {
   ILoadedTileSets,
 } from '@/types/main-types'
 
-// assets
+//maps
+import { default as JsonMapList } from '@/assets/maps/map-list.json'
+// images
 import tilesRaw from '@assets/castle-tiles.png'
 import tilesWallsRaw from '@assets/castle-tileset-walls.png'
 import tipIcons from '@assets/tip-icons.png'
@@ -16,6 +18,7 @@ import bricksRaw from '@assets/bricks.png'
 import charRaw from '@assets/char.png'
 import itemIcons from '@assets/items-Icons.png'
 import additinalIcons from '@assets/add-tip-icons.png'
+// sounds
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -23,8 +26,6 @@ import { SceneCamera } from '@/classes/scene-camera'
 import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
 import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
-//
-import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
@@ -38,11 +39,11 @@ export class MainEngine extends Scene {
 
   _selectedMap: string = ''
   //@ts-ignore
-  _slotSystem: PocketSlotsSystem
+  slotSystem: PocketSlotsSystem
   //@ts-ignore
-  _modalsSystem: NotificationsModalsSystem
+  modalsSystem: NotificationsModalsSystem
   //@ts-ignore
-  _scopeEndGame: ScopeEndGame
+  scopeEndGame: ScopeEndGame
 
 
   constructor() {
@@ -51,9 +52,9 @@ export class MainEngine extends Scene {
 
   init(initParams: IParamsForInitEngine) {
     this._selectedMap = initParams.nameMap
-    this._slotSystem = initParams.slotsSystem
-    this._modalsSystem = initParams.modalsSystem
-    this._scopeEndGame = initParams.scopeEndGame
+    this.slotSystem = initParams.slotsSystem
+    this.modalsSystem = initParams.modalsSystem
+    this.scopeEndGame = initParams.scopeEndGame
   }
 
   create() {
@@ -84,7 +85,6 @@ export class MainEngine extends Scene {
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,
-      this._slotSystem, this._modalsSystem, this._scopeEndGame,
       'dudeFrameSet',
       { width: 32, height: 45 } as IResolution,
       listOfStaticElements,
@@ -105,21 +105,20 @@ export class MainEngine extends Scene {
     this.load.on('progress', this.onDrawProgressBar, this)
     this.load.on('complete', () => { this._progress.destroy() })
     //
-
-    this.load.image('tileSet', tilesRaw)
-    this.load.image('wallTileSet', tilesWallsRaw)
-    this.load.image('backgroundTileSet', bricksRaw)
     // load for maps
-    // '/src/assets/maps/map3.txt'
     mapList.forEach((el: IJsonMap) => {
       this.load.text(el.name, `/src/assets/${el.file}`)
     })
-
+    // load sprites
+    this.load.image('tileSet', tilesRaw)
+    this.load.image('wallTileSet', tilesWallsRaw)
+    this.load.image('backgroundTileSet', bricksRaw)
     this.load.spritesheet('dudeFrameSet', charRaw, { frameWidth: 56, frameHeight: 56 })
-
     this.load.spritesheet('tipIcons', tipIcons, { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('itemIcons', itemIcons, { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('additinalTipIcons', additinalIcons, { frameWidth: 32, frameHeight: 32 })
+    // load sounds
+
   }
 
   onDrawProgressBar(value: number) {
