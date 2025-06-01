@@ -13,6 +13,7 @@ import { DudeProgressBar } from '@/classes/dude-progress-bar'
 import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -41,6 +42,8 @@ import {
   SceneLevelZIndexes,
   ProgressBarTypes,
   BusEventsList,
+  SoundLevels as SoundLV,
+  DudeMoveSounds as MoveSounds,
 } from '@/types/enums'
 
 export class Dude {
@@ -56,6 +59,7 @@ export class Dude {
   _progressBar: DudeProgressBar
   _staticElementsList: IListOFEnvStaticElements
   scopeEndGame: ScopeEndGame
+  sounds: SoundSystem
 
   userModals: NotificationsModalsSystem
 
@@ -333,6 +337,8 @@ export class Dude {
       engine.physics.add.collider(this._playerBody, this._levels.groundLayer)
     }
 
+    this.sounds = engine.soundSystem
+
     // all animations for dude
     this.createAnimations(engine, keyAnimFrameSet)
 
@@ -460,16 +466,19 @@ export class Dude {
         }
         this.setDydeStaySizes()
         this.calcsForDropAvailable()
+        this.sounds.stopLevelTypeSound(SoundLV.dudeMoveSounds)
         break
       case DudeStates.walk:
         this.dudeAnimationKey = {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
+        this.sounds.playLevelTypeSound(SoundLV.dudeMoveSounds, MoveSounds[MoveSounds.walk])
         break
       case DudeStates.run:
         this.dudeAnimationKey = {
           key: DudeAnimations.run, isIgnoreIf: true
         }
+        this.sounds.playLevelTypeSound(SoundLV.dudeMoveSounds, MoveSounds[MoveSounds.run])
         break
       case DudeStates.climbing:
         this.setXPlayerBodyForClimbing()
@@ -563,6 +572,10 @@ export class Dude {
       yOffsetForCheckMove = 1
     }
 
+    const setClimbingSound = () => {
+      this.sounds.playLevelTypeSound(SoundLV.dudeMoveSounds, MoveSounds[MoveSounds.climbing])
+    }
+
     switch (this.dudeMoveState) {
       case DudeStates.idle:
         const plCoords = this.getTilePlayerCoords()
@@ -570,14 +583,17 @@ export class Dude {
           && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + yOffsetForCheckMove)) {
           this.climbingType = newClimbingType
           this.dudeMoveState = DudeStates.climbing
+          setClimbingSound()
         }
         break
       case DudeStates.climbing:
         if (newValue) {
           if (this.climbingType == newClimbingType) {
             this.climbingType = DudeClimbingTypes.stand
+            this.sounds.stopLevelTypeSound(SoundLV.dudeMoveSounds)
           } else {
             this.climbingType = newClimbingType
+            setClimbingSound()
           }
         }
     }

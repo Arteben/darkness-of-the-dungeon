@@ -22,6 +22,8 @@ import charRaw from '@assets/char.png'
 import itemIcons from '@assets/items-Icons.png'
 import additinalIcons from '@assets/add-tip-icons.png'
 // sounds
+import dudeMoveSoundsJSON from '@assets/sounds/dude-move-sounds.json.txt'
+import dudeMoveSoundsOgg from '@assets/sounds/dude-move-sounds.ogg'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -49,8 +51,7 @@ export class MainEngine extends Scene {
   //@ts-ignore
   scopeEndGame: ScopeEndGame
   //@ts-ignore
-  sountSystem: SoundSystem
-
+  soundSystem: SoundSystem
 
   constructor() {
     super()
@@ -89,12 +90,11 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    // const soundLevelsSprites: IAudioSpriteCollection = {
-      // [SoundLevels.dudeMovements]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite('asdf')
-    // }
+    const soundLevelsSprites: IAudioSpriteCollection = {
+      [SoundLevels.dudeMoveSounds]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(SoundLevels[SoundLevels.dudeMoveSounds])
+    }
 
-    // const sprite = this.sound.addAudioSprite('asdf')
-    // this.sountSystem = new SoundSystem(this, soundLevelsSprites)
+    this.soundSystem = new SoundSystem(this, soundLevelsSprites)
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,
@@ -132,9 +132,7 @@ export class MainEngine extends Scene {
     this.load.spritesheet('additinalTipIcons', additinalIcons, { frameWidth: 32, frameHeight: 32 })
     // load sounds
 
-    //  this.load.audioSprite('sfx', 'assets/audio/SoundEffects/fx_mixdown.ogg', null, audioJSON);
-
-
+    this.load.audioSprite(SoundLevels[SoundLevels.dudeMoveSounds], dudeMoveSoundsJSON, dudeMoveSoundsOgg)
   }
 
   onDrawProgressBar(value: number) {

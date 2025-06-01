@@ -27,7 +27,7 @@
       ],
       "@assets/*": [
         "assets/*"
-      ]     
+      ]
     },
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -35,6 +35,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "strict": true
-  }
+    "strict": true,
+  },
 }
