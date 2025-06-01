@@ -89,12 +89,12 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    const soundLevelsSprites: IAudioSpriteCollection = {
-      [SoundLevels.dudeMovements]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite('asdf')
-    }
+    // const soundLevelsSprites: IAudioSpriteCollection = {
+      // [SoundLevels.dudeMovements]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite('asdf')
+    // }
 
-    const sprite = this.sound.addAudioSprite('asdf')
-    this.sountSystem = new SoundSystem(this, soundLevelsSprites)
+    // const sprite = this.sound.addAudioSprite('asdf')
+    // this.sountSystem = new SoundSystem(this, soundLevelsSprites)
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,
@@ -131,6 +131,9 @@ export class MainEngine extends Scene {
     this.load.spritesheet('itemIcons', itemIcons, { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('additinalTipIcons', additinalIcons, { frameWidth: 32, frameHeight: 32 })
     // load sounds
+
+    //  this.load.audioSprite('sfx', 'assets/audio/SoundEffects/fx_mixdown.ogg', null, audioJSON);
+
 
   }
 

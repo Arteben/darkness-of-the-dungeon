@@ -1,0 +1,19 @@
+{
+  "spritemap": {
+    "walk": {
+      "start": 0,
+      "end": 0.43,
+      "loop": true
+    },
+    "run": {
+      "start": 0.43,
+      "end": 0.705,
+      "loop": true
+    },
+    "climbing": {
+      "start": 0.705,
+      "end": 0.955,
+      "loop": true
+    }
+  }
+}
