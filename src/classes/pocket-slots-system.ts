@@ -3,6 +3,8 @@ import {
   BusEventsList,
 } from '@/types/enums'
 
+import { callbackForAddDropItem } from '@/types/main-types'
+
 import { GameState } from '@/classes/game-state'
 import { EventBus } from '@/classes/event-bus'
 import { PocketItem } from '@/classes/pocket-item'
@@ -61,12 +63,16 @@ export class PocketSlotsSystem {
     this.addItem(String(PocketItemsEnum.hand))
   }
 
-  addItem(typeItem: string) {
+  addItem(typeItem: string, callback?: callbackForAddDropItem) {
     const added = pocketItemTypes[typeItem]
 
     const items = this._state.pocketItems
     for (let i = 0; i < this.maxSlotsNum; i++) {
       if (items[i] == null) {
+        if (callback) {
+          callback(added)
+        }
+
         items[i] = added
         this._state.pocketItems = [...items]
         return

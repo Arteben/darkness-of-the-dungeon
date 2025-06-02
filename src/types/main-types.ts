@@ -240,3 +240,5 @@ export interface ISelectedMap {
 export interface IAudioSpriteCollection {
   [index: number]: Phaser.Sound.WebAudioSound
 }
+
+export type callbackForAddDropItem = (a: PocketItem) => void

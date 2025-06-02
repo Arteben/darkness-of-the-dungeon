@@ -1,5 +1,8 @@
 import { IScreenSizes } from '@/types/main-types'
-import { PocketItemsEnum } from '@/types/enums'
+import {
+  PocketItemsEnum,
+  DudeActionSounds,
+} from '@/types/enums'
 
 import { Dude } from './dude'
 
@@ -13,6 +16,7 @@ export class PocketItem {
   isDropped: boolean
   droppedRotete: number
   _useCallback: callbackType
+  pickupSound: DudeActionSounds
 
   constructor(
     type: PocketItemsEnum,
@@ -20,6 +24,7 @@ export class PocketItem {
     useCallback: callbackType = function (a: Dude) {},
     isBig: boolean = false,
     rotates: number = 0,
+    pickupSound: DudeActionSounds = DudeActionSounds.getItem,
     isDropped: boolean = true
   ) {
     this.type = type
@@ -28,6 +33,7 @@ export class PocketItem {
     this.isBig = isBig
     this.isDropped = isDropped
     this.droppedRotete = rotates
+    this.pickupSound = pickupSound
   }
 
   use(dude: Dude) {

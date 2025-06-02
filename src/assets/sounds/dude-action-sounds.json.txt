@@ -14,6 +14,16 @@
       "start": 4.190,
       "end": 5.387,
       "loop": false
+    },
+    "getItem": {
+      "start": 5.387,
+      "end": 5.948,
+      "loop": false
+    },
+    "getKey": {
+      "start": 5.948,
+      "end": 6.209,
+      "loop": false
     }
   }
 }

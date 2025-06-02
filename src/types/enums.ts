@@ -152,7 +152,7 @@ export enum DudeMoveSounds {
 export enum DudeActionSounds {
   searchBox,
   searchChest,
-  getObject,
+  getItem,
   getKey,
   searchCampfire,
 }

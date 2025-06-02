@@ -2,6 +2,8 @@ import {
   PocketItemsEnum,
   UserNotificationTypes,
   EnvStaticElements,
+  SoundLevels,
+  DudeActionSounds,
 } from '@/types/enums'
 
 import {
@@ -43,6 +45,7 @@ export const pocketItemTypes: IPocketItemTypes = {
     },
     false,
     0.8,
+    DudeActionSounds.getKey,
   ),
   [PocketItemsEnum.hand]: new PocketItem(
     PocketItemsEnum.hand,
@@ -56,7 +59,11 @@ export const pocketItemTypes: IPocketItemTypes = {
         const pickupItemType = dude.dropItems.pickupItem(pocketItemData.coords)
         if (pickupItemType == null) return
 
-        dude._slotSystem.addItem(pocketItemData.type)
+        const callbackForPlaySound = (item: PocketItem) => {
+          dude.sounds.playLevelTypeSound(SoundLevels.dudeActionSounds, DudeActionSounds[item.pickupSound])
+        }
+
+        dude._slotSystem.addItem(pocketItemData.type, callbackForPlaySound)
 
         dude.pocketItemCollisionData = dude.dropItems.getItemDataForActiveItem(pocketItemData.coords)
       } else if (envData && envData.tileIndex == EnvStaticElements.door) {
@@ -75,6 +82,7 @@ export const pocketItemTypes: IPocketItemTypes = {
     },
     false,
     0,
+    undefined,
     false,
   ),
   [PocketItemsEnum.rock]: new PocketItem(
