@@ -1,6 +1,6 @@
 import { Scene, GameObjects } from 'phaser'
 
-import { SoundLevels } from '@/types/enums'
+import { SoundLevels as LVSounds } from '@/types/enums'
 
 import {
   IResolution,
@@ -24,13 +24,15 @@ import additinalIcons from '@assets/add-tip-icons.png'
 // sounds
 import dudeMoveSoundsJSON from '@assets/sounds/dude-move-sounds.json.txt'
 import dudeMoveSoundsOgg from '@assets/sounds/dude-move-sounds.ogg'
+import dudeActionSoundsJSON from '@assets/sounds/dude-action-sounds.json.txt'
+import dudeActionSoundsOgg from '@assets/sounds/dude-action-sounds.ogg'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
 import { SceneCamera } from '@/classes/scene-camera'
 import { IconTips } from '@/classes/icon-tips'
 import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-system'
-import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
+import { EnvStaticMapElementTypes } from '@/classes/env-static-map-element-types'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
@@ -88,10 +90,11 @@ export class MainEngine extends Scene {
     const droppedItems = new DroppedItems(this, mapLevels, 'itemIcons')
 
     const listOfStaticElements =
-      new EnvStaticMapElements(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
+      new EnvStaticMapElementTypes(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
     const soundLevelsSprites: IAudioSpriteCollection = {
-      [SoundLevels.dudeMoveSounds]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(SoundLevels[SoundLevels.dudeMoveSounds])
+      [LVSounds.dudeMoveSounds]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeMoveSounds]),
+      [LVSounds.dudeActionSounds]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeActionSounds])
     }
 
     this.soundSystem = new SoundSystem(this, soundLevelsSprites)
@@ -132,7 +135,8 @@ export class MainEngine extends Scene {
     this.load.spritesheet('additinalTipIcons', additinalIcons, { frameWidth: 32, frameHeight: 32 })
     // load sounds
 
-    this.load.audioSprite(SoundLevels[SoundLevels.dudeMoveSounds], dudeMoveSoundsJSON, dudeMoveSoundsOgg)
+    this.load.audioSprite(LVSounds[LVSounds.dudeMoveSounds], dudeMoveSoundsJSON, dudeMoveSoundsOgg)
+    this.load.audioSprite(LVSounds[LVSounds.dudeActionSounds], dudeActionSoundsJSON, dudeActionSoundsOgg)
   }
 
   onDrawProgressBar(value: number) {

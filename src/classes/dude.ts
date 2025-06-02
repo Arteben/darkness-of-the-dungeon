@@ -10,7 +10,7 @@ import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
-import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
+import { EnvStaticMapElementTypes } from '@/classes/env-static-map-element-types'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
 import { SoundSystem } from '@/classes/sound-system'
@@ -645,7 +645,7 @@ export class Dude {
     }
 
     const element = this._staticElementsList[
-      EnvStaticMapElements.GetIndexForStaticElement(String(envElementTile.index), plCords)]
+      EnvStaticMapElementTypes.GetIndexForStaticElement(String(envElementTile.index), plCords)]
 
     if (!element || !element.isInteractive) {
       this.envCollisionElementData = null

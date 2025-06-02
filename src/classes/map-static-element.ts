@@ -18,10 +18,12 @@ import {
   EnvStaticElements,
   UserNotificationTypes,
   ScopeActions,
+  DudeActionSounds,
+  SoundLevels,
 } from '@/types/enums'
 
 import { Dude } from '@/classes/dude'
-import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
+import { EnvStaticMapElementTypes } from '@/classes/env-static-map-element-types'
 
 const filledBarKey = 'filled!'
 
@@ -31,7 +33,7 @@ export class MapStaticElement {
   // @ts-ignore
   isInteractive: boolean
   _useCallback: StaticEnvElementCallback
-  _staticElements: EnvStaticMapElements
+  _staticElements: EnvStaticMapElementTypes
   _eventBusFunc: (data: CustomEventInit) => void
   _fillBar: boolean = false
   // seconds * 10
@@ -39,15 +41,17 @@ export class MapStaticElement {
   _nonInteractiveTile: EnvStaticElements
   tileIndex: EnvStaticElements
   _coords: ITilesCoords
+  _interactSound?: DudeActionSounds
 
   constructor(
-    staticElements: EnvStaticMapElements,
+    staticElements: EnvStaticMapElementTypes,
     tileIndex: EnvStaticElements,
     noInterTileIndex: EnvStaticElements,
     coords: ITilesCoords,
     tip: number,
     callback: StaticEnvElementCallback,
     time: number = 1,
+    actionSound?: DudeActionSounds,
     pocketItemType: PocketItemsEnum = PocketItemsEnum.hand,
     isInteractive: boolean = true,
   ) {
@@ -58,6 +62,7 @@ export class MapStaticElement {
     this.tileIndex = tileIndex
     this._nonInteractiveTile = noInterTileIndex
     this._coords = coords
+    this._interactSound = actionSound
 
     this._eventBusFunc = (data: CustomEventInit) => {
       if (data && data.detail && data.detail == this) {
@@ -93,15 +98,34 @@ export class MapStaticElement {
     this.isInteractive = flag
   }
 
+  hasSound() {
+    return this._interactSound != undefined
+  }
+
   async use(char: Dude) {
     if (this._fillBar || !this.isInteractive) return
 
+    const stopSound = () =>
+      char.sounds.stopLevelTypeSound(SoundLevels.dudeActionSounds)
+
+    if (this.hasSound()) {
+      char.sounds.playLevelTypeSound(
+        SoundLevels.dudeActionSounds, DudeActionSounds[<DudeActionSounds>this._interactSound])
+    }
+
     try {
       const resultBarFill = await this.getProgressBarPromise(char)
+      if (this.hasSound()) {
+        stopSound()
+      }
       if (resultBarFill == filledBarKey) {
         this._useCallback(this._coords, char)
       }
-    } catch (err) { }
+    } catch (err) {
+      if (this.hasSound()) {
+        stopSound()
+      }
+    }
   }
 
   isCorrectToolType(type: PocketItemsEnum) {
@@ -135,13 +159,14 @@ export class MapStaticElement {
 
 export class BoxStaticElement extends MapStaticElement {
   constructor(
-    staticElements: EnvStaticMapElements,
+    staticElements: EnvStaticMapElementTypes,
     tile: EnvStaticElements,
     notInteractiveTile: EnvStaticElements,
     coords: ITilesCoords,
     tip: number,
     list: DroppedItemsList,
     isAlwaysFull: boolean = true,
+    searchSound: DudeActionSounds = DudeActionSounds.searchBox
   ) {
     const callback = function (this: MapStaticElement, coords: ITilesCoords, char: Dude) {
       const isFullBox = isAlwaysFull || getRandomIntNumber(1, 2) == 1
@@ -155,12 +180,9 @@ export class BoxStaticElement extends MapStaticElement {
           text: char.userModals.loc('boxSeachNothingAction'),
         })
       }
-
       this.setInteractive(false)
     }
-
     const time = getRandomIntNumber(2, 5)
-
-    super(staticElements, tile, notInteractiveTile, coords, tip, callback, time)
+    super(staticElements, tile, notInteractiveTile, coords, tip, callback, time, searchSound)
   }
 }

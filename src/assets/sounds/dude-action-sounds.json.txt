@@ -1,0 +1,19 @@
+{
+  "spritemap": {
+    "searchBox": {
+      "start": 0,
+      "end": 3.088,
+      "loop": false
+    },
+    "searchChest": {
+      "start": 3.088,
+      "end": 4.190,
+      "loop": false
+    },
+    "searchCampfire": {
+      "start": 4.190,
+      "end": 5.387,
+      "loop": false
+    }
+  }
+}

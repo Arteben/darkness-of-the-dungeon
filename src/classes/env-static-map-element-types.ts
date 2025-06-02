@@ -4,6 +4,7 @@ import {
   EnvStaticElements as EnvElmts,
   PocketItemsEnum,
   ScopeActions,
+  DudeActionSounds,
 } from '@/types/enums'
 
 import {
@@ -24,7 +25,7 @@ import { Dude } from '@/classes/dude'
 
 import { pocketItemTypes } from '@/utils/drop-item-types'
 
-export class EnvStaticMapElements {
+export class EnvStaticMapElementTypes {
   _tilesLayer: Phaser.Tilemaps.TilemapLayer
   elementsList: IListOFEnvStaticElements = {}
 
@@ -43,7 +44,7 @@ export class EnvStaticMapElements {
       if (!findedType) return
 
       const indexForElement =
-        EnvStaticMapElements.GetIndexForStaticElement(findedType, { x: tile.x, y: tile.y })
+        EnvStaticMapElementTypes.GetIndexForStaticElement(findedType, { x: tile.x, y: tile.y })
 
       this.elementsList[indexForElement] = listOfTypesElements[findedType]({ x: tile.x, y: tile.y })
     })
@@ -52,11 +53,12 @@ export class EnvStaticMapElements {
   getCreaterUsualBoxesElement(
     tile: EnvElmts,
     openedBoxTile: EnvElmts,
-    isAlwaysFull: boolean = true,
-    list: DroppedItemsList = boxDroppedItems
+    isAlwaysFull: boolean,
+    list: DroppedItemsList = boxDroppedItems,
+    searchSound?: DudeActionSounds
   ) {
     return (coords: ITilesCoords) => {
-      return new BoxStaticElement(this, tile, openedBoxTile, coords, 168, list, isAlwaysFull)
+      return new BoxStaticElement(this, tile, openedBoxTile, coords, 168, list, isAlwaysFull, searchSound)
     }
   }
 
@@ -77,6 +79,7 @@ export class EnvStaticMapElements {
         tip,
         callback,
         time,
+        undefined,
         pocketItemType,
       )
     }
@@ -89,9 +92,9 @@ export class EnvStaticMapElements {
       [EnvElmts.barrels]: this.getCreaterUsualBoxesElement(EnvElmts.barrels, EnvElmts.openedBarrels, false),
       [EnvElmts.bigBarrel]: this.getCreaterUsualBoxesElement(EnvElmts.bigBarrel, EnvElmts.openedBigBarrel, false),
       [EnvElmts.chest]: this.getCreaterUsualBoxesElement(
-        EnvElmts.chest, EnvElmts.openedChest, true, [pocketItemTypes[PocketItemsEnum.key]]),
+        EnvElmts.chest, EnvElmts.openedChest, true, [pocketItemTypes[PocketItemsEnum.key]], DudeActionSounds.searchChest),
       [EnvElmts.fire]: this.getCreaterUsualBoxesElement(
-        EnvElmts.fire, EnvElmts.extFire, true, [pocketItemTypes[PocketItemsEnum.smolBranch]]),
+        EnvElmts.fire, EnvElmts.extFire, true, [pocketItemTypes[PocketItemsEnum.smolBranch]], DudeActionSounds.searchCampfire),
       [EnvElmts.door]: this.getCreaterStaticElementWithLayer(
         EnvElmts.door,
         EnvElmts.door,
@@ -133,7 +136,7 @@ export class EnvStaticMapElements {
 
   pushNewElement(
     coords: ITilesCoords, newTile: EnvElmts, oldTile: EnvElmts) {
-    const getElementIdx = EnvStaticMapElements.GetIndexForStaticElement
+    const getElementIdx = EnvStaticMapElementTypes.GetIndexForStaticElement
     const element = this.elementsList[getElementIdx(String(oldTile), coords)]
 
     if (!element) {

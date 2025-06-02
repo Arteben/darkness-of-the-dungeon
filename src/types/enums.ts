@@ -140,10 +140,19 @@ export enum ScopeActions {
 
 export enum SoundLevels {
   dudeMoveSounds,
+  dudeActionSounds,
 }
 
 export enum DudeMoveSounds {
   walk,
   run,
   climbing,
+}
+
+export enum DudeActionSounds {
+  searchBox,
+  searchChest,
+  getObject,
+  getKey,
+  searchCampfire,
 }
