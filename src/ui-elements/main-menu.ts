@@ -43,7 +43,7 @@ export class MainMenu extends GameStateElement {
 
   _stateSettings: NullOrGameStateSettings = [
     GameStateSettings.isGameStarted,
-    GameStateSettings.isSound,
+    GameStateSettings.soundValues,
     GameStateSettings.lang,
     GameStateSettings.pages,
   ]
@@ -64,7 +64,7 @@ export class MainMenu extends GameStateElement {
           }
           break
         case 'turnSound':
-          newButton.name = state.isSound ? button.names[0] : button.names[1]
+          newButton.name = state.soundValues.sfx == 100 ? button.names[0] : button.names[1]
           break
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
@@ -104,7 +104,11 @@ export class MainMenu extends GameStateElement {
         state.page = GamePages.maps
         break
       case 'turnSound':
-        state.isSound = !state.isSound
+        if (state.soundValues.sfx == 0) {
+          state.soundValues = { sfx: 100, music: 100}
+        } else {
+          state.soundValues = { sfx: 0, music: 0}
+        }
         break
     }
   }

@@ -27,7 +27,7 @@ export enum BusEventsList {
 }
 
 export enum GameStateSettings {
-  isSound,
+  soundValues,
   selectedMap,
   pages,
   lang,

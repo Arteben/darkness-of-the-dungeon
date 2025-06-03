@@ -17,7 +17,7 @@
     },
     "getItem": {
       "start": 5.387,
-      "end": 5.948,
+      "end": 5.875,
       "loop": false
     },
     "getKey": {

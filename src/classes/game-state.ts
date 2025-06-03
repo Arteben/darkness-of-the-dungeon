@@ -12,6 +12,7 @@ import {
   NotificationNullData,
   UserModalNullData,
   ISelectedMap,
+  ICommonSoundValues,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
@@ -54,18 +55,32 @@ export class GameState implements IHashParams, ILocSettings {
     return this._isGameStarted
   }
   //
-  // isSound
-  private _isSound: boolean = true
-  public set isSound(flag: boolean) {
-    if (this._isSound != flag) {
-      this._isSound = flag
-      this.triggerChnageState(GameStateSettings.isSound)
-    }
+  // soundValues
+  // in percents 100 - max, 0 - turned off
+  private _soundValues: ICommonSoundValues = {
+    music: 0,
+    sfx: 0,
   }
-  public get isSound(): boolean {
-    return this._isSound
+
+  public set soundValues(rawValues: ICommonSoundValues | null) {
+    const values: ICommonSoundValues = (rawValues == null) ? { music: 0, sfx: 0 } : rawValues
+
+    const hasEqualsValues = (old: ICommonSoundValues, newValues: ICommonSoundValues) => {
+      return old.sfx == newValues.sfx && old.music == newValues.music
+    }
+
+    if (hasEqualsValues(this._soundValues, values)) return
+
+    this._soundValues.music = values.music
+    this._soundValues.sfx = values.sfx
+
+    this.triggerChnageState(GameStateSettings.soundValues)
+  }
+  public get soundValues(): ICommonSoundValues {
+    return this._soundValues
   }
   //
+
   // selected map
   private _selectedMap?: ISelectedMap
   public set selectedMap(data: ISelectedMap) {
@@ -155,7 +170,7 @@ export class GameState implements IHashParams, ILocSettings {
     }
 
     if (locSettings) {
-      this._isSound = locSettings.isSound
+      this._soundValues = locSettings.soundValues
       this._selectedMap = locSettings.selectedMap
       this._isShowGameIntro = locSettings.isShowGameIntro
     }

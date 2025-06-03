@@ -733,7 +733,7 @@ export class Dude {
     this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.climbingUp),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 128, end: 137 }),
-      frameRate: 15,
+      frameRate: 13,
       repeat: -1,
     })
 

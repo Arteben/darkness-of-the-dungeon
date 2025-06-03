@@ -24,12 +24,6 @@ export type ElementOrNull = HTMLElement | null;
 
 export type VoidFunction = () => void;
 
-export interface MainMenuEventData {
-  isSound?: boolean
-  newlang?: Languages
-  isStarted?: boolean
-}
-
 export interface MainButtonType {
   type: string
   names: Array<string>
@@ -51,7 +45,7 @@ export interface IJsonTranslatesType {
 }
 
 export interface ILocSettings {
-  isSound: boolean
+  soundValues: ICommonSoundValues
   isShowGameIntro: boolean
   selectedMap?: ISelectedMap
 }
@@ -242,3 +236,8 @@ export interface IAudioSpriteCollection {
 }
 
 export type callbackForAddDropItem = (a: PocketItem) => void
+
+export interface ICommonSoundValues {
+  sfx: number
+  music: number
+}
