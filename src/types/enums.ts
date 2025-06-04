@@ -45,6 +45,16 @@ export enum GamePages {
   rules,
   game,
   maps,
+  settings,
+}
+
+export enum UrlHashes {
+  ru,
+  eng,
+  rules,
+  game,
+  maps,
+  settings,
 }
 
 export enum DudeStates {
