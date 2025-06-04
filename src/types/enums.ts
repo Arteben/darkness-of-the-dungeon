@@ -24,6 +24,7 @@ export enum BusEventsList {
   charTwitching,
   notificationClick,
   userModalOk,
+  setSoundValues,
 }
 
 export enum GameStateSettings {

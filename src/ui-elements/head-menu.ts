@@ -5,6 +5,7 @@ import headBackPng from '@/styles/images/stripHeadMenu.png'
 import '@/ui-elements/info-panel'
 import '@/ui-elements/font-icon'
 import '@/ui-elements/pocket-slots-ui'
+import '@/ui-elements/sound-button'
 
 import '@/ui-elements/menu-button'
 import { css, html, unsafeCSS } from 'lit'
@@ -38,11 +39,13 @@ export class MainMenu extends GameStateElement {
         <div class="backgroundColor"></div>
         <div class="headMenuDiveder">
           <menu-button
-              @click="${(e: Event) => { this._state.page = GamePages.mainMenu }}"
-              placeClass="headMenu">
+            @click="${(e: Event) => { this._state.page = GamePages.mainMenu }}"
+            placeClass="headMenu">
             <font-icon icon="th-list"></font-icon>
             ${this.loc('hMenuToMain')}
           </menu-button>
+          <sound-button
+            placeClass="buttonIconHeadMenu" ?isIcon="${true}"></sound-button>
         </div>
         <div class="headMenuDiveder">
           <info-panel ?smallMap=${true}>

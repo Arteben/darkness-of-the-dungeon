@@ -1,14 +1,12 @@
 import {
   SoundLevels as lVs,
   BusEventsList,
-  GameStateSettings,
   TypesOfSoundLevels,
 } from '@/types/enums'
 
 import {
   ISoundLevelsCollection,
   ICommonSoundValues,
-  GameStateChangeData,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
@@ -19,14 +17,16 @@ export const defaulSoundValues: ICommonSoundValues = {
   sfx: 0.5, music: 0.5
 }
 
+export const onSoundValues: ICommonSoundValues = {
+  sfx: 1, music: 1
+}
+
 export const offSoundValues: ICommonSoundValues = {
   sfx: 0, music: 0
 }
 
 export class SoundSystem {
   _soundLevels: ISoundLevelsCollection
-  // @ts-ignore
-  _currentSoundValues: ICommonSoundValues
   _engineSound: Phaser.Sound.WebAudioSoundManager
   _state: GameState
 
@@ -35,13 +35,10 @@ export class SoundSystem {
     this._soundLevels = {}
     this._engineSound = engine.sound as Phaser.Sound.WebAudioSoundManager
     this._state = state
-    this.setNewSoundVolumes(this._state.soundValues)
 
-    EventBus.On(BusEventsList[BusEventsList.changeGameState], (event: CustomEventInit) => {
+    EventBus.On(BusEventsList[BusEventsList.setSoundValues], (event: CustomEventInit) => {
       if (!event.detail) return
-      const data: GameStateChangeData = event.detail
-      if (data.property != GameStateSettings.soundValues) return
-      this.setNewSoundVolumes(this._state.soundValues)
+      this.setNewSoundVolumes(event.detail)
     })
   }
 
@@ -61,7 +58,7 @@ export class SoundSystem {
   }
 
   setNewSoundVolumes(newValues: ICommonSoundValues) {
-    this._currentSoundValues = newValues
+    this._state.soundValues = newValues
 
     const setNewVolume = (levelIdx: string, newVolume: number) => {
       const sound = this._soundLevels[levelIdx].sound
@@ -92,7 +89,7 @@ export class SoundSystem {
   getVolumeForLevel(levelIdx: string): number {
     switch (this._soundLevels[levelIdx]?.type) {
       case TypesOfSoundLevels.sfx:
-        return this._currentSoundValues.sfx
+        return this._state.soundValues.sfx
       default:
         console.warn('for ', levelIdx, 'cant find any type!!!')
         return 0
