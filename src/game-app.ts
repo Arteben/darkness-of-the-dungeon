@@ -21,6 +21,7 @@ import '@/ui-elements/head-menu'
 import '@/ui-elements/maps-menu'
 import '@/ui-elements/user-notifications'
 import '@/ui-elements/user-dialog-modals'
+import '@/ui-elements/settings-menu'
 
 // assets
 import topPng from '@/styles/images/top.png'
@@ -63,6 +64,7 @@ export class GameApp extends GameStateElement {
     let rightColumnElement = html`<img class="columnPagesElement" src="${rightColumnPng}"/>`
     let userNotificationElement = html``
     let userModalElement = html``
+    let settingsMenu = html``
 
     switch (this._state.page) {
       case GamePages.mainMenu:
@@ -91,6 +93,9 @@ export class GameApp extends GameStateElement {
       case GamePages.maps:
         mapsMenu = html`<maps-menu></maps-menu>`
         break
+      case GamePages.settings:
+        settingsMenu = html`<settings-menu></settings-menu>`
+        break
     }
 
     return html`
@@ -102,6 +107,7 @@ export class GameApp extends GameStateElement {
           ${leftColumnElement}
           ${mainMenu}
           ${mapsMenu}
+          ${settingsMenu}
           ${rightColumnElement}
           <canvas style=${styleMap(convasDisplay)}></canvas>
         </div>

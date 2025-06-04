@@ -27,6 +27,10 @@
     "ru": "Русский",
     "eng": "Russian"
   },
+  "menuSettings": {
+    "ru": "Настройки",
+    "eng": "Settings"
+  },
   "hMenuToMain": {
     "ru": "Основное меню",
     "eng": "Back to main menu"
