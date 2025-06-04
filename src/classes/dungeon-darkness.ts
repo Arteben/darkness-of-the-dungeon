@@ -126,7 +126,7 @@ export class DungeonDarkness {
       slotsSystem: this._slotsSystem,
       modalsSystem: this._modalsSystem,
       scopeEndGame: this._scopeEndGame,
-      soundValues: this.state.soundValues,
+      state: this.state,
     }
     this.phaser.scene.start(this._mainSceneName, initParams)
     this._scopeEndGame.pause()

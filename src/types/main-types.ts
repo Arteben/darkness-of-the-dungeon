@@ -109,7 +109,7 @@ export interface IParamsForInitEngine {
   slotsSystem: PocketSlotsSystem
   modalsSystem: NotificationsModalsSystem
   scopeEndGame: ScopeEndGame
-  soundValues: ICommonSoundValues
+  state: GameState
 }
 
 export interface ILoadedTileSets {
@@ -239,7 +239,7 @@ export interface ISoundLevelsWithTypes {
 }
 
 export interface ISoundLevelsCollection {
-  [index: number]: ISoundLevelsWithTypes
+  [index: string]: ISoundLevelsWithTypes
 }
 
 export type callbackForAddDropItem = (a: PocketItem) => void

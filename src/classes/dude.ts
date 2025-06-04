@@ -466,19 +466,19 @@ export class Dude {
         }
         this.setDydeStaySizes()
         this.calcsForDropAvailable()
-        this.sounds.stopLevelSound(SoundLV.dudeMoveSounds)
+        this.sounds.stopLevelSound(SoundLV[SoundLV.dudeMoveSounds])
         break
       case DudeStates.walk:
         this.dudeAnimationKey = {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
-        this.sounds.playSingleSoundForLevel(SoundLV.dudeMoveSounds, MoveSounds[MoveSounds.walk])
+        this.sounds.playSingleSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.walk])
         break
       case DudeStates.run:
         this.dudeAnimationKey = {
           key: DudeAnimations.run, isIgnoreIf: true
         }
-        this.sounds.playSingleSoundForLevel(SoundLV.dudeMoveSounds, MoveSounds[MoveSounds.run])
+        this.sounds.playSingleSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.run])
         break
       case DudeStates.climbing:
         this.setXPlayerBodyForClimbing()
@@ -573,7 +573,7 @@ export class Dude {
     }
 
     const setClimbingSound = () => {
-      this.sounds.playSingleSoundForLevel(SoundLV.dudeMoveSounds, MoveSounds[MoveSounds.climbing])
+      this.sounds.playSingleSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.climbing])
     }
 
     switch (this.dudeMoveState) {
@@ -590,7 +590,7 @@ export class Dude {
         if (newValue) {
           if (this.climbingType == newClimbingType) {
             this.climbingType = DudeClimbingTypes.stand
-            this.sounds.stopLevelSound(SoundLV.dudeMoveSounds)
+            this.sounds.stopLevelSound(SoundLV[SoundLV.dudeMoveSounds])
           } else {
             this.climbingType = newClimbingType
             setClimbingSound()

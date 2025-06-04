@@ -41,6 +41,7 @@ import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
 import { SoundSystem } from '@/classes/sound-system'
+import { GameState } from '@/classes/game-state'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -59,7 +60,7 @@ export class MainEngine extends Scene {
   //@ts-ignore
   soundSystem: SoundSystem
   //@ts-ignore
-  _initSoundLevels: ICommonSoundValues
+  _gameState: GameState
 
   constructor() {
     super()
@@ -70,7 +71,7 @@ export class MainEngine extends Scene {
     this.slotSystem = initParams.slotsSystem
     this.modalsSystem = initParams.modalsSystem
     this.scopeEndGame = initParams.scopeEndGame
-    this._initSoundLevels = initParams.soundValues
+    this._gameState = initParams.state
   }
 
   create() {
@@ -99,18 +100,11 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElementTypes(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    const soundLevelsSprites: ISoundLevelsCollection = {
-      [LVSounds.dudeMoveSounds]: {
-        sound: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeMoveSounds]),
-        type: TypesOfSoundLevels.sfx,
-      },
-      [LVSounds.dudeActionSounds]: {
-        sound: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeActionSounds]),
-        type: TypesOfSoundLevels.sfx,
-      }
-    }
-
-    this.soundSystem = new SoundSystem(this, soundLevelsSprites, this._initSoundLevels)
+    this.soundSystem = new SoundSystem(this, this._gameState)
+    this.soundSystem.addNewSoundLevel(
+      LVSounds[LVSounds.dudeMoveSounds], LVSounds.dudeMoveSounds, TypesOfSoundLevels.sfx)
+    this.soundSystem.addNewSoundLevel(
+      LVSounds[LVSounds.dudeActionSounds], LVSounds.dudeActionSounds, TypesOfSoundLevels.sfx)
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,
