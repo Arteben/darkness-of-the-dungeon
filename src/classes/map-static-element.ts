@@ -106,10 +106,10 @@ export class MapStaticElement {
     if (this._fillBar || !this.isInteractive) return
 
     const stopSound = () =>
-      char.sounds.stopLevelTypeSound(SoundLevels.dudeActionSounds)
+      char.sounds.stopLevelSound(SoundLevels.dudeActionSounds)
 
     if (this.hasSound()) {
-      char.sounds.playLevelTypeSound(
+      char.sounds.playSingleSoundForLevel(
         SoundLevels.dudeActionSounds, DudeActionSounds[<DudeActionSounds>this._interactSound])
     }
 

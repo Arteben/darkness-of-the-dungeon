@@ -1,14 +1,18 @@
 import { Scene, GameObjects } from 'phaser'
 
-import { SoundLevels as LVSounds } from '@/types/enums'
+import {
+  SoundLevels as LVSounds,
+  TypesOfSoundLevels,
+} from '@/types/enums'
 
 import {
   IResolution,
   mainKeys,
   IJsonMap,
-  IParamsForInitEngine,
   ILoadedTileSets,
-  IAudioSpriteCollection,
+  ISoundLevelsCollection,
+  ICommonSoundValues,
+  IParamsForInitEngine,
 } from '@/types/main-types'
 
 //maps
@@ -54,6 +58,8 @@ export class MainEngine extends Scene {
   scopeEndGame: ScopeEndGame
   //@ts-ignore
   soundSystem: SoundSystem
+  //@ts-ignore
+  _initSoundLevels: ICommonSoundValues
 
   constructor() {
     super()
@@ -64,6 +70,7 @@ export class MainEngine extends Scene {
     this.slotSystem = initParams.slotsSystem
     this.modalsSystem = initParams.modalsSystem
     this.scopeEndGame = initParams.scopeEndGame
+    this._initSoundLevels = initParams.soundValues
   }
 
   create() {
@@ -92,12 +99,18 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElementTypes(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    const soundLevelsSprites: IAudioSpriteCollection = {
-      [LVSounds.dudeMoveSounds]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeMoveSounds]),
-      [LVSounds.dudeActionSounds]: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeActionSounds])
+    const soundLevelsSprites: ISoundLevelsCollection = {
+      [LVSounds.dudeMoveSounds]: {
+        sound: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeMoveSounds]),
+        type: TypesOfSoundLevels.sfx,
+      },
+      [LVSounds.dudeActionSounds]: {
+        sound: <Phaser.Sound.WebAudioSound>this.sound.addAudioSprite(LVSounds[LVSounds.dudeActionSounds]),
+        type: TypesOfSoundLevels.sfx,
+      }
     }
 
-    this.soundSystem = new SoundSystem(this, soundLevelsSprites)
+    this.soundSystem = new SoundSystem(this, soundLevelsSprites, this._initSoundLevels)
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,

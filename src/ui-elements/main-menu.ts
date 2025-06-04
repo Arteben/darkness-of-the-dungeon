@@ -23,6 +23,7 @@ import {
 } from '@/types/enums'
 
 import { GameState } from '@/classes/game-state'
+import { defaulSoundValues, offSoundValues } from '@/classes/sound-system'
 
 
 interface MenuButtonRenderInfo extends MainButtonRenderInfo {
@@ -64,7 +65,7 @@ export class MainMenu extends GameStateElement {
           }
           break
         case 'turnSound':
-          newButton.name = state.soundValues.sfx == 100 ? button.names[0] : button.names[1]
+          newButton.name = state.soundValues.sfx > 0 ? button.names[0] : button.names[1]
           break
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
@@ -105,9 +106,9 @@ export class MainMenu extends GameStateElement {
         break
       case 'turnSound':
         if (state.soundValues.sfx == 0) {
-          state.soundValues = { sfx: 100, music: 100}
+          state.soundValues = { ...defaulSoundValues }
         } else {
-          state.soundValues = { sfx: 0, music: 0}
+          state.soundValues = { ...offSoundValues }
         }
         break
     }

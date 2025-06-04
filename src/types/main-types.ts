@@ -16,6 +16,7 @@ import {
   UserNotificationTypes,
   UserModalAddOptionsEnum,
   DifficultyLevels,
+  TypesOfSoundLevels,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -108,6 +109,7 @@ export interface IParamsForInitEngine {
   slotsSystem: PocketSlotsSystem
   modalsSystem: NotificationsModalsSystem
   scopeEndGame: ScopeEndGame
+  soundValues: ICommonSoundValues
 }
 
 export interface ILoadedTileSets {
@@ -231,8 +233,13 @@ export interface ISelectedMap {
   difficult: DifficultyLevels
 }
 
-export interface IAudioSpriteCollection {
-  [index: number]: Phaser.Sound.WebAudioSound
+export interface ISoundLevelsWithTypes {
+  sound: Phaser.Sound.WebAudioSound
+  type: TypesOfSoundLevels
+}
+
+export interface ISoundLevelsCollection {
+  [index: number]: ISoundLevelsWithTypes
 }
 
 export type callbackForAddDropItem = (a: PocketItem) => void

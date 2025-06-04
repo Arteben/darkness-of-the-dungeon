@@ -16,6 +16,7 @@ import {
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
+import { offSoundValues } from '@/classes/sound-system'
 
 export class GameState implements IHashParams, ILocSettings {
 
@@ -56,11 +57,8 @@ export class GameState implements IHashParams, ILocSettings {
   }
   //
   // soundValues
-  // in percents 100 - max, 0 - turned off
-  private _soundValues: ICommonSoundValues = {
-    music: 0,
-    sfx: 0,
-  }
+  // in percents 1 - max, 0 - turned off
+  private _soundValues: ICommonSoundValues = { ...offSoundValues }
 
   public set soundValues(rawValues: ICommonSoundValues | null) {
     const values: ICommonSoundValues = (rawValues == null) ? { music: 0, sfx: 0 } : rawValues
@@ -71,8 +69,16 @@ export class GameState implements IHashParams, ILocSettings {
 
     if (hasEqualsValues(this._soundValues, values)) return
 
-    this._soundValues.music = values.music
-    this._soundValues.sfx = values.sfx
+    const setValue = (num: number) => {
+      if (num > 0) {
+        return num > 1 ? 1 : num
+      } else {
+        return 0
+      }
+    }
+
+    this._soundValues.music = setValue(values.music)
+    this._soundValues.sfx = setValue(values.sfx)
 
     this.triggerChnageState(GameStateSettings.soundValues)
   }

@@ -143,6 +143,11 @@ export enum SoundLevels {
   dudeActionSounds,
 }
 
+export enum TypesOfSoundLevels {
+  sfx,
+  music,
+}
+
 export enum DudeMoveSounds {
   walk,
   run,

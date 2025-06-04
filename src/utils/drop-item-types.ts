@@ -60,7 +60,7 @@ export const pocketItemTypes: IPocketItemTypes = {
         if (pickupItemType == null) return
 
         const callbackForPlaySound = (item: PocketItem) => {
-          dude.sounds.playLevelTypeSound(SoundLevels.dudeActionSounds, DudeActionSounds[item.pickupSound])
+          dude.sounds.playSingleSoundForLevel(SoundLevels.dudeActionSounds, DudeActionSounds[item.pickupSound])
         }
 
         dude._slotSystem.addItem(pocketItemData.type, callbackForPlaySound)

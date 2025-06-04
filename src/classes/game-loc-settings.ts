@@ -8,15 +8,13 @@ import {
 } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from './game-state'
+import { defaulSoundValues } from '@/classes/sound-system'
 
 export class GameLocSettings {
   locStorage: Storage
   storageKey = 'darknessOfTheMain'
   defaultLocSettings: ILocSettings = {
-    soundValues: {
-      music: 100,
-      sfx: 100,
-    },
+    soundValues: { ...defaulSoundValues },
     selectedMap: undefined,
     isShowGameIntro: true,
   }
