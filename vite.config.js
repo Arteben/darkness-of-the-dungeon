@@ -7,7 +7,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@assets': path.resolve(__dirname, './src/assets'),
-      '@fontello': path.resolve(__dirname, './src/styles/fontello-71afdb0e'),
+      '@fontello': path.resolve(__dirname, './src/styles/fontello-e9f3f4db'),
     },
   },
 })

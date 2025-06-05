@@ -110,13 +110,13 @@
     },
     {
       "uid": "cf772d9d1eca484c9772a98045dd39d6",
-      "css": "target",
-      "code": 59392,
+      "css": "target-1",
+      "code": 57407,
       "src": "elusive"
     },
     {
       "uid": "3fba70399d61e886bce68721edbc71af",
-      "css": "star-half",
+      "css": "star-half-1",
       "code": 61474,
       "src": "mfglabs"
     },
@@ -128,7 +128,7 @@
     },
     {
       "uid": "cc6a79edb1e82ee90129147ba089c323",
-      "css": "fire",
+      "css": "fire-3",
       "code": 62757,
       "src": "mfglabs"
     },
@@ -140,14 +140,14 @@
     },
     {
       "uid": "14cfd18cc1dd5fb99ba04311b888bc23",
-      "css": "flickr",
+      "css": "flickr-1",
       "code": 62211,
       "src": "entypo"
     },
     {
       "uid": "bcb868184ff9c35f8aef564f50c0d649",
       "css": "feather",
-      "code": 59393,
+      "code": 10002,
       "src": "entypo"
     },
     {
@@ -158,8 +158,8 @@
     },
     {
       "uid": "cd9ad52ef0740bb86ff11af9646d4859",
-      "css": "list",
-      "code": 59396,
+      "css": "list-1",
+      "code": 57472,
       "src": "elusive"
     },
     {
@@ -212,7 +212,7 @@
     },
     {
       "uid": "474656633f79ea2f1dad59ff63f6bf07",
-      "css": "star",
+      "css": "star-1",
       "code": 59398,
       "src": "fontawesome"
     },
@@ -369,7 +369,7 @@
     {
       "uid": "44e04715aecbca7f266a17d5a7863c68",
       "css": "plus",
-      "code": 59415,
+      "code": 59615,
       "src": "fontawesome"
     },
     {
@@ -4191,13 +4191,13 @@
     {
       "uid": "ef0c0495599c1e1d733359546ae3a48a",
       "css": "trash-empty-1",
-      "code": 59394,
+      "code": 59178,
       "src": "iconic"
     },
     {
       "uid": "d41b15fca9100375790a920f2deda3ff",
       "css": "trash-1",
-      "code": 59395,
+      "code": 59177,
       "src": "iconic"
     },
     {
@@ -4493,6 +4493,18 @@
       "css": "inbox-1",
       "code": 59614,
       "src": "linecons"
+    },
+    {
+      "uid": "0a9d5a8bfa0ccfd44a38328b8ca276c2",
+      "css": "volume-off-1",
+      "code": 59616,
+      "src": "typicons"
+    },
+    {
+      "uid": "3bf8e868324f7efb93c7bde31be9cc5e",
+      "css": "volume-middle",
+      "code": 59618,
+      "src": "typicons"
     }
   ]
 }

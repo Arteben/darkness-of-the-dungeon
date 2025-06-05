@@ -46,7 +46,7 @@ export class SoundButton extends GameStateElement {
   renderWithGame() {
     const isSound = this.isSound()
     const text = this.loc((isSound ? 'menuTurnSoundOff' : 'menuTurnSoundOn'))
-    const iconType = isSound ? 'volume-off' : 'volume-up'
+    const iconType = isSound ? 'volume-off-1' : 'volume-middle'
     const slotContent =
       this.isIcon ? html`<font-icon size="25" icon="${iconType}"></font-icon>` : text
     const iconClass = { 'iconWidth': this.isIcon }
