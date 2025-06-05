@@ -41,7 +41,7 @@ export class Translates {
     let translatedString = this.loc(str, pageTranslates)
     args.forEach((arg, idx) => {
       translatedString =
-        translatedString.replace(this.getArgsSearchRgx(idx), ' ' + this.loc(arg, pageTranslates))
+        translatedString.replace(this.getArgsSearchRgx(idx), ' ' + arg)
     })
     return translatedString
   }

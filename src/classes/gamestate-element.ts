@@ -58,11 +58,16 @@ export class GameStateElement extends LitElement {
 
   // added functions here
   // it runs with GAME OBJECT!
-  renderWithGame(game: DungeonDarkness) {}
+  renderWithGame(game: DungeonDarkness) { }
 
   loc(someString: string, pageTranslates?: IJsonTranslatesType): string {
     if (!this._game) return ''
     return this._game.locals.loc(someString, pageTranslates)
+  }
+
+  argsLoc(someString: string, args: string[], pageTranslates?: IJsonTranslatesType): string {
+    if (!this._game) return ''
+    return this._game.locals.locWithArgs(someString, args, pageTranslates)
   }
 
   getSelectedMap(): SelectedJsonMap {

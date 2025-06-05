@@ -17,8 +17,9 @@ import { Dude } from '@/classes/dude'
 const translatesDroppedItemKey = 'droppedItemAction'
 
 const getNotesForNoIteractiveItems = (item: PocketItemsEnum, char: Dude) => {
+  const pocketItemTrnslate = char.userModals.loc('droppedItem' + PocketItemsEnum[item])
   const translate = char.userModals.argsLoc(
-    translatesDroppedItemKey + 'Item', ['droppedItem' + PocketItemsEnum[item]])
+    translatesDroppedItemKey + 'Item', [pocketItemTrnslate])
 
   return {
     type: UserNotificationTypes.error,

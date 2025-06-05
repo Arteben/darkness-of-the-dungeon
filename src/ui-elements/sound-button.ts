@@ -11,7 +11,7 @@ import { commonVars } from '@/utils/common-css-vars'
 import '@/ui-elements/menu-button'
 import '@/ui-elements/font-icon'
 
-import { onSoundValues, offSoundValues } from '@/classes/sound-system'
+import { offSoundValues, defaulSoundValues } from '@/classes/sound-system'
 import { EventBus } from '@/classes/event-bus'
 
 @customElement('sound-button')
@@ -27,10 +27,15 @@ export class SoundButton extends GameStateElement {
   @property({ type: String })
   placeClass = ''
 
+  isSound = () => {
+    return this._state?.soundValues.sfx > 0
+      || this._state?.soundValues.music > 0
+  }
+
   OnClickButtonWithState(e: Event) {
     let soundValues
-    if (this._state.soundValues.sfx == 0) {
-      soundValues = { ...onSoundValues }
+    if (!this.isSound()) {
+      soundValues = { ...defaulSoundValues }
     } else {
       soundValues = { ...offSoundValues }
     }
@@ -39,7 +44,7 @@ export class SoundButton extends GameStateElement {
   }
 
   renderWithGame() {
-    const isSound = this._state.soundValues.sfx > 0
+    const isSound = this.isSound()
     const text = this.loc((isSound ? 'menuTurnSoundOff' : 'menuTurnSoundOn'))
     const iconType = isSound ? 'volume-off' : 'volume-up'
     const slotContent =

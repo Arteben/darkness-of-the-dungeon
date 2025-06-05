@@ -33,7 +33,12 @@ export class MainMenu extends GameStateElement {
     }
 
     const isGame = this._state.page == GamePages.game
-    const pocketSlots = isGame ? html`<pocket-slots-ui></pocket-slots-ui>` : html``
+    const pocketSlots = isGame ? html`<pocket-slots-ui></pocket-slots-ui>` : ''
+
+    const isSettings = this._state.page == GamePages.settings
+    const soundButton = !isSettings ? html`<sound-button
+            placeClass="buttonIconHeadMenu" ?isIcon="${true}"></sound-button>`
+            : ''
 
     return html`
         <div class="backgroundColor"></div>
@@ -44,8 +49,7 @@ export class MainMenu extends GameStateElement {
             <font-icon icon="th-list"></font-icon>
             ${this.loc('hMenuToMain')}
           </menu-button>
-          <sound-button
-            placeClass="buttonIconHeadMenu" ?isIcon="${true}"></sound-button>
+          ${soundButton}
         </div>
         <div class="headMenuDiveder">
           <info-panel ?smallMap=${true}>

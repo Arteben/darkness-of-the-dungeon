@@ -17,10 +17,6 @@ export const defaulSoundValues: ICommonSoundValues = {
   sfx: 0.5, music: 0.5
 }
 
-export const onSoundValues: ICommonSoundValues = {
-  sfx: 1, music: 1
-}
-
 export const offSoundValues: ICommonSoundValues = {
   sfx: 0, music: 0
 }
