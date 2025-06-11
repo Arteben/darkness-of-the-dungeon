@@ -109,7 +109,7 @@ export class MapStaticElement {
       char.sounds.stopLevelSound(SoundLevels[SoundLevels.dudeActionSounds])
 
     if (this.hasSound()) {
-      char.sounds.playSingleSoundForLevel(
+      char.sounds.playSfxSoundForLevel(
         SoundLevels[SoundLevels.dudeActionSounds], DudeActionSounds[<DudeActionSounds>this._interactSound])
     }
 

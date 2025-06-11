@@ -472,13 +472,13 @@ export class Dude {
         this.dudeAnimationKey = {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
-        this.sounds.playSingleSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.walk])
+        this.sounds.playSfxSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.walk])
         break
       case DudeStates.run:
         this.dudeAnimationKey = {
           key: DudeAnimations.run, isIgnoreIf: true
         }
-        this.sounds.playSingleSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.run])
+        this.sounds.playSfxSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.run])
         break
       case DudeStates.climbing:
         this.setXPlayerBodyForClimbing()
@@ -573,7 +573,7 @@ export class Dude {
     }
 
     const setClimbingSound = () => {
-      this.sounds.playSingleSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.climbing])
+      this.sounds.playSfxSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.climbing])
     }
 
     switch (this.dudeMoveState) {

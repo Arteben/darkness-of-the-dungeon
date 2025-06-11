@@ -2,7 +2,6 @@ import { Scene, GameObjects } from 'phaser'
 
 import {
   SoundLevels as LVSounds,
-  TypesOfSoundLevels,
 } from '@/types/enums'
 
 import {
@@ -10,8 +9,6 @@ import {
   mainKeys,
   IJsonMap,
   ILoadedTileSets,
-  ISoundLevelsCollection,
-  ICommonSoundValues,
   IParamsForInitEngine,
 } from '@/types/main-types'
 
@@ -101,10 +98,10 @@ export class MainEngine extends Scene {
       new EnvStaticMapElementTypes(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
     this.soundSystem = new SoundSystem(this, this._gameState)
-    this.soundSystem.addNewSoundLevel(
-      LVSounds[LVSounds.dudeMoveSounds], LVSounds.dudeMoveSounds, TypesOfSoundLevels.sfx)
-    this.soundSystem.addNewSoundLevel(
-      LVSounds[LVSounds.dudeActionSounds], LVSounds.dudeActionSounds, TypesOfSoundLevels.sfx)
+    this.soundSystem.addNewSfxLevel(
+      LVSounds[LVSounds.dudeMoveSounds], LVSounds.dudeMoveSounds)
+    this.soundSystem.addNewSfxLevel(
+      LVSounds[LVSounds.dudeActionSounds], LVSounds.dudeActionSounds)
 
     this._dude = new Dude(
       this, mapLevels, sceneCamera, tips, droppedItems,

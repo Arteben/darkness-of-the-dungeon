@@ -233,13 +233,8 @@ export interface ISelectedMap {
   difficult: DifficultyLevels
 }
 
-export interface ISoundLevelsWithTypes {
-  sound: Phaser.Sound.WebAudioSound
-  type: TypesOfSoundLevels
-}
-
 export interface ISoundLevelsCollection {
-  [index: string]: ISoundLevelsWithTypes
+  [index: string]: Phaser.Sound.WebAudioSound
 }
 
 export type callbackForAddDropItem = (a: PocketItem) => void

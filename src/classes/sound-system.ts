@@ -1,7 +1,6 @@
 import {
   SoundLevels as lVs,
   BusEventsList,
-  TypesOfSoundLevels,
 } from '@/types/enums'
 
 import {
@@ -38,67 +37,41 @@ export class SoundSystem {
     })
   }
 
-  addNewSoundLevel(idx: string, sprite: lVs, type: TypesOfSoundLevels) {
-    this._soundLevels[idx] = {
-      sound: <Phaser.Sound.WebAudioSound>this._engineSound.addAudioSprite(lVs[sprite]),
-      type,
-    }
+  addNewSfxLevel(idx: string, sprite: lVs) {
+    this._soundLevels[idx] =
+      <Phaser.Sound.WebAudioSound>this._engineSound.addAudioSprite(lVs[sprite])
   }
 
-  deleteSoundLevel(idx: string) {
+  deleteSfxLevel(idx: string) {
     const soundLevel = this._soundLevels[idx]
     if (soundLevel == undefined) return
 
     this.stopLevelSound(idx)
+    soundLevel.destroy()
     delete this._soundLevels[idx]
   }
 
   setNewSoundVolumes(newValues: ICommonSoundValues) {
     this._state.soundValues = newValues
-
-    const setNewVolume = (levelIdx: string, newVolume: number) => {
-      const sound = this._soundLevels[levelIdx].sound
-      if (sound.isPlaying) {
-        const seek = sound.seek
-        const marker = sound.currentMarker
-        this.stopLevelSound(levelIdx)
-        sound.play(marker.name, { volume: newVolume, seek })
-      }
-    }
-
-    const levelStrs: string[] = Object.keys(this._soundLevels)
-    levelStrs.forEach((levelStr: string) => {
-      const volume = this.getVolumeForLevel(levelStr)
-      setNewVolume(levelStr, volume)
-    })
+    this._engineSound.setVolume(this._state.soundValues.sfx)
   }
 
   stopLevelSound(levelIdx: string) {
     const soundLevel = this._soundLevels[levelIdx]
     if (soundLevel == undefined) return
 
-    if (soundLevel.sound.isPlaying) {
-      soundLevel.sound.stop()
+    if (soundLevel.isPlaying) {
+      soundLevel.stop()
     }
   }
 
-  getVolumeForLevel(levelIdx: string): number {
-    switch (this._soundLevels[levelIdx]?.type) {
-      case TypesOfSoundLevels.sfx:
-        return this._state.soundValues.sfx
-      default:
-        console.warn('for ', levelIdx, 'cant find any type!!!')
-        return 0
-    }
-  }
-
-  playSingleSoundForLevel(levelIdx: string, type: string) {
+  playSfxSoundForLevel(levelIdx: string, type: string) {
     const soundLevel = this._soundLevels[levelIdx]
     if (soundLevel == undefined) return
 
     this.stopLevelSound(levelIdx)
-    const volume = this.getVolumeForLevel(levelIdx)
-    const sound = soundLevel.sound
+    const volume = this._state.soundValues.sfx
+    const sound = soundLevel
     sound.play(type, { volume })
   }
 }
