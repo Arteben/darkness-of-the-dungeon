@@ -22,6 +22,7 @@ import '@/ui-elements/maps-menu'
 import '@/ui-elements/user-notifications'
 import '@/ui-elements/user-dialog-modals'
 import '@/ui-elements/settings-menu'
+import '@/ui-elements/fon-musics'
 
 // assets
 import topPng from '@/styles/images/top.png'
@@ -115,6 +116,7 @@ export class GameApp extends GameStateElement {
         <mobile-controls></mobile-controls>
         ${userNotificationElement}
         ${userModalElement}
+        <fon-musics></fon-musics>
     `
   }
 
