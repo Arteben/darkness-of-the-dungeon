@@ -6,13 +6,9 @@ import { commonVars } from '@/utils/common-css-vars'
 
 import {
   GameStateSettings,
-  UserModalAddOptionsEnum as ModalOptions,
   TypesOfSoundLevels as STypes,
-  BusEventsList,
 } from '@/types/enums'
 import { NullOrGameStateSettings } from '@/types/main-types'
-
-import { EventBus } from '@/classes/event-bus'
 
 import '@/ui-elements/menu-button'
 import '@/ui-elements/label-checkbox'
@@ -24,7 +20,8 @@ export class SettingsMenu extends GameStateElement {
 
   _stateSettings: NullOrGameStateSettings = [
     GameStateSettings.isShowGameIntro,
-    GameStateSettings.soundValues
+    GameStateSettings.soundValues,
+    GameStateSettings.hasSoundOn,
   ]
 
   onCheckbox(flag: boolean) {
@@ -35,7 +32,7 @@ export class SettingsMenu extends GameStateElement {
     const soundValues = { ...this._state.soundValues }
     // @ts-ignore
     soundValues[STypes[type]] = value / 100
-    EventBus.Dispatch(BusEventsList[BusEventsList.setSoundValues], soundValues)
+    this._state.soundValues = soundValues
   }
 
   renderWithGame() {
@@ -62,9 +59,9 @@ export class SettingsMenu extends GameStateElement {
         ?hasChecked="${isCheck}"
         @checkbox="${(e: CustomEvent) => { this.onCheckbox(e.detail) }}"
         >${this.loc('menuSettingsShownOnStart')}</label-checkbox>
+        <sound-button class="elementMenu soundButton" ?isIcon="${false}"></sound-button>
         ${getInputRange(STypes.sfx, soundValues.sfx)}
         ${getInputRange(STypes.music, soundValues.music)}
-        <sound-button class="elementMenu" ?isIcon="${false}"></sound-button>
     </div>
     `
   }
@@ -91,6 +88,11 @@ export class SettingsMenu extends GameStateElement {
     
     .elementMenu {
       margin-bottom: 20px;
+    }
+
+    .soundButton {
+      display: flex;
+      align-self: end;
     }
     
     .checkboxRule {

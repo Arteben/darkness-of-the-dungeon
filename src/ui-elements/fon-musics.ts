@@ -28,6 +28,7 @@ export class FonMusics extends GameStateElement {
     GameStateSettings.soundValues,
     GameStateSettings.isGameStarted,
     GameStateSettings.pages,
+    GameStateSettings.hasSoundOn,
   ]
 
   audio: HTMLAudioElement = new Audio()
@@ -49,7 +50,7 @@ export class FonMusics extends GameStateElement {
     return this._isPlaying
   }
 
-  _volume: number = 0
+  _volume?: number
   set volume(value: number) {
     if (this._volume == value) return
     this.audio.volume = value
@@ -59,13 +60,13 @@ export class FonMusics extends GameStateElement {
     }
   }
   get volume(): number {
-    return this._volume
+    return !this._volume ? 0 : this._volume
   }
 
 
   connectedCallback(): void {
     super.connectedCallback()
-    this.volume = this.getVolume()
+    this.volume = 0
     this.audio.onended = () => {
       if (this.isPlaying && this.setSrcAudio()) {
         this.isPlaying = true
@@ -109,7 +110,7 @@ export class FonMusics extends GameStateElement {
   }
 
   getVolume() {
-    return !this._state ? 0 : this._state.soundValues.music
+    return !this._state ? 0 : this._state.soundValues.music / 5
   }
 
   renderWithGame() {

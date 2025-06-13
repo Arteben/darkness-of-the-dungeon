@@ -4,21 +4,18 @@ import { css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit-html/directives/class-map.js'
 
-import { GameStateSettings, BusEventsList } from '@/types/enums'
+import { GameStateSettings } from '@/types/enums'
 import { NullOrGameStateSettings } from '@/types/main-types'
 
 import { commonVars } from '@/utils/common-css-vars'
 import '@/ui-elements/menu-button'
 import '@/ui-elements/font-icon'
 
-import { offSoundValues, defaulSoundValues } from '@/classes/sound-system'
-import { EventBus } from '@/classes/event-bus'
-
 @customElement('sound-button')
 export class SoundButton extends GameStateElement {
 
   _stateSettings: NullOrGameStateSettings = [
-    GameStateSettings.soundValues
+    GameStateSettings.hasSoundOn
   ]
 
   @property({ type: Boolean })
@@ -28,25 +25,17 @@ export class SoundButton extends GameStateElement {
   placeClass = ''
 
   isSound = () => {
-    return this._state?.soundValues.sfx > 0
-      || this._state?.soundValues.music > 0
+    return this._state?.hasSoundOn
   }
 
   OnClickButtonWithState(e: Event) {
-    let soundValues
-    if (!this.isSound()) {
-      soundValues = { ...defaulSoundValues }
-    } else {
-      soundValues = { ...offSoundValues }
-    }
-
-    EventBus.Dispatch(BusEventsList[BusEventsList.setSoundValues], soundValues)
+    this._state.hasSoundOn = !this.isSound()
   }
 
   renderWithGame() {
     const isSound = this.isSound()
     const text = this.loc((isSound ? 'menuTurnSoundOff' : 'menuTurnSoundOn'))
-    const iconType = isSound ? 'volume-off-1' : 'volume-middle'
+    const iconType = isSound ? 'volume-off-1' : 'volume-up'
     const slotContent =
       this.isIcon ? html`<font-icon size="25" icon="${iconType}"></font-icon>` : text
     const iconClass = { 'iconWidth': this.isIcon }

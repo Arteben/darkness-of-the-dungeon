@@ -1,6 +1,7 @@
 import {
   SoundLevels as lVs,
   BusEventsList,
+  GameStateSettings,
 } from '@/types/enums'
 
 import {
@@ -31,9 +32,13 @@ export class SoundSystem {
     this._engineSound = engine.sound as Phaser.Sound.WebAudioSoundManager
     this._state = state
 
-    EventBus.On(BusEventsList[BusEventsList.setSoundValues], (event: CustomEventInit) => {
-      if (!event.detail) return
-      this.setNewSoundVolumes(event.detail)
+    EventBus.On(BusEventsList[BusEventsList.changeGameState], (event: CustomEventInit) => {
+      const details = event.detail
+      if (!details &&
+        (details?.property != GameStateSettings.soundValues || details?.property != GameStateSettings.hasSoundOn)) {
+        return
+      }
+      this.setNewSoundVolumes()
     })
   }
 
@@ -51,8 +56,7 @@ export class SoundSystem {
     delete this._soundLevels[idx]
   }
 
-  setNewSoundVolumes(newValues: ICommonSoundValues) {
-    this._state.soundValues = newValues
+  setNewSoundVolumes() {
     this._engineSound.setVolume(this._state.soundValues.sfx)
   }
 

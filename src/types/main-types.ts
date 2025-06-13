@@ -16,7 +16,6 @@ import {
   UserNotificationTypes,
   UserModalAddOptionsEnum,
   DifficultyLevels,
-  TypesOfSoundLevels,
 } from '@/types/enums'
 
 export type nullNumber = null | number;
@@ -47,6 +46,7 @@ export interface IJsonTranslatesType {
 
 export interface ILocSettings {
   soundValues: ICommonSoundValues
+  hasSoundOn: boolean
   isShowGameIntro: boolean
   selectedMap?: ISelectedMap
 }

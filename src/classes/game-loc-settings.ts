@@ -15,6 +15,7 @@ export class GameLocSettings {
   storageKey = 'darknessOfTheMain'
   defaultLocSettings: ILocSettings = {
     soundValues: { ...defaulSoundValues },
+    hasSoundOn: true,
     selectedMap: undefined,
     isShowGameIntro: true,
   }
@@ -75,6 +76,9 @@ export class GameLocSettings {
     switch (type) {
       case GameStateSettings.soundValues:
         setLocalSettings('soundValues', state.soundValues)
+        break
+      case GameStateSettings.hasSoundOn:
+        setLocalSettings('hasSoundOn', state.hasSoundOn)
         break
       case GameStateSettings.selectedMap:
         setLocalSettings('selectedMap', state.selectedMap)

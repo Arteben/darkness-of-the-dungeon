@@ -24,11 +24,11 @@ export enum BusEventsList {
   charTwitching,
   notificationClick,
   userModalOk,
-  setSoundValues,
 }
 
 export enum GameStateSettings {
   soundValues,
+  hasSoundOn,
   selectedMap,
   pages,
   lang,

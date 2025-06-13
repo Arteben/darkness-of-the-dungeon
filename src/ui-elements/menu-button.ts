@@ -95,6 +95,9 @@ export class MainMenu extends LitElement {
     button:hover, button:active {
       outline: #eeeded solid 1px;
     }
+    button:not(:hover) {
+      outline: none;
+    }
 
     /* maps menu light */
     button.mapsMenu.light {

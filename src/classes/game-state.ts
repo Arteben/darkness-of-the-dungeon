@@ -57,7 +57,7 @@ export class GameState implements IHashParams, ILocSettings {
   }
   //
   // soundValues
-  // in percents 1 - max, 0 - turned off
+  // 1 - max, 0 - turned off
   private _soundValues: ICommonSoundValues = { ...offSoundValues }
 
   public set soundValues(rawValues: ICommonSoundValues | null) {
@@ -83,7 +83,19 @@ export class GameState implements IHashParams, ILocSettings {
     this.triggerChnageState(GameStateSettings.soundValues)
   }
   public get soundValues(): ICommonSoundValues {
-    return this._soundValues
+    return this.hasSoundOn ? this._soundValues : { ...offSoundValues }
+  }
+  //
+
+  // selected map
+  private _hasSoundOn: boolean = true
+  public set hasSoundOn(flag: boolean) {
+    if (flag == this._hasSoundOn) return
+    this._hasSoundOn = flag
+    this.triggerChnageState(GameStateSettings.hasSoundOn)
+  }
+  public get hasSoundOn(): boolean {
+    return this._hasSoundOn
   }
   //
 
@@ -177,6 +189,7 @@ export class GameState implements IHashParams, ILocSettings {
 
     if (locSettings) {
       this._soundValues = locSettings.soundValues
+      this._hasSoundOn = locSettings.hasSoundOn
       this._selectedMap = locSettings.selectedMap
       this._isShowGameIntro = locSettings.isShowGameIntro
     }
