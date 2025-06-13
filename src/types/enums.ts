@@ -152,6 +152,7 @@ export enum ScopeActions {
 export enum SoundLevels {
   dudeMoveSounds,
   dudeActionSounds,
+  gameEndMusics,
 }
 
 export enum TypesOfSoundLevels {

@@ -27,6 +27,8 @@ import dudeMoveSoundsJSON from '@assets/sounds/dude-move-sounds.json.txt'
 import dudeMoveSoundsOgg from '@assets/sounds/dude-move-sounds.ogg'
 import dudeActionSoundsJSON from '@assets/sounds/dude-action-sounds.json.txt'
 import dudeActionSoundsOgg from '@assets/sounds/dude-action-sounds.ogg'
+import gameEndMusicJson from '@assets/sounds/game-end-modal-musics.json.txt'
+import gameEndMusicOgg from '@assets/sounds/game-end-modal-musics.ogg'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -141,6 +143,7 @@ export class MainEngine extends Scene {
 
     this.load.audioSprite(LVSounds[LVSounds.dudeMoveSounds], dudeMoveSoundsJSON, dudeMoveSoundsOgg)
     this.load.audioSprite(LVSounds[LVSounds.dudeActionSounds], dudeActionSoundsJSON, dudeActionSoundsOgg)
+    this.load.audioSprite(LVSounds[LVSounds.gameEndMusics], gameEndMusicJson, gameEndMusicOgg)
   }
 
   onDrawProgressBar(value: number) {
