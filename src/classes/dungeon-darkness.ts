@@ -30,6 +30,7 @@ import { MainEngine } from '@/classes/main-engine'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem as ModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 export let dungeonDarknessGame: DungeonDarkness | null = null
 
@@ -85,6 +86,7 @@ export class DungeonDarkness {
   }
 
   _scopeEndGame?: ScopeEndGame
+  _soundSystem?: SoundSystem
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -119,14 +121,14 @@ export class DungeonDarkness {
 
   startMainEngine() {
     const map = this.getSelectedMap()
-    if (!this.phaser || !this._scopeEndGame || !map) return
+    if (!this.phaser || !this._scopeEndGame || !this._soundSystem || !map) return
 
     const initParams: IParamsForInitEngine = {
       nameMap: map.name,
       slotsSystem: this._slotsSystem,
       modalsSystem: this._modalsSystem,
       scopeEndGame: this._scopeEndGame,
-      state: this.state,
+      soundSystem: this._soundSystem,
     }
     this.phaser.scene.start(this._mainSceneName, initParams)
     this._scopeEndGame.pause()
@@ -139,6 +141,7 @@ export class DungeonDarkness {
     this.phaser = new PhaserGame(this._phConfig)
     this._scopeEndGame = new ScopeEndGame(this.phaser, this.state, this)
     this._scopeEndGame.setTransparent(true)
+    this._soundSystem = new SoundSystem(this.phaser, this.state)
     this.phaser.scene.add(this._mainSceneName, MainEngine, false)
     this.startMainEngine()
   }

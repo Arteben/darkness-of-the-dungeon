@@ -61,7 +61,7 @@ export class GameState implements IHashParams, ILocSettings {
   private _soundValues: ICommonSoundValues = { ...offSoundValues }
 
   public set soundValues(rawValues: ICommonSoundValues | null) {
-    const values: ICommonSoundValues = (rawValues == null) ? { music: 0, sfx: 0 } : rawValues
+    const values: ICommonSoundValues = (rawValues == null) ? { ...offSoundValues } : rawValues
 
     const hasEqualsValues = (old: ICommonSoundValues, newValues: ICommonSoundValues) => {
       return old.sfx == newValues.sfx && old.music == newValues.music
@@ -69,21 +69,11 @@ export class GameState implements IHashParams, ILocSettings {
 
     if (hasEqualsValues(this._soundValues, values)) return
 
-    const setValue = (num: number) => {
-      if (num > 0) {
-        return num > 1 ? 1 : num
-      } else {
-        return 0
-      }
-    }
-
-    this._soundValues.music = setValue(values.music)
-    this._soundValues.sfx = setValue(values.sfx)
-
+    this._soundValues = values
     this.triggerChnageState(GameStateSettings.soundValues)
   }
   public get soundValues(): ICommonSoundValues {
-    return this.hasSoundOn ? this._soundValues : { ...offSoundValues }
+    return this._soundValues
   }
   //
 

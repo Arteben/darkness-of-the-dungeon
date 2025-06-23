@@ -1,6 +1,7 @@
 
 export const isAllNull = (a: any, b: any) => {
-  return a == null && b == null
+  const isUndefinedOrNull = (value: any) => value == undefined || value == null
+  return isUndefinedOrNull(a) && isUndefinedOrNull(b)
 }
 
 export const getTOutPromise = (counter: number) =>{

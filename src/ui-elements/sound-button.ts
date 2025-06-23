@@ -4,8 +4,10 @@ import { css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { classMap } from 'lit-html/directives/class-map.js'
 
-import { GameStateSettings } from '@/types/enums'
+import { GameStateSettings, BusEventsList } from '@/types/enums'
 import { NullOrGameStateSettings } from '@/types/main-types'
+
+import { EventBus } from '@/classes/event-bus'
 
 import { commonVars } from '@/utils/common-css-vars'
 import '@/ui-elements/menu-button'
@@ -29,7 +31,7 @@ export class SoundButton extends GameStateElement {
   }
 
   OnClickButtonWithState(e: Event) {
-    this._state.hasSoundOn = !this.isSound()
+    EventBus.Dispatch(BusEventsList[BusEventsList.turnSoundOn], !this.isSound())
   }
 
   renderWithGame() {

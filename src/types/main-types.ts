@@ -6,6 +6,7 @@ import { NotificationsModalsSystem } from '@/classes/notifications-modals-system
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 import { Dude } from '@/classes/dude'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 import {
   Languages,
@@ -109,7 +110,7 @@ export interface IParamsForInitEngine {
   slotsSystem: PocketSlotsSystem
   modalsSystem: NotificationsModalsSystem
   scopeEndGame: ScopeEndGame
-  state: GameState
+  soundSystem: SoundSystem
 }
 
 export interface ILoadedTileSets {

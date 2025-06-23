@@ -1,7 +1,6 @@
 import {
   SoundLevels as lVs,
   BusEventsList,
-  GameStateSettings,
 } from '@/types/enums'
 
 import {
@@ -9,8 +8,8 @@ import {
   ICommonSoundValues,
 } from '@/types/main-types'
 
+import { Game as PhaserGame } from 'phaser'
 import { EventBus } from '@/classes/event-bus'
-import { MainEngine } from '@/classes/main-engine'
 import { GameState } from '@/classes/game-state'
 
 export const defaulSoundValues: ICommonSoundValues = {
@@ -27,24 +26,54 @@ export class SoundSystem {
   _state: GameState
 
   constructor(
-    engine: MainEngine, state: GameState) {
+    phaser: PhaserGame, state: GameState) {
     this._soundLevels = {}
-    this._engineSound = engine.sound as Phaser.Sound.WebAudioSoundManager
+    this._engineSound = phaser.sound as Phaser.Sound.WebAudioSoundManager
     this._state = state
 
-    EventBus.On(BusEventsList[BusEventsList.changeGameState], (event: CustomEventInit) => {
-      const details = event.detail
-      if (!details &&
-        (details?.property != GameStateSettings.soundValues || details?.property != GameStateSettings.hasSoundOn)) {
-        return
-      }
-      this.setNewSoundVolumes()
+    EventBus.On(BusEventsList[BusEventsList.setSoundValues], (event: CustomEventInit) => {
+      const values: ICommonSoundValues = event.detail
+      if (!values) return
+      this.setSoundVolumes(values)
+      this.applyNewSfxValue()
+    })
+
+    EventBus.On(BusEventsList[BusEventsList.turnSoundOn], (event: CustomEventInit) => {
+      const flag: boolean = Boolean(event.detail)
+      this._state.hasSoundOn = flag
+      this.applyNewSfxValue()
     })
   }
 
+  setSoundVolumes(newValues: ICommonSoundValues) {
+    const setValue = (num: number) => {
+      if (num > 0) {
+        return num > 1 ? 1 : num
+      } else {
+        return 0
+      }
+    }
+
+    const values: ICommonSoundValues = {
+      music: setValue(newValues.music),
+      sfx: setValue(newValues.sfx),
+    }
+
+    this._state.soundValues = values
+  }
+
+  applyNewSfxValue() {
+    const sfxValue = this._state.hasSoundOn
+      ? this._state.soundValues.sfx
+      : 0
+    this._engineSound.setVolume(sfxValue)
+  }
+
   addNewSfxLevel(idx: string, sprite: lVs) {
-    this._soundLevels[idx] =
-      <Phaser.Sound.WebAudioSound>this._engineSound.addAudioSprite(lVs[sprite])
+    if (!this._soundLevels[idx]) {
+      this._soundLevels[idx] =
+        <Phaser.Sound.WebAudioSound>this._engineSound.addAudioSprite(lVs[sprite])
+    }
   }
 
   deleteSfxLevel(idx: string) {
@@ -54,10 +83,6 @@ export class SoundSystem {
     this.stopLevelSound(idx)
     soundLevel.destroy()
     delete this._soundLevels[idx]
-  }
-
-  setNewSoundVolumes() {
-    this._engineSound.setVolume(this._state.soundValues.sfx)
   }
 
   stopLevelSound(levelIdx: string) {

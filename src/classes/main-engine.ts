@@ -27,8 +27,6 @@ import dudeMoveSoundsJSON from '@assets/sounds/dude-move-sounds.json.txt'
 import dudeMoveSoundsOgg from '@assets/sounds/dude-move-sounds.ogg'
 import dudeActionSoundsJSON from '@assets/sounds/dude-action-sounds.json.txt'
 import dudeActionSoundsOgg from '@assets/sounds/dude-action-sounds.ogg'
-import gameEndMusicJson from '@assets/sounds/game-end-modal-musics.json.txt'
-import gameEndMusicOgg from '@assets/sounds/game-end-modal-musics.ogg'
 //
 import { MapSceneLevels } from '@/classes/map-scene-levels'
 import { Dude } from '@/classes/dude'
@@ -40,7 +38,6 @@ import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { ScopeEndGame } from '@/classes/scope-and-end-game'
 import { SoundSystem } from '@/classes/sound-system'
-import { GameState } from '@/classes/game-state'
 
 const mapList: IJsonMap[] = JsonMapList
 
@@ -58,8 +55,6 @@ export class MainEngine extends Scene {
   scopeEndGame: ScopeEndGame
   //@ts-ignore
   soundSystem: SoundSystem
-  //@ts-ignore
-  _gameState: GameState
 
   constructor() {
     super()
@@ -70,7 +65,7 @@ export class MainEngine extends Scene {
     this.slotSystem = initParams.slotsSystem
     this.modalsSystem = initParams.modalsSystem
     this.scopeEndGame = initParams.scopeEndGame
-    this._gameState = initParams.state
+    this.soundSystem = initParams.soundSystem
   }
 
   create() {
@@ -99,7 +94,6 @@ export class MainEngine extends Scene {
     const listOfStaticElements =
       new EnvStaticMapElementTypes(mapLevels.envLayer as Phaser.Tilemaps.TilemapLayer).elementsList
 
-    this.soundSystem = new SoundSystem(this, this._gameState)
     this.soundSystem.addNewSfxLevel(
       LVSounds[LVSounds.dudeMoveSounds], LVSounds.dudeMoveSounds)
     this.soundSystem.addNewSfxLevel(
@@ -143,7 +137,6 @@ export class MainEngine extends Scene {
 
     this.load.audioSprite(LVSounds[LVSounds.dudeMoveSounds], dudeMoveSoundsJSON, dudeMoveSoundsOgg)
     this.load.audioSprite(LVSounds[LVSounds.dudeActionSounds], dudeActionSoundsJSON, dudeActionSoundsOgg)
-    this.load.audioSprite(LVSounds[LVSounds.gameEndMusics], gameEndMusicJson, gameEndMusicOgg)
   }
 
   onDrawProgressBar(value: number) {

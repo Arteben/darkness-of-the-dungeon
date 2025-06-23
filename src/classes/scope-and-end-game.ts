@@ -87,4 +87,8 @@ export class ScopeEndGame {
     if (!this._phaser || !this._phaser.canvas) return
     this._phaser.canvas.style.opacity = flag ? '0' : '1'
   }
+
+  toMainMenu() {
+    this._state.page = GamePages.mainMenu
+  }
 }

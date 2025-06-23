@@ -110,7 +110,7 @@ export class FonMusics extends GameStateElement {
   }
 
   getVolume() {
-    return !this._state ? 0 : this._state.soundValues.music / 5
+    return (!this._state?.hasSoundOn) ? 0 : this._state.soundValues.music / 5
   }
 
   renderWithGame() {

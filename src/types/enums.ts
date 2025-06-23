@@ -24,6 +24,8 @@ export enum BusEventsList {
   charTwitching,
   notificationClick,
   userModalOk,
+  setSoundValues,
+  turnSoundOn,
 }
 
 export enum GameStateSettings {
@@ -173,3 +175,8 @@ export enum DudeActionSounds {
   getKey,
   searchCampfire,
 }
+
+// export enum FonMusicTypes {
+//   none,
+//   fon,
+// }

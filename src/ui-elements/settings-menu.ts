@@ -7,8 +7,11 @@ import { commonVars } from '@/utils/common-css-vars'
 import {
   GameStateSettings,
   TypesOfSoundLevels as STypes,
+  BusEventsList,
 } from '@/types/enums'
 import { NullOrGameStateSettings } from '@/types/main-types'
+
+import { EventBus } from '@/classes/event-bus'
 
 import '@/ui-elements/menu-button'
 import '@/ui-elements/label-checkbox'
@@ -32,7 +35,7 @@ export class SettingsMenu extends GameStateElement {
     const soundValues = { ...this._state.soundValues }
     // @ts-ignore
     soundValues[STypes[type]] = value / 100
-    this._state.soundValues = soundValues
+    EventBus.Dispatch(BusEventsList[BusEventsList.setSoundValues], soundValues)
   }
 
   renderWithGame() {
