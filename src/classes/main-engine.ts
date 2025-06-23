@@ -36,7 +36,7 @@ import { DroppedItemsSystem as DroppedItems } from '@/classes/dropped-items-syst
 import { EnvStaticMapElementTypes } from '@/classes/env-static-map-element-types'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
-import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { ScopeStartEndGame } from '@/classes/scope-start-end-game'
 import { SoundSystem } from '@/classes/sound-system'
 
 const mapList: IJsonMap[] = JsonMapList
@@ -52,7 +52,7 @@ export class MainEngine extends Scene {
   //@ts-ignore
   modalsSystem: NotificationsModalsSystem
   //@ts-ignore
-  scopeEndGame: ScopeEndGame
+  scopeEndGame: ScopeStartEndGame
   //@ts-ignore
   soundSystem: SoundSystem
 

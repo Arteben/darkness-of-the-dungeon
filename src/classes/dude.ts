@@ -12,7 +12,7 @@ import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
 import { EnvStaticMapElementTypes } from '@/classes/env-static-map-element-types'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
-import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { ScopeStartEndGame } from '@/classes/scope-start-end-game'
 import { SoundSystem } from '@/classes/sound-system'
 
 import { isAllNull } from '@/utils/usefull'
@@ -58,7 +58,7 @@ export class Dude {
   _slotSystem: PocketSlotsSystem
   _progressBar: DudeProgressBar
   _staticElementsList: IListOFEnvStaticElements
-  scopeEndGame: ScopeEndGame
+  scopeEndGame: ScopeStartEndGame
   sounds: SoundSystem
 
   userModals: NotificationsModalsSystem

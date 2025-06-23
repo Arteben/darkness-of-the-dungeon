@@ -5,7 +5,7 @@ import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 import { Dude } from '@/classes/dude'
-import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { ScopeStartEndGame } from '@/classes/scope-start-end-game'
 import { SoundSystem } from '@/classes/sound-system'
 
 import {
@@ -109,7 +109,7 @@ export interface IParamsForInitEngine {
   nameMap: string
   slotsSystem: PocketSlotsSystem
   modalsSystem: NotificationsModalsSystem
-  scopeEndGame: ScopeEndGame
+  scopeEndGame: ScopeStartEndGame
   soundSystem: SoundSystem
 }
 

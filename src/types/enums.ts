@@ -41,6 +41,7 @@ export enum GameStateSettings {
   userNotification,
   userDialogModal,
   isShowGameIntro,
+  typeFonMusic,
 }
 
 export enum GamePages {
@@ -176,7 +177,9 @@ export enum DudeActionSounds {
   searchCampfire,
 }
 
-// export enum FonMusicTypes {
-//   none,
-//   fon,
-// }
+export enum FonMusicTypes {
+  none,
+  fon,
+  intro,
+  endMusic,
+}

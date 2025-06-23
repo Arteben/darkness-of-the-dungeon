@@ -3,6 +3,7 @@ import {
   BusEventsList,
   GamePages,
   GameStateSettings,
+  FonMusicTypes,
 } from '@/types/enums'
 import {
   IHashParams,
@@ -170,6 +171,19 @@ export class GameState implements IHashParams, ILocSettings {
     return this._isShowGameIntro
   }
   //
+
+  // typeFonMusic
+  private _typeFonMusic: FonMusicTypes = FonMusicTypes.none
+  public set typeFonMusic(typeMusic: FonMusicTypes) {
+    if (typeMusic == this._typeFonMusic) return
+
+    this._typeFonMusic = typeMusic
+    this.triggerChnageState(GameStateSettings.typeFonMusic)
+  }
+  public get typeFonMusic(): FonMusicTypes {
+    return this._typeFonMusic
+  }
+
 
   constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {

@@ -6,22 +6,28 @@ import { nullNumber } from '@/types/main-types'
 import {
   ScopeActions,
   GamePages,
+  FonMusicTypes,
 } from '@/types/enums'
 
-export class ScopeEndGame {
+export class ScopeStartEndGame {
   _state: GameState
   _phaser: PhaserGame
   gameScope: number = 0
   _startTime: nullNumber = null
 
   restartTheGame: VoidFunction
+  setMusic: (a: FonMusicTypes) => void
 
   constructor(phaser: PhaserGame, state: GameState, dungeonDarkness: DungeonDarkness) {
     this._state = state
     this._phaser = phaser
     this.restartTheGame = () => {
-      this._state.page = GamePages.mainMenu
+      this.toMainMenu()
       dungeonDarkness.restartMainEngine()
+    }
+
+    this.setMusic = (type: FonMusicTypes) => {
+      dungeonDarkness.soundSystem?.setFonMusic(type)
     }
   }
 
@@ -48,12 +54,14 @@ export class ScopeEndGame {
   pause() {
     if (!this._phaser.isPaused) {
       this._phaser.pause()
+      this.setMusic(FonMusicTypes.none)
     }
   }
 
   resume() {
     if (this._phaser.isPaused && this._state.isGameStarted) {
       this._phaser.resume()
+      this.setMusic(FonMusicTypes.fon)
     }
   }
 

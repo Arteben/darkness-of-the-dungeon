@@ -1,6 +1,7 @@
 import {
   SoundLevels as lVs,
   BusEventsList,
+  FonMusicTypes,
 } from '@/types/enums'
 
 import {
@@ -102,5 +103,9 @@ export class SoundSystem {
     const volume = this._state.soundValues.sfx
     const sound = soundLevel
     sound.play(type, { volume })
+  }
+
+  setFonMusic(type: FonMusicTypes) {
+    this._state.typeFonMusic = type
   }
 }

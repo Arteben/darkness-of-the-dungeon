@@ -42,7 +42,7 @@ export class MainMenu extends GameStateElement {
         <div class="headMenuDiveder">
           ${soundButton}
           <menu-button
-            @click="${(e: Event) => { this._state.page = GamePages.mainMenu }}"
+            @click="${(e: Event) => { this._game?._scopeEndGame?.toMainMenu() }}"
             placeClass="headMenu">
             <font-icon icon="th-list"></font-icon>
             ${this.loc('hMenuToMain')}

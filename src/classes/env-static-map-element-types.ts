@@ -5,6 +5,7 @@ import {
   PocketItemsEnum,
   ScopeActions,
   DudeActionSounds,
+  FonMusicTypes,
 } from '@/types/enums'
 
 import {
@@ -105,6 +106,7 @@ export class EnvStaticMapElementTypes {
           scopeEndGame.addScope(ScopeActions.difficultLevel)
           scopeEndGame.addScope(ScopeActions.onTimes)
           const gameTime = new Date(scopeEndGame.getGameTime())
+          scopeEndGame.setMusic(FonMusicTypes.endMusic)
 
           userModals.showModal({
             text: userModals.loc('gameEndModalText'),
