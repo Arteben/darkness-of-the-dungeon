@@ -1,11 +1,7 @@
-import dateFormater from 'dateformat'
-
 import {
   EnvStaticElements as EnvElmts,
   PocketItemsEnum,
-  ScopeActions,
   DudeActionSounds,
-  FonMusicTypes,
 } from '@/types/enums'
 
 import {
@@ -15,8 +11,6 @@ import {
   ITilesCoords,
   IListOFEnvStaticElements,
 } from '@/types/main-types'
-
-import warriorModalEnd from '@assets/warrior-modal-end.png'
 
 import { getZerosStringFromNum } from '@/utils/usefull'
 
@@ -101,26 +95,7 @@ export class EnvStaticMapElementTypes {
         EnvElmts.door,
         15,
         function (this: MapStaticElement, coords: ITilesCoords, char: Dude) {
-          const userModals = char.userModals
-          const scopeEndGame = char.scopeEndGame
-          scopeEndGame.addScope(ScopeActions.difficultLevel)
-          scopeEndGame.addScope(ScopeActions.onTimes)
-          const gameTime = new Date(scopeEndGame.getGameTime())
-          scopeEndGame.setMusic(FonMusicTypes.endMusic)
-
-          userModals.showModal({
-            text: userModals.loc('gameEndModalText'),
-            callback: () => { scopeEndGame.restartTheGame() },
-            image: warriorModalEnd,
-            titles: [{
-              title: ' ' + userModals.loc('gameEndModalTitleScope'),
-              value: String(scopeEndGame.gameScope),
-              bigValue: true,
-            },{
-              title: userModals.loc('gameEndModalTitleTime'),
-              value: ' ' + dateFormater(gameTime, 'MM:ss')
-            }],
-          })
+          char.scopeEndGame.showEndGameUserModal()
         },
         2,
         PocketItemsEnum.key,
