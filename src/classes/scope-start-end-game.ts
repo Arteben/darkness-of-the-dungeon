@@ -22,6 +22,7 @@ export class ScopeStartEndGame {
     this._state = state
     this._phaser = phaser
     this.restartTheGame = () => {
+      this.setMusic(FonMusicTypes.none)
       this.toMainMenu()
       dungeonDarkness.restartMainEngine()
     }
@@ -36,6 +37,7 @@ export class ScopeStartEndGame {
     this.setTransparent(false)
     this.resume()
     this._startTime = Date.now()
+    this.setMusic(FonMusicTypes.fon)
   }
 
   getGameTime() {
@@ -54,14 +56,12 @@ export class ScopeStartEndGame {
   pause() {
     if (!this._phaser.isPaused) {
       this._phaser.pause()
-      this.setMusic(FonMusicTypes.none)
     }
   }
 
   resume() {
     if (this._phaser.isPaused && this._state.isGameStarted) {
       this._phaser.resume()
-      this.setMusic(FonMusicTypes.fon)
     }
   }
 
