@@ -1,17 +1,13 @@
 import {
-  FonMusicTypes,
   GamePages,
   GameStateSettings,
-  UserModalAddOptionsEnum,
 } from '@/types/enums'
 
 import {
   IJsonMap,
   IResolution,
   GameStateChangeData,
-  IParamsForInitEngine,
   INotificationAnimTimeouts,
-  IUserModalAddOptions,
 } from '@/types/main-types'
 
 import { WEBGL, Types, Game as PhaserGame } from 'phaser'
@@ -22,8 +18,6 @@ import { Translates } from '@/classes/translates'
 
 import '@/game-app'
 import { GameApp } from '@/game-app'
-
-import warriorImg from '@assets/warrior-modal.png'
 
 import { default as JsonMapList } from '@/assets/maps/map-list.json'
 
@@ -73,12 +67,12 @@ export class DungeonDarkness {
   phaser?: PhaserGame
   gameApp?: GameApp
 
-  _mainSceneName: string = 'MainEngine'
+  mainSceneName: string = 'MainEngine'
 
-  _slotsSystem: PocketSlotsSystem
+  slotsSystem: PocketSlotsSystem
   maxSlots: number
 
-  _modalsSystem: ModalsSystem
+  modalsSystem: ModalsSystem
   // time in seconds
   notificationAnimTimeouts: INotificationAnimTimeouts = {
     start: 0.2,
@@ -87,7 +81,7 @@ export class DungeonDarkness {
   }
 
   _scopeEndGame?: ScopeStartEndGame
-  soundSystem?: SoundSystem
+  _soundSystem?: SoundSystem
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -95,10 +89,10 @@ export class DungeonDarkness {
     this.state = state
     this.locals = locals
 
-    this._slotsSystem = new PocketSlotsSystem(state)
-    this.maxSlots = this._slotsSystem.maxSlotsNum
+    this.slotsSystem = new PocketSlotsSystem(state)
+    this.maxSlots = this.slotsSystem.maxSlotsNum
 
-    this._modalsSystem = new ModalsSystem(
+    this.modalsSystem = new ModalsSystem(
       state, this.notificationAnimTimeouts, this.locals)
 
     // select any map if map not selected!
@@ -120,31 +114,16 @@ export class DungeonDarkness {
     window.addEventListener('resize', (event: UIEvent) => { this.onWindowResize() })
   }
 
-  startMainEngine() {
-    const map = this.getSelectedMap()
-    if (!this.phaser || !this._scopeEndGame || !this.soundSystem || !map) return
-
-    const initParams: IParamsForInitEngine = {
-      nameMap: map.name,
-      slotsSystem: this._slotsSystem,
-      modalsSystem: this._modalsSystem,
-      scopeEndGame: this._scopeEndGame,
-      soundSystem: this.soundSystem,
-    }
-    this.phaser.scene.start(this._mainSceneName, initParams)
-    this._scopeEndGame.pause()
-  }
-
   createPhaserGame(canvas: HTMLCanvasElement, parentApp: HTMLElement, appElement: GameApp) {
     this.gameApp = appElement
     this._phConfig.parent = parentApp
     this._phConfig.canvas = canvas
     this.phaser = new PhaserGame(this._phConfig)
-    this.soundSystem = new SoundSystem(this.phaser, this.state)
-    this._scopeEndGame = new ScopeStartEndGame(this.phaser, this.state, this)
+    this.phaser.scene.add(this.mainSceneName, MainEngine, false)
+    this._soundSystem = new SoundSystem(this.phaser, this.state)
+    this._scopeEndGame = new ScopeStartEndGame(this.phaser, this, this._soundSystem)
     this._scopeEndGame.setTransparent(true)
-    this.phaser.scene.add(this._mainSceneName, MainEngine, false)
-    this.startMainEngine()
+    this._scopeEndGame.startMainEngine()
   }
 
   getSelectedMap(): IJsonMap | null {
@@ -164,33 +143,15 @@ export class DungeonDarkness {
   private onChangeGameState(data: CustomEventInit) {
     const eventDetail = data.detail as GameStateChangeData
     if (!this._scopeEndGame) return
-    const scopeEndGame = this._scopeEndGame
 
     if (eventDetail.property == GameStateSettings.pages) {
       if (this.state.page == GamePages.game) {
         if (this.state.isGameStarted) {
-          scopeEndGame.resume()
-        } else if (scopeEndGame.isShowIntro()) {
-          scopeEndGame.setMusic(FonMusicTypes.intro)
-          this._modalsSystem.showModal({
-            text: this._modalsSystem.loc('gameIntroModalText'),
-            callback: (options?: IUserModalAddOptions[]) => {
-              scopeEndGame.startGame()
-              if (!options) return
-              options.forEach((element: IUserModalAddOptions) => {
-                if (UserModalAddOptionsEnum[element.prop] == 'shownOnStart') {
-                  scopeEndGame.setIsShowIntro(element.value)
-                }
-              })
-            },
-            image: warriorImg,
-            options: [{
-              value: true,
-              prop: UserModalAddOptionsEnum.shownOnStart,
-            }],
-          })
+          this._scopeEndGame.resume()
+        } else if (this._scopeEndGame.isShowIntro()) {
+          this._scopeEndGame.showStartGameUserModal()
         } else {
-          scopeEndGame.startGame()
+          this._scopeEndGame.startGame()
         }
 
         window.setTimeout(() => { this.onWindowResize() }, 100)
@@ -200,17 +161,8 @@ export class DungeonDarkness {
     }
 
     if (eventDetail.property == GameStateSettings.selectedMap) {
-      this.restartMainEngine()
+      this._scopeEndGame.restart()
     }
-  }
-
-  restartMainEngine() {
-    if (!this.phaser || !this._scopeEndGame) return
-
-    this._slotsSystem.cleanAllSlots()
-    this._scopeEndGame.endGame()
-    this.phaser.scene.stop(this._mainSceneName)
-    this.startMainEngine()
   }
 
   onWindowResize() {
