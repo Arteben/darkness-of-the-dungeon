@@ -2,6 +2,8 @@ import {
   PocketItemsEnum,
   UserNotificationTypes,
   EnvStaticElements,
+  SoundLevels,
+  DudeActionSounds,
 } from '@/types/enums'
 
 import {
@@ -15,8 +17,9 @@ import { Dude } from '@/classes/dude'
 const translatesDroppedItemKey = 'droppedItemAction'
 
 const getNotesForNoIteractiveItems = (item: PocketItemsEnum, char: Dude) => {
+  const pocketItemTrnslate = char.userModals.loc('droppedItem' + PocketItemsEnum[item])
   const translate = char.userModals.argsLoc(
-    translatesDroppedItemKey + 'Item', ['droppedItem' + PocketItemsEnum[item]])
+    translatesDroppedItemKey + 'Item', [pocketItemTrnslate])
 
   return {
     type: UserNotificationTypes.error,
@@ -43,6 +46,7 @@ export const pocketItemTypes: IPocketItemTypes = {
     },
     false,
     0.8,
+    DudeActionSounds.getKey,
   ),
   [PocketItemsEnum.hand]: new PocketItem(
     PocketItemsEnum.hand,
@@ -56,7 +60,11 @@ export const pocketItemTypes: IPocketItemTypes = {
         const pickupItemType = dude.dropItems.pickupItem(pocketItemData.coords)
         if (pickupItemType == null) return
 
-        dude._slotSystem.addItem(pocketItemData.type)
+        const callbackForPlaySound = (item: PocketItem) => {
+          dude.sounds.playSfxSoundForLevel(SoundLevels[SoundLevels.dudeActionSounds], DudeActionSounds[item.pickupSound])
+        }
+
+        dude._slotSystem.addItem(pocketItemData.type, callbackForPlaySound)
 
         dude.pocketItemCollisionData = dude.dropItems.getItemDataForActiveItem(pocketItemData.coords)
       } else if (envData && envData.tileIndex == EnvStaticElements.door) {
@@ -75,6 +83,7 @@ export const pocketItemTypes: IPocketItemTypes = {
     },
     false,
     0,
+    undefined,
     false,
   ),
   [PocketItemsEnum.rock]: new PocketItem(

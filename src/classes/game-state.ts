@@ -3,6 +3,7 @@ import {
   BusEventsList,
   GamePages,
   GameStateSettings,
+  FonMusicTypes,
 } from '@/types/enums'
 import {
   IHashParams,
@@ -12,9 +13,11 @@ import {
   NotificationNullData,
   UserModalNullData,
   ISelectedMap,
+  ICommonSoundValues,
 } from '@/types/main-types'
 
 import { EventBus } from '@/classes/event-bus'
+import { offSoundValues } from '@/classes/sound-system'
 
 export class GameState implements IHashParams, ILocSettings {
 
@@ -54,18 +57,39 @@ export class GameState implements IHashParams, ILocSettings {
     return this._isGameStarted
   }
   //
-  // isSound
-  private _isSound: boolean = true
-  public set isSound(flag: boolean) {
-    if (this._isSound != flag) {
-      this._isSound = flag
-      this.triggerChnageState(GameStateSettings.isSound)
+  // soundValues
+  // 1 - max, 0 - turned off
+  private _soundValues: ICommonSoundValues = { ...offSoundValues }
+
+  public set soundValues(rawValues: ICommonSoundValues | null) {
+    const values: ICommonSoundValues = (rawValues == null) ? { ...offSoundValues } : rawValues
+
+    const hasEqualsValues = (old: ICommonSoundValues, newValues: ICommonSoundValues) => {
+      return old.sfx == newValues.sfx && old.music == newValues.music
     }
+
+    if (hasEqualsValues(this._soundValues, values)) return
+
+    this._soundValues = values
+    this.triggerChnageState(GameStateSettings.soundValues)
   }
-  public get isSound(): boolean {
-    return this._isSound
+  public get soundValues(): ICommonSoundValues {
+    return this._soundValues
   }
   //
+
+  // selected map
+  private _hasSoundOn: boolean = true
+  public set hasSoundOn(flag: boolean) {
+    if (flag == this._hasSoundOn) return
+    this._hasSoundOn = flag
+    this.triggerChnageState(GameStateSettings.hasSoundOn)
+  }
+  public get hasSoundOn(): boolean {
+    return this._hasSoundOn
+  }
+  //
+
   // selected map
   private _selectedMap?: ISelectedMap
   public set selectedMap(data: ISelectedMap) {
@@ -148,6 +172,19 @@ export class GameState implements IHashParams, ILocSettings {
   }
   //
 
+  // typeFonMusic
+  private _typeFonMusic: FonMusicTypes = FonMusicTypes.none
+  public set typeFonMusic(typeMusic: FonMusicTypes) {
+    if (typeMusic == this._typeFonMusic) return
+
+    this._typeFonMusic = typeMusic
+    this.triggerChnageState(GameStateSettings.typeFonMusic)
+  }
+  public get typeFonMusic(): FonMusicTypes {
+    return this._typeFonMusic
+  }
+
+
   constructor(newParams?: IHashParams, locSettings?: ILocSettings) {
     if (newParams) {
       this.lang = newParams.lang
@@ -155,7 +192,8 @@ export class GameState implements IHashParams, ILocSettings {
     }
 
     if (locSettings) {
-      this._isSound = locSettings.isSound
+      this._soundValues = locSettings.soundValues
+      this._hasSoundOn = locSettings.hasSoundOn
       this._selectedMap = locSettings.selectedMap
       this._isShowGameIntro = locSettings.isShowGameIntro
     }

@@ -1,64 +1,74 @@
-import { GamePages, Languages } from '@/types/enums'
+import {
+  GamePages,
+  Languages,
+  UrlHashes as Hashes,
+} from '@/types/enums'
 import { IHashParams } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 
 import { getDungeonDarknessGame } from '@/classes/dungeon-darkness'
 
+interface someHashesForPages {
+  page: GamePages
+  hash: Hashes
+}
+
 export class GameHashes {
 
-  location: Location
-  hashes: { [index: string]: string } = {
-    ru: 'ru',
-    eng: 'en',
-    rules: 'rules',
-    game: 'game',
-    maps: 'maps',
-  }
+  _location: Location
+  _corrsPageHashes: someHashesForPages[] = [
+    { page: GamePages.game, hash: Hashes.game },
+    { page: GamePages.maps, hash: Hashes.maps },
+    { page: GamePages.rules, hash: Hashes.rules },
+    { page: GamePages.settings, hash: Hashes.settings },
+  ]
 
   // params
-  lang: Languages = Languages.eng
-  page: GamePages = GamePages.mainMenu
+  _lang: Languages = Languages.eng
+  _page: GamePages = GamePages.mainMenu
   //
 
   constructor() {
-    this.location = window.location
+    this._location = window.location
     const hashParams = this.getHashParams()
-    this.lang = hashParams.lang
-    this.page = hashParams.page
+    this._lang = hashParams.lang
+    this._page = hashParams.page
 
     EventBus.subscribeAndUpdateStateChanges(this.onChangeGameState, this)
 
     window.addEventListener('hashchange', (e: HashChangeEvent) => {
       this.onHashChange()
     })
+  }
 
+  getHashStr(type: Hashes) {
+    return Hashes[type]
   }
 
   getHashParams() {
     const params: IHashParams = {
-      lang: this.lang, page: this.page
+      lang: this._lang, page: this._page
     }
+
+    const isPageForHash = (hash: Hashes) => {
+      const regExpForPage = new RegExp('^#[a-z]+\/' + this.getHashStr(hash) + '$', 'i')
+      return regExpForPage.test(this._location.hash)
+    }
+    params.page = GamePages.mainMenu
+    const findedElement = this._corrsPageHashes.find(element => {
+      return (isPageForHash(element.hash))
+    })
+    if (findedElement != undefined) {
+      params.page = findedElement.page
+    }
+
     const langRexp = new RegExp('^#[a-z]+')
-    const rulesRexp = new RegExp('^#[a-z]+\/'+ this.hashes.rules + '$', 'i')
-    const gameRexp = new RegExp('^#[a-z]+\/' + this.hashes.game + '$', 'i')
-    const mapsRexp = new RegExp('^#[a-z]+\/' + this.hashes.maps + '$', 'i')
-
-    if (rulesRexp.test(this.location.hash)) {
-      params.page = GamePages.rules
-    } else if (gameRexp.test(this.location.hash)) {
-      params.page = GamePages.game
-    } else if (mapsRexp.test(this.location.hash)) {
-      params.page = GamePages.maps
-    } else {
-      params.page = GamePages.mainMenu
-    }
-
-    const langSearches = this.location.hash.match(langRexp)
+    const langSearches = this._location.hash.match(langRexp)
     if (langSearches?.length) {
       const langSearch = langSearches[0].toLocaleLowerCase()
-      if (('#' + this.hashes.eng) == langSearch) {
+      if (('#' + this.getHashStr(Hashes.eng)) == langSearch) {
         params.lang = Languages.eng
-      } else if (('#' + this.hashes.ru) == langSearch) {
+      } else if (('#' + this.getHashStr(Hashes.ru)) == langSearch) {
         params.lang = Languages.ru
       }
     }
@@ -67,13 +77,13 @@ export class GameHashes {
   }
 
   getLocalStateForStart(): IHashParams {
-    let page = this.page
+    let page = this._page
     if (page == GamePages.game) {
       page = GamePages.mainMenu
     }
 
     return {
-      lang: this.lang,
+      lang: this._lang,
       page: page
     }
   }
@@ -85,14 +95,14 @@ export class GameHashes {
 
     const newParams = this.getHashParams()
 
-    if (newParams.page != this.page) {
-      this.page = newParams.page
-      game.state.page = this.page
+    if (newParams.page != this._page) {
+      this._page = newParams.page
+      game.state.page = this._page
     }
 
-    if (newParams.lang != this.lang) {
-      this.lang = newParams.lang
-      game.state.lang = this.lang
+    if (newParams.lang != this._lang) {
+      this._lang = newParams.lang
+      game.state.lang = this._lang
     }
   }
 
@@ -104,32 +114,28 @@ export class GameHashes {
     let isChanged = false
     let isRaplaceChanged = false
 
-    if (game.state.lang != this.lang) {
+    if (game.state.lang != this._lang) {
       isRaplaceChanged = true
-      this.lang = game.state.lang
+      this._lang = game.state.lang
     }
 
-    if (game.state.page != this.page) {
+    if (game.state.page != this._page) {
       isChanged = true
-      this.page = game.state.page
+      this._page = game.state.page
     }
 
     if (!(isChanged || isRaplaceChanged)) {
       return
     }
 
-    let newHash = '#' + (this.lang == Languages.eng ? this.hashes.eng : this.hashes.ru)
+    let newHash =
+      '#' + (this._lang == Languages.eng ? this.getHashStr(Hashes.eng) : this.getHashStr(Hashes.ru))
 
-    switch (this.page) {
-      case GamePages.rules:
-        newHash += '/' + this.hashes.rules
-        break
-      case GamePages.game:
-        newHash += '/' + this.hashes.game
-        break
-      case GamePages.maps:
-        newHash += '/' + this.hashes.maps
-        break
+    const findedElement = this._corrsPageHashes.find(element => {
+      return element.page == this._page
+    })
+    if (findedElement != undefined) {
+      newHash += '/' + this.getHashStr(findedElement.hash)
     }
 
     if (isChanged) {

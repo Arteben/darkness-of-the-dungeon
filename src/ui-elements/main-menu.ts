@@ -34,7 +34,7 @@ const buttons: Array<MainButtonType> = [
   { type: 'gameStart', names: ['menuGameStart', 'menuGameContinue'] },
   { type: 'rules', names: ['menuRules'] },
   { type: 'maps', names: ['menuChangeMap'] },
-  { type: 'turnSound', names: ['menuTurnSoundOff', 'menuTurnSoundOn'] },
+  { type: 'settings', names: ['menuSettings'] },
   { type: 'lang', names: ['menuToEng', 'menuToRu'] },
 ]
 
@@ -43,7 +43,6 @@ export class MainMenu extends GameStateElement {
 
   _stateSettings: NullOrGameStateSettings = [
     GameStateSettings.isGameStarted,
-    GameStateSettings.isSound,
     GameStateSettings.lang,
     GameStateSettings.pages,
   ]
@@ -63,15 +62,14 @@ export class MainMenu extends GameStateElement {
             newButton.name = button.names[0]
           }
           break
-        case 'turnSound':
-          newButton.name = state.isSound ? button.names[0] : button.names[1]
-          break
         case 'lang':
           newButton.name = state.lang == Languages.ru ? button.names[0] : button.names[1]
           break
         case 'maps':
           newButton.name = button.names[0]
           break
+        case 'settings':
+          newButton.name = button.names[0]
         default:
           newButton.name = button.names[0]
           break
@@ -103,8 +101,8 @@ export class MainMenu extends GameStateElement {
       case 'maps':
         state.page = GamePages.maps
         break
-      case 'turnSound':
-        state.isSound = !state.isSound
+      case 'settings':
+        state.page = GamePages.settings
         break
     }
   }

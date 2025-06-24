@@ -24,10 +24,13 @@ export enum BusEventsList {
   charTwitching,
   notificationClick,
   userModalOk,
+  setSoundValues,
+  turnSoundOn,
 }
 
 export enum GameStateSettings {
-  isSound,
+  soundValues,
+  hasSoundOn,
   selectedMap,
   pages,
   lang,
@@ -38,6 +41,7 @@ export enum GameStateSettings {
   userNotification,
   userDialogModal,
   isShowGameIntro,
+  typeFonMusic,
 }
 
 export enum GamePages {
@@ -45,6 +49,16 @@ export enum GamePages {
   rules,
   game,
   maps,
+  settings,
+}
+
+export enum UrlHashes {
+  ru,
+  eng,
+  rules,
+  game,
+  maps,
+  settings,
 }
 
 export enum DudeStates {
@@ -136,4 +150,36 @@ export enum ScopeActions {
   searchBox,
   difficultLevel,
   onTimes,
+}
+
+export enum SoundLevels {
+  dudeMoveSounds,
+  dudeActionSounds,
+  gameEndMusics,
+}
+
+export enum TypesOfSoundLevels {
+  sfx,
+  music,
+}
+
+export enum DudeMoveSounds {
+  walk,
+  run,
+  climbing,
+}
+
+export enum DudeActionSounds {
+  searchBox,
+  searchChest,
+  getItem,
+  getKey,
+  searchCampfire,
+}
+
+export enum FonMusicTypes {
+  none,
+  fon,
+  intro,
+  endMusic,
 }

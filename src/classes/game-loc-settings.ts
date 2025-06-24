@@ -8,12 +8,14 @@ import {
 } from '@/types/main-types'
 import { EventBus } from '@/classes/event-bus'
 import { GameState } from './game-state'
+import { defaulSoundValues } from '@/classes/sound-system'
 
 export class GameLocSettings {
   locStorage: Storage
   storageKey = 'darknessOfTheMain'
   defaultLocSettings: ILocSettings = {
-    isSound: true,
+    soundValues: { ...defaulSoundValues },
+    hasSoundOn: true,
     selectedMap: undefined,
     isShowGameIntro: true,
   }
@@ -72,8 +74,11 @@ export class GameLocSettings {
     }
 
     switch (type) {
-      case GameStateSettings.isSound:
-        setLocalSettings('isSound', state.isSound)
+      case GameStateSettings.soundValues:
+        setLocalSettings('soundValues', state.soundValues)
+        break
+      case GameStateSettings.hasSoundOn:
+        setLocalSettings('hasSoundOn', state.hasSoundOn)
         break
       case GameStateSettings.selectedMap:
         setLocalSettings('selectedMap', state.selectedMap)

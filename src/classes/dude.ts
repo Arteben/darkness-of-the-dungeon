@@ -10,9 +10,10 @@ import { IconTips } from '@/classes/icon-tips'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { PocketItem } from '@/classes/pocket-item'
 import { DudeProgressBar } from '@/classes/dude-progress-bar'
-import { EnvStaticMapElements } from '@/classes/env-static-map-elements'
+import { EnvStaticMapElementTypes } from '@/classes/env-static-map-element-types'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
-import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { ScopeStartEndGame } from '@/classes/scope-start-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 import { isAllNull } from '@/utils/usefull'
 
@@ -41,6 +42,8 @@ import {
   SceneLevelZIndexes,
   ProgressBarTypes,
   BusEventsList,
+  SoundLevels as SoundLV,
+  DudeMoveSounds as MoveSounds,
 } from '@/types/enums'
 
 export class Dude {
@@ -55,7 +58,8 @@ export class Dude {
   _slotSystem: PocketSlotsSystem
   _progressBar: DudeProgressBar
   _staticElementsList: IListOFEnvStaticElements
-  scopeEndGame: ScopeEndGame
+  scopeEndGame: ScopeStartEndGame
+  sounds: SoundSystem
 
   userModals: NotificationsModalsSystem
 
@@ -333,6 +337,8 @@ export class Dude {
       engine.physics.add.collider(this._playerBody, this._levels.groundLayer)
     }
 
+    this.sounds = engine.soundSystem
+
     // all animations for dude
     this.createAnimations(engine, keyAnimFrameSet)
 
@@ -460,16 +466,19 @@ export class Dude {
         }
         this.setDydeStaySizes()
         this.calcsForDropAvailable()
+        this.sounds.stopLevelSound(SoundLV[SoundLV.dudeMoveSounds])
         break
       case DudeStates.walk:
         this.dudeAnimationKey = {
           key: DudeAnimations.walking, isIgnoreIf: true
         }
+        this.sounds.playSfxSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.walk])
         break
       case DudeStates.run:
         this.dudeAnimationKey = {
           key: DudeAnimations.run, isIgnoreIf: true
         }
+        this.sounds.playSfxSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.run])
         break
       case DudeStates.climbing:
         this.setXPlayerBodyForClimbing()
@@ -563,6 +572,10 @@ export class Dude {
       yOffsetForCheckMove = 1
     }
 
+    const setClimbingSound = () => {
+      this.sounds.playSfxSoundForLevel(SoundLV[SoundLV.dudeMoveSounds], MoveSounds[MoveSounds.climbing])
+    }
+
     switch (this.dudeMoveState) {
       case DudeStates.idle:
         const plCoords = this.getTilePlayerCoords()
@@ -570,14 +583,17 @@ export class Dude {
           && this._levels.isCheckSymbMapElements(CheckSymMapElements.ladder, plCoords.x, plCoords.y + yOffsetForCheckMove)) {
           this.climbingType = newClimbingType
           this.dudeMoveState = DudeStates.climbing
+          setClimbingSound()
         }
         break
       case DudeStates.climbing:
         if (newValue) {
           if (this.climbingType == newClimbingType) {
             this.climbingType = DudeClimbingTypes.stand
+            this.sounds.stopLevelSound(SoundLV[SoundLV.dudeMoveSounds])
           } else {
             this.climbingType = newClimbingType
+            setClimbingSound()
           }
         }
     }
@@ -629,7 +645,7 @@ export class Dude {
     }
 
     const element = this._staticElementsList[
-      EnvStaticMapElements.GetIndexForStaticElement(String(envElementTile.index), plCords)]
+      EnvStaticMapElementTypes.GetIndexForStaticElement(String(envElementTile.index), plCords)]
 
     if (!element || !element.isInteractive) {
       this.envCollisionElementData = null
@@ -717,7 +733,7 @@ export class Dude {
     this._playerSprite.anims.create({
       key: Dude.getAnimKey(DudeAnimations.climbingUp),
       frames: scene.anims.generateFrameNumbers(animsKey, { start: 128, end: 137 }),
-      frameRate: 15,
+      frameRate: 13,
       repeat: -1,
     })
 

@@ -27,6 +27,18 @@
     "ru": "Русский",
     "eng": "Russian"
   },
+  "menuSettings": {
+    "ru": "Настройки",
+    "eng": "Settings"
+  },
+  "menuTypeSoundsfx": {
+    "ru": "Окружение: {0}%",
+    "eng": "Sounds: {0}%"
+  },
+  "menuTypeSoundmusic": {
+    "ru": "Музыка: {0}%",
+    "eng": "Music: {0}%"
+  },
   "hMenuToMain": {
     "ru": "Основное меню",
     "eng": "Back to main menu"
@@ -90,6 +102,10 @@
   "shownOnStart": {
     "ru": "Показавать при запуске новой игры?",
     "eng": "Show when starting a new game?"
+  },
+  "menuSettingsShownOnStart": {
+    "ru": "Показавать интро при запуске новой игры?",
+    "eng": "Show intro when starting a new game?"
   },
   "buttonOk": {
     "ru": "Хорошо",

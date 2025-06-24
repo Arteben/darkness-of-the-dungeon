@@ -87,8 +87,16 @@ export class MainMenu extends LitElement {
       height: 50px;
     }
 
+    button.buttonIconHeadMenu {
+      height: 50px;
+      padding: 10px;
+    }
+
     button:hover, button:active {
       outline: #eeeded solid 1px;
+    }
+    button:not(:hover) {
+      outline: none;
     }
 
     /* maps menu light */

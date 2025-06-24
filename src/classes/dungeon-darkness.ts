@@ -1,4 +1,5 @@
 import {
+  FonMusicTypes,
   GamePages,
   GameStateSettings,
   UserModalAddOptionsEnum,
@@ -29,7 +30,8 @@ import { default as JsonMapList } from '@/assets/maps/map-list.json'
 import { MainEngine } from '@/classes/main-engine'
 import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem as ModalsSystem } from '@/classes/notifications-modals-system'
-import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { ScopeStartEndGame } from '@/classes/scope-start-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 export let dungeonDarknessGame: DungeonDarkness | null = null
 
@@ -63,6 +65,9 @@ export class DungeonDarkness {
       target: 60,
       forceSetTimeOut: true,
     },
+    audio: {
+      disableWebAudio: false
+    }
   }
 
   phaser?: PhaserGame
@@ -81,7 +86,8 @@ export class DungeonDarkness {
     hold: 10,
   }
 
-  _scopeEndGame?: ScopeEndGame
+  _scopeEndGame?: ScopeStartEndGame
+  soundSystem?: SoundSystem
 
   constructor(state: GameState, locals: Translates) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -116,13 +122,14 @@ export class DungeonDarkness {
 
   startMainEngine() {
     const map = this.getSelectedMap()
-    if (!this.phaser || !this._scopeEndGame || !map) return
+    if (!this.phaser || !this._scopeEndGame || !this.soundSystem || !map) return
 
     const initParams: IParamsForInitEngine = {
       nameMap: map.name,
       slotsSystem: this._slotsSystem,
       modalsSystem: this._modalsSystem,
-      scopeEndGame: this._scopeEndGame
+      scopeEndGame: this._scopeEndGame,
+      soundSystem: this.soundSystem,
     }
     this.phaser.scene.start(this._mainSceneName, initParams)
     this._scopeEndGame.pause()
@@ -133,7 +140,8 @@ export class DungeonDarkness {
     this._phConfig.parent = parentApp
     this._phConfig.canvas = canvas
     this.phaser = new PhaserGame(this._phConfig)
-    this._scopeEndGame = new ScopeEndGame(this.phaser, this.state, this)
+    this.soundSystem = new SoundSystem(this.phaser, this.state)
+    this._scopeEndGame = new ScopeStartEndGame(this.phaser, this.state, this)
     this._scopeEndGame.setTransparent(true)
     this.phaser.scene.add(this._mainSceneName, MainEngine, false)
     this.startMainEngine()
@@ -163,6 +171,7 @@ export class DungeonDarkness {
         if (this.state.isGameStarted) {
           scopeEndGame.resume()
         } else if (scopeEndGame.isShowIntro()) {
+          scopeEndGame.setMusic(FonMusicTypes.intro)
           this._modalsSystem.showModal({
             text: this._modalsSystem.loc('gameIntroModalText'),
             callback: (options?: IUserModalAddOptions[]) => {

@@ -5,7 +5,8 @@ import { PocketSlotsSystem } from '@/classes/pocket-slots-system'
 import { NotificationsModalsSystem } from '@/classes/notifications-modals-system'
 import { MapStaticElement, BoxStaticElement } from '@/classes/map-static-element'
 import { Dude } from '@/classes/dude'
-import { ScopeEndGame } from '@/classes/scope-and-end-game'
+import { ScopeStartEndGame } from '@/classes/scope-start-end-game'
+import { SoundSystem } from '@/classes/sound-system'
 
 import {
   Languages,
@@ -23,12 +24,6 @@ export type nullNumber = null | number;
 export type ElementOrNull = HTMLElement | null;
 
 export type VoidFunction = () => void;
-
-export interface MainMenuEventData {
-  isSound?: boolean
-  newlang?: Languages
-  isStarted?: boolean
-}
 
 export interface MainButtonType {
   type: string
@@ -51,7 +46,8 @@ export interface IJsonTranslatesType {
 }
 
 export interface ILocSettings {
-  isSound: boolean
+  soundValues: ICommonSoundValues
+  hasSoundOn: boolean
   isShowGameIntro: boolean
   selectedMap?: ISelectedMap
 }
@@ -113,7 +109,8 @@ export interface IParamsForInitEngine {
   nameMap: string
   slotsSystem: PocketSlotsSystem
   modalsSystem: NotificationsModalsSystem
-  scopeEndGame: ScopeEndGame
+  scopeEndGame: ScopeStartEndGame
+  soundSystem: SoundSystem
 }
 
 export interface ILoadedTileSets {
@@ -235,4 +232,15 @@ export type UserModalNullData = IUserModalData | null
 export interface ISelectedMap {
   type: string
   difficult: DifficultyLevels
+}
+
+export interface ISoundLevelsCollection {
+  [index: string]: Phaser.Sound.WebAudioSound
+}
+
+export type callbackForAddDropItem = (a: PocketItem) => void
+
+export interface ICommonSoundValues {
+  sfx: number
+  music: number
 }
