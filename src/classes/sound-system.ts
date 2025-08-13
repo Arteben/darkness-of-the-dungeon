@@ -81,12 +81,12 @@ export class SoundSystem {
     const soundLevel = this._soundLevels[idx]
     if (soundLevel == undefined) return
 
-    this.stopLevelSound(idx)
+    this.stopAllSoundLevel(idx)
     soundLevel.destroy()
     delete this._soundLevels[idx]
   }
 
-  stopLevelSound(levelIdx: string) {
+  stopAllSoundLevel(levelIdx: string) {
     const soundLevel = this._soundLevels[levelIdx]
     if (soundLevel == undefined) return
 
@@ -95,11 +95,11 @@ export class SoundSystem {
     }
   }
 
-  playSfxSoundForLevel(levelIdx: string, type: string) {
+  playLevelStaticSound(levelIdx: string, type: string) {
     const soundLevel = this._soundLevels[levelIdx]
     if (soundLevel == undefined) return
 
-    this.stopLevelSound(levelIdx)
+    this.stopAllSoundLevel(levelIdx)
     const volume = this._state.soundValues.sfx
     const sound = soundLevel
     sound.play(type, { volume })
