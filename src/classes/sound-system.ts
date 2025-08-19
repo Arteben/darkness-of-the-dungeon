@@ -14,7 +14,7 @@ import { EventBus } from '@/classes/event-bus'
 import { GameState } from '@/classes/game-state'
 
 export const defaulSoundValues: ICommonSoundValues = {
-  sfx: 0.5, music: 0.5
+  sfx: 0.3, music: 0.3
 }
 
 export const offSoundValues: ICommonSoundValues = {
