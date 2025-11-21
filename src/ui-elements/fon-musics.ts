@@ -161,9 +161,9 @@ export class FonMusics extends GameStateElement {
 
   onStartEndMusicLoad() {
     this._loaddedCountMusic++
-    if (this._loaddedCountMusic == startEndMusic.length) {
-      console.log('all music loaded! ++++++++++++')
-    }
+    // if (this._loaddedCountMusic == startEndMusic.length) {
+    //   console.log('all music loaded! ++++++++++++')
+    // }
   }
 
   getVolume() {
